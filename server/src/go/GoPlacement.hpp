@@ -30,6 +30,8 @@
 			GoPlacement (Go * go);
 			GoPlacement (Go * go, xmlNode * node);
 			
+			void Save (xmlNode* placementNode) const;
+
 			bool IsDirty () const;
 			void MarkAsClean ();
 			

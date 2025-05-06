@@ -18,6 +18,7 @@
 #ifndef PACKETS_HPP_
 #define PACKETS_HPP_
 
+//####### SEND ##########################
 	#define RSAUTHENTICATION 1
 	#define RSPLAYERREADY 2
 	#define RSCHAT 11
@@ -29,23 +30,30 @@
 	#define RSATTACKMELEE 24
 	#define RSATTACKRANGED 25
 	#define RSCAST 26
+	#define RSINVENMOVE 31
 	#define RSJOBTRAVELDISTANCEREACHED 40
-	
+//####### RECV ##########################
 	#define RCAUTHENTICATION 1
+
 	#define RCCREATEACTOR 6
 	#define RCCREATEITEM 7
+
 	#define RCDISPLAYMESSAGE 9
 	#define RCCREATEGO 10
 	#define RCCHAT 11
 	#define RCMOVE 12
 	#define RCDESTROYGO 13
 	#define RCSETSCREENHERO 14
+
 	#define RCGET 20
 	#define RCDROP 21
 	#define RCEQUIP 22
 	#define RCUNEQUIP 23
 	#define RCATTACKMELEE 24
 	#define RCATTACKRANGED 25
+
 	#define RCAPPROACH 27
+
+	#define RCINVENMOVE 31
 
 #endif /* PACKETS_HPP_ */

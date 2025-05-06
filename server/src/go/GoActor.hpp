@@ -30,6 +30,9 @@
 			GoActor (Go * go, xmlNode * node); // should be GoActor (xmlNode * node);
 			~GoActor ();
 			
+			void Save(xmlNode* actorNode) const;
+			void SaveSkills(xmlNode* actorNode) const;
+
 			eActorAlignment Alignment () const;
 			void ChangeSkillLevel (const string & skill, float delta);
 			float GetSkillLevel (const string & skill) const;

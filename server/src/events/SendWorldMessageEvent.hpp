@@ -20,7 +20,7 @@
 
 	#include "Event.hpp"
 	#include "../msg/WorldMessage.hpp"
-	
+
 	class SendWorldMessageEvent : public Event
 	{
 		public:

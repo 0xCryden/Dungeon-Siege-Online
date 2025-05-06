@@ -30,7 +30,53 @@
 	class InGame : public WorldState
 	{
 		public:
-			
+
+		const char* GetPacketName(u_int8_t type, bool isServerToClient) {
+		    switch (isServerToClient) {
+		    case true: {
+		    	switch (type) {
+		       // if (isServerToClient == true) {
+		        case 1: return "RSAUTHENTICATION";
+		        case 2: return "RSPLAYERREADY";
+		        case 11: return "RSCHAT";
+		        case 12: return "RSMOVE";
+		        case 20: return "RSGET";
+		        case 21: return "RSDROP";
+		        case 22: return "RSEQUIP";
+		        case 23: return "RSUNEQUIP";
+		        case 24: return "RSATTACKMELEE";
+		        case 25: return "RSATTACKRANGED";
+		        case 26: return "RSCAST";
+		        case 40: return "RSJOBTRAVELDISTANCEREACHED";
+
+		        default: return "UNKNOWN";
+		    	}
+			}
+		    default: {
+		    	switch (type) {
+		    	case 1: return "RCAUTHENTICATION";
+		    	    case 6: return "RCCREATEACTOR";
+		    	    case 7: return "RCCREATEITEM";
+		    	    case 9: return "RCDISPLAYMESSAGE";
+		    	    case 10: return "RCCREATEGO";
+		    	    case 11: return "RCCHAT";
+		    	    case 12: return "RCMOVE";
+		    	    case 13: return "RCDESTROYGO";
+		    	    case 14: return "RCSETSCREENHERO";
+		    	    case 20: return "RCGET";
+		    	    case 21: return "RCDROP";
+		    	    case 22: return "RCEQUIP";
+		    	    case 23: return "RCUNEQUIP";
+		    	    case 24: return "RCATTACKMELEE";
+		    	    case 25: return "RCATTACKRANGED";
+		    	    case 27: return "RCAPPROACH";
+
+		    	    default: return "UNKNOWN";
+		    	}
+		    }
+		    }
+		}
+
 			InGame (Connection & connection, Go * go) : WorldState (&connection), m_go (go)
 			{
 			}
@@ -60,6 +106,10 @@
 				Packet incoming (buffer);
 				
 				u_int8_t type = incoming.ReadUInt8();
+
+		        std::cout << "[HANDLE SEND] Type: " << GetPacketName(type, true)
+						  << " (id=" << (int)type << ")" << std::endl;
+
 				switch (type)
 				{
 					case RSPLAYERREADY:
@@ -170,6 +220,41 @@
 					}
 					break;
 					
+					case RSINVENMOVE:
+					{
+						std::cout << "RsInvenmove" << std::endl;
+						u_int32_t id = incoming.ReadUInt32();
+						u_int8_t origLoc = incoming.ReadUInt8();
+						u_int8_t destLoc = incoming.ReadUInt8();
+
+						Go * item = godb.FindGoById (id);
+						if (item != NULL)
+						{
+							cout << "moving " << id << " from slot " << (eInventoryLocation)origLoc << " to " << (eInventoryLocation)destLoc << endl;
+							if (destLoc == il_main)
+							{
+								std::cout << "RsInvenmove2" << std::endl;
+								//delete item from location llist
+								//GopSet::const_iterator iterator = m_go->Inventory()->m_bag.find ((Go *)item);
+								//m_go->Inventory()->m_bag.erase(iterator);
+								m_go->Inventory()->RemoveFromSpellbook((eInventoryLocation)origLoc);
+								/*map<eInventoryLocation, Go *>::iterator iterator = m_go->Inventory()->m_bag.find ((eInventoryLocation)origLoc);
+								if (iterator != m_go->Inventory()->m_bag.end())
+								{
+									std::cout << "RsInvenmove3" << std::endl;
+									m_go->Inventory()->m_bag.erase (iterator);
+								}*/
+							}
+							else
+							{
+								std::cout << "RsInvenmove4" << std::endl;
+								m_go->Inventory()->SetInventoryLocation(item, (eInventoryLocation)destLoc);
+								//m_go->Inventory()->m_bag[(eInventoryLocation)destLoc] = item;
+							}
+						}
+					}
+					break;
+
 					case RSJOBTRAVELDISTANCEREACHED:
 					{
 						u_int32_t node = incoming.ReadUInt32();

@@ -72,6 +72,69 @@ GoActor :: ~GoActor ()
 	}
 }
 
+void GoActor::SaveSkills(xmlNode* actorNode) const
+{
+    // Get or create <skills> node
+    xmlNode* skillsNode = nullptr;
+    for (xmlNode* child = actorNode->children; child; child = child->next)
+    {
+    	if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST "skills"))
+    	{
+    		skillsNode = child;
+            break;
+        }
+    }
+
+    if (!skillsNode) {
+    	std::cout << "[GoActor] No skills to save" << std::endl;
+    	return;
+    }
+
+    const std::string hardcodedSkills[] = {
+        "strength", "intelligence", "dexterity",
+        "melee", "ranged", "nature magic", "combat magic"
+    };
+
+    // Assuming skillsNode is already your <skills> xmlNode
+    for (const std::string& name : hardcodedSkills)
+    {
+        auto it = m_skills.find(name);
+        if (it == m_skills.end()) continue;
+
+        Skill* skill = it->second;
+        if (!skill) continue;
+
+        xmlNode* skillNode = nullptr;
+
+        // Search for existing <skill> node by name
+        for (xmlNode* child = skillsNode->children; child; child = child->next)
+        {
+            if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST "skill"))
+            {
+                std::string existingName = xml::XReadString(child, "name", "");
+                if (existingName == name)
+                {
+                    skillNode = child;
+                    break;
+                }
+            }
+        }
+
+        if (!skillNode)
+        	std::cout << "Skill '" << name << "' not found" << std::endl;
+        // Update attributes
+        //xml::SetAttribute(skillNode, "name", skill->name);
+        xml::SetAttribute(skillNode, "level", skill->level);
+        xml::SetAttribute(skillNode, "experience", skill->experience);
+    }
+}
+
+void GoActor::Save(xmlNode* actorNode) const
+{
+	xml::SetOrUpdateChildValue(actorNode, "alignment", ToString(Alignment()));
+    SaveSkills(actorNode);
+}
+
 eActorAlignment GoActor :: Alignment () const
 {
 	return m_alignment;

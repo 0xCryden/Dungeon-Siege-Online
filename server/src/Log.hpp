@@ -31,7 +31,7 @@
 			Log ();
 			~Log ();
 			
-			void Write (const char * write);
+			void Write (const char * write, bool outputConsole = false);
 			void WriteF (const char * write, ...);
 			
 		private:

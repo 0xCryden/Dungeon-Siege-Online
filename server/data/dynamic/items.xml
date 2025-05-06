@@ -78,4 +78,108 @@
 			<position node="4026581136" x="1.000000" y="0.000000" z="1.000000" />
 		</placement>
 	</go>
+	<go id="107">
+		<aspect>
+			 <model value="spell_book" />
+		</aspect>
+		<common>
+			<auto_expiration_class value="never" />
+			<forced_expiration_class value="auto" />
+			<screen_name value="Spell Book" />
+		</common>
+		<placement region="1">
+			<position node="4026581136" x="2.000000" y="0.000000" z="3.000000" />
+		</placement>
+	</go>
+	<go id="108">
+		<aspect>
+			 <model value="revive" />
+		</aspect>
+		<common>
+			<auto_expiration_class value="never" />
+			<forced_expiration_class value="auto" />
+			<screen_name value="Revive" />
+		</common>
+		<placement region="1">
+			<position node="4026581136" x="4.000000" y="0.000000" z="2.000000" />
+		</placement>
+	</go>
+	<go id="109">
+		<aspect>
+			 <model value="spell_book" />
+		</aspect>
+		<common>
+			<auto_expiration_class value="never" />
+			<forced_expiration_class value="auto" />
+			<screen_name value="Spell Book" />
+		</common>
+		<placement region="1">
+			<position node="4026581136" x="2.000000" y="0.000000" z="2.000000" />
+		</placement>
+	</go>
+	<go id="110">
+		<aspect>
+			 <model value="revive" />
+		</aspect>
+		<common>
+			<auto_expiration_class value="never" />
+			<forced_expiration_class value="auto" />
+			<screen_name value="Revive" />
+		</common>
+		<placement region="1">
+			<position node="4026581136" x="3.000000" y="0.000000" z="1.000000" />
+		</placement>
+	</go>
+	<go id="111">
+		<aspect>
+			 <model value="special_armor" />
+		</aspect>
+		<common>
+			<auto_expiration_class value="never" />
+			<forced_expiration_class value="auto" />
+			<screen_name value="armor of a thousand GPG pwnage" />
+		</common>
+		<placement region="1">
+			<position node="4053099924" x="-1.000000" y="0.000000" z="-1.000000" />
+		</placement>
+	</go>
+	<go id="112">
+		<aspect>
+			 <model value="special_armor" />
+		</aspect>
+		<common>
+			<auto_expiration_class value="never" />
+			<forced_expiration_class value="auto" />
+			<screen_name value="armor of a thousand GPG pwnage" />
+		</common>
+		<placement region="1">
+			<position node="4053099924" x="-1.000000" y="0.000000" z="-1.000000" />
+		</placement>
+	</go>
+	<go id="113">
+		<aspect>
+			 <model value="special_armor2" />
+		</aspect>
+		<common>
+			<auto_expiration_class value="never" />
+			<forced_expiration_class value="auto" />
+			<screen_name value="ar 2" />
+		</common>
+		<placement region="1">
+			<position node="4053099924" x="-1.000000" y="0.000000" z="-1.000000" />
+		</placement>
+	</go>
+	<go id="114">
+		<aspect>
+			 <model value="special_armor2" />
+		</aspect>
+		<common>
+			<auto_expiration_class value="never" />
+			<forced_expiration_class value="auto" />
+			<screen_name value="armge 2" />
+		</common>
+		<placement region="1">
+			<position node="4053099924" x="-1.000000" y="0.000000" z="-1.000000" />
+		</placement>
+	</go>
 </objects>

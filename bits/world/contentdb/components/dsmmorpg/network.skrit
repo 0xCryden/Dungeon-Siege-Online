@@ -95,6 +95,10 @@ startup state startup$
 				{
 					RCRevive$ (packet$);
 				}
+				else if (type$ == 31)
+				{
+					RCInvenMove$ (packet$);
+				}
 				
 				NetworkManager.DiscardPacket (packet$);
 				received$ -= 1;

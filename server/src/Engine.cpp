@@ -18,6 +18,10 @@
 #include "Engine.hpp"
 #include "events/SendWorldMessageEvent.hpp"
 
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+
 Engine engine;
 
 Engine :: Engine ()
@@ -34,6 +38,17 @@ Engine :: ~Engine ()
 		m_EventRegistry.pop();
 	}
 }
+
+void Engine::RegisterPlayer(Go* playerGo) {
+    if (playerGo) m_players.insert(playerGo);
+}
+void Engine::UnregisterPlayer(Go* playerGo) {
+    m_players.erase(playerGo);
+}
+bool Engine::IsPlayer(Go* obj) const {
+    return m_players.find(obj) != m_players.end();
+}
+
 
 bool Engine :: IsRunning ()
 {
@@ -58,6 +73,24 @@ void Engine :: Loop ()
 		}
 		
 		delete event;
+	}
+
+	if ((CurrentTime() % 60000) == 0) {
+		/*for (const auto& pair : godb.FindGoById(1)) {
+		    Go* go = pair.second;
+		    ...
+		}*/
+		std::cout << "####### [START] 60 Second Timer #######" << std::endl;
+		for (GopSet::iterator iterator = m_players.begin(); iterator != m_players.end(); iterator++)
+		{
+			(*iterator)->SaveToXml();
+			logger.Write("[ENGINE] Save GO..", true);
+		}
+		std::cout << "Currently tracked players: " << m_players.size() << std::endl;
+		//godb.FindGoById(1)->SaveToXml();
+		//logger.Write("[ENGINE] Save GO: 1", true);
+		//std::cout << "[ENGINE] Save GO: " << "1" << std::endl;
+		std::cout << "####### [END] 60 Second Timer #######" << std::endl;
 	}
 }
 
@@ -92,6 +125,9 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			{
 				if (from->Placement()->GetRegion().empty() != true)
 				{
+					if (engine.IsPlayer(from)) {
+						engine.UnregisterPlayer(from);
+					}
 					RemoveGoFromRegion (from);
 				}
 			}

@@ -97,6 +97,9 @@
 	category_name = "magic";
 	doc = "revive spell";
 	specializes = base_spell_good;
+	[object]
+	{
+	}
 	[aspect]
 	{
 	}
@@ -118,5 +121,64 @@
 		requires_line_of_sight = true;
 		target_type_flags = tt_actor;
 		usage_context_flags = uc_offensive;
+	}
+}
+[t:template,n:spell_book]
+{
+	doc = "book_magic_wizard";
+	specializes = base_book_spell;
+	[object]
+	{
+	}
+	[aspect]
+	{
+		[textures]
+		{
+			0 = b_i_glb_book-magic-04;
+		}
+	}
+	[gui]
+	{
+
+		inventory_icon = b_gui_ig_i_it_magic-book-04;
+	}
+	[magic]
+	{
+		pcontent_level = 10;
+	}
+	[pcontent]
+	{
+		[base]
+		{
+			f modifier_max = 1;
+			f modifier_min = 1;
+		}
+	}
+}
+
+[t:template,n:special_armor2]
+{
+	doc = "Standard Plate";
+	specializes = base_body_armor_plate;
+	
+	[object]
+	{
+	}
+	
+	[common]
+	{
+		screen_name = "Standard Plate2";
+	}
+	[defend]
+	{
+		armor_style = 014;
+		armor_type = a3;
+	  f defense = 204.000000;
+	}
+	[gui]
+	{
+		inventory_height = 3;
+		inventory_icon = b_gui_ig_i_a_pos_a3_014;
+		inventory_width = 2;
 	}
 }

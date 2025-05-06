@@ -18,17 +18,23 @@
 #ifndef PLATFORM_HPP_
 #define PLATFORM_HPP_
 
+	#include <cstdint>  // This defines uint64_t and other integer types
 	#include <string>
 	using std::string;
 	
 	#ifdef WIN32
-	
+#include <winsock2.h>
+#include <ws2tcpip.h>
+//#include <windows.h>
+//#undef byte // removes the one from rpcndr.h
+//typedef unsigned char byte; // your own definition
+
 		typedef unsigned char u_int8_t;
 		typedef signed char int8_t;
 		typedef unsigned short int u_int16_t;
 		typedef signed short int int16_t;
 		typedef unsigned long int u_int32_t;
-		typedef signed long int int32_t;
+		//typedef signed long int int32_t;
 		typedef unsigned __int64 u_int64_t;
 		typedef __int64 int64_t;
 		

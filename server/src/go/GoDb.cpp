@@ -84,6 +84,7 @@ void GoDb :: LoadGoDb (const string & filename)
 						if (region.empty() != true)
 						{
 							SendWorldMessage (we_entered_world, t, t, region);
+							std::cout << "Loaded go " << id << std::endl;
 						}
 					}
 				}
@@ -134,6 +135,7 @@ void GoDb :: LoadContentDb (const string & filename)
 				{
 					Go * t = new Go (node);
 					m_contentdb[name] = t;
+					std::cout << "Loaded template " << name.c_str() << std::endl;
 				}
 				catch (exception & e)
 				{

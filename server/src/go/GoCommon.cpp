@@ -47,6 +47,13 @@ GoCommon :: GoCommon (Go * go, xmlNode * node) : GoComponent (go)
 	}
 }
 
+void GoCommon :: Save (xmlNode* commonNode) const
+{
+	xml::SetOrUpdateChildValue(commonNode, "auto_expiration_class", m_auto_expiration_class);
+	xml::SetOrUpdateChildValue(commonNode, "forced_expiration_class", m_forced_expiration_class);
+	xml::SetOrUpdateChildValue(commonNode, "screen_name", m_screen_name);
+}
+
 string GoCommon :: AutoExpirationClass () const
 {
 	return m_auto_expiration_class;

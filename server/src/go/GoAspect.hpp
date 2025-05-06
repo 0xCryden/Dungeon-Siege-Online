@@ -31,6 +31,8 @@
 			GoAspect (Go * go);
 			GoAspect (Go * go, xmlNode * node);
 			
+			void Save(xmlNode* aspectNode) const;
+
 			float BoundingSphereRadius () const;
 			float CurrentLife () const;
 			float CurrentMana () const;

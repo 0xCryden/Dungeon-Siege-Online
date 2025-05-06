@@ -60,6 +60,16 @@ GoAttack :: GoAttack (Go * go, xmlNode * node) : GoComponent (go)
 	}
 }
 
+void GoAttack :: Save (xmlNode* attackNode) const
+{
+	xml::SetOrUpdateChildValue(attackNode, "attack_range", AttackRange());
+	xml::SetOrUpdateChildValue(attackNode, "critical_hit_chance", CriticalHitChance());
+	xml::SetOrUpdateChildValue(attackNode, "damage_max", DamageMax());
+	xml::SetOrUpdateChildValue(attackNode, "damage_min", DamageMin());
+	xml::SetOrUpdateChildValue(attackNode, "is_two_handed", IsTwoHanded());
+	//xml::SetOrUpdateChildValue(attackNode, "reload_delay", ReloadDelay());
+}
+
 float GoAttack :: AttackRange () const
 {
 	return m_attack_range;

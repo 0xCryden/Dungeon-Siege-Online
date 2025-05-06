@@ -17,6 +17,11 @@
 
 #include "Log.hpp"
 
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+
 Log logger;
 
 Log :: Log ()
@@ -32,11 +37,20 @@ Log :: ~Log ()
 	}
 }
 
-void Log :: Write (const char * write)
+void Log :: Write (const char * write, bool outputConsole)
 {
 	if (m_file.is_open())
 	{
+		// Get current time
+		auto now = std::chrono::system_clock::now();
+		std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+
+		// Write timestamp and log message
+		m_file << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] ";
 		m_file << write << "\n";
+		if (outputConsole == true) {
+			std::cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] " << write <<  std::endl;
+		}
 		m_file.flush();
 	}
 }

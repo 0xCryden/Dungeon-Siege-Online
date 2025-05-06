@@ -134,21 +134,17 @@ public:
 	#endif // GPSTRING_TRACKING
 
 	typedef gp_basic_string<_E, _Tr, _A> _Myt;
-	typedef _A::size_type size_type;
-	typedef _A::difference_type difference_type;
-	typedef _A::pointer pointer;
-	typedef _A::const_pointer const_pointer;
-	typedef _A::reference reference;
-	typedef _A::const_reference const_reference;
-	typedef _A::value_type value_type;
-	typedef _A::pointer iterator;
-	typedef _A::const_pointer const_iterator;
-	typedef reverse_iterator<const_iterator, value_type,
-		const_reference, const_pointer, difference_type>
-			const_reverse_iterator;
-	typedef reverse_iterator<iterator, value_type,
-		reference, pointer, difference_type>
-			reverse_iterator;
+	typedef typename _A::size_type size_type;
+	typedef typename _A::difference_type difference_type;
+	typedef typename _A::pointer pointer;
+	typedef typename _A::const_pointer const_pointer;
+	typedef typename _A::reference reference;
+	typedef typename _A::const_reference const_reference;
+	typedef typename _A::value_type value_type;
+	typedef typename _A::pointer iterator;
+	typedef typename _A::const_pointer const_iterator;
+	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+	typedef std::reverse_iterator<iterator> reverse_iterator;
 	explicit gp_basic_string(const _A& _Al = _A())
 		: _A(_Al) {_Ptr = 0; }
 	gp_basic_string(const _Myt& _X)
@@ -795,8 +791,9 @@ private:
 	_E *_Ptr;
 	};
 template<class _E, class _Tr, class _A>
-	const gp_basic_string<_E, _Tr, _A>::size_type
+	const typename gp_basic_string<_E, _Tr, _A>::size_type
 		gp_basic_string<_E, _Tr, _A>::npos = (size_type)-1;
+
 
         // gp_basic_string TEMPLATE OPERATORS
 template<class _E, class _Tr, class _A> inline

@@ -19,37 +19,37 @@
 #define CONNECTION_HPP_
 
 	#include "../platform.hpp"
-	#include <sys/socket.h>
+	//#include <sys/socket.h>
 	#include <errno.h>
-	#include <netinet/in.h>
+	//#include <netinet/in.h>
 	#include <fcntl.h>
-	
+
 	#include "WorldState.hpp"
-	
+
 	class Connection
 	{
 		public:
-			
+
 			Connection (int descriptor);
-			
+
 			void SetNonBlockingFlag (bool nonblocking);
-			
+
 			int Send (const char * buffer, int size);
 			int Receive ();
-			
+
 			void Close ();
-			
+
 			int data () {return m_descriptor;}
-			
+
 			WorldState * State () const;
 			void SetWorldState (WorldState * state);
-			
+
 		private:
-			
+
 			int m_descriptor;
 			bool m_connected;
 			WorldState * m_state;
-			
+
 			char m_buffer[1024];
 	};
 

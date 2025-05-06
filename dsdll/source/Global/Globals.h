@@ -29,6 +29,32 @@
 
 	};
 
+	enum eInventoryLocation
+	{
+		il_active_melee_weapon = 0,
+		il_active_ranged_weapon = 1,
+		il_active_primary_spell = 2,
+		il_active_secondary_spell = 3,
+		il_spell_1 = 4,
+		il_spell_2 = 5,
+		il_spell_3 = 6,
+		il_spell_4 = 7,
+		il_spell_5 = 8,
+		il_spell_6 = 9,
+		il_spell_7 = 10,
+		il_spell_8 = 11,
+		il_spell_9 = 12,
+		il_spell_10 = 13,
+		il_spell_11 = 14,
+		il_spell_12 = 15,
+		il_shield = 16,
+		il_invalid = 17,
+		il_all = 18,
+		il_all_active = 19,
+		il_all_spells = 20,
+		il_main = 21,
+	};
+
 	enum eActorAlignment
 	{
 		AA_GOOD = 0,
@@ -55,6 +81,11 @@
 		return (eEquipSlot)es;
 	}
 
+	FEX eInventoryLocation MakeInvenLocation (int il)
+	{
+		return (eInventoryLocation)il;
+	}
+
 	FEX eActorAlignment MakeActorAlignment (int align)
 	{
 		return (eActorAlignment)align;
@@ -68,6 +99,11 @@
 	FEX int MakeInt (eEquipSlot es)
 	{
 		return (int)es;
+	}
+
+	FEX int MakeInt (eInventoryLocation il)
+	{
+		return (int)il;
 	}
 
 	FEX int MakeInt (eActorAlignment align)

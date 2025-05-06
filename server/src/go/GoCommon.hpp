@@ -27,6 +27,8 @@
 			GoCommon (Go * go);
 			GoCommon (Go * go, xmlNode * node);
 			
+			void Save(xmlNode* commonNode) const;
+
 			string AutoExpirationClass () const;
 			string ForcedExpirationClass () const;
 			string ScreenName () const;

@@ -19,7 +19,7 @@
 #define PACKET_HPP_
 
 	#include "../platform.hpp"
-	#include <netinet/in.h> // endian converting functions
+	//#include <netinet/in.h> // endian converting functions
 	#include <string> // string type & memcpy
 	
 	using namespace std;

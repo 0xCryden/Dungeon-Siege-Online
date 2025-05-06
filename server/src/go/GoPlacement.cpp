@@ -46,7 +46,42 @@ GoPlacement :: GoPlacement (Go * go, xmlNode * node) : GoComponent (go)
 				m_position.Z = xml::ReadAttribute<float> (current, "z", 0.0f);
 			}
 		}
+
+		// Logging the placement info
+				std::cout << "[GoPlacement] Placed object with GO ID=" << go->Goid()
+				          << " in region=\"" << m_region << "\" at node=" << m_position.Node
+				          << " (" << std::fixed
+				          << m_position.X << ", " << m_position.Y << ", " << m_position.Z << ")"
+				          << std::endl;
 	}
+}
+
+void GoPlacement :: Save(xmlNode* placementNode) const
+{
+	xml::SetAttribute(placementNode, "region", m_region);
+
+    // Search for an existing position node.
+    xmlNode* positionNode = nullptr;
+    for (xmlNode* child = placementNode->children; child; child = child->next)
+    {
+        if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, (const xmlChar*)"position"))
+        {
+            positionNode = child;
+            break;
+        }
+    }
+
+    // If the position node doesn't exist, create a new one.
+    if (!positionNode)
+    {
+        positionNode = xmlNewChild(placementNode, nullptr, BAD_CAST "position", nullptr);
+    }
+
+    // Update the position node attributes with the current values.
+    xml::SetAttribute(positionNode, "node", m_position.Node);
+    xml::SetAttribute(positionNode, "x", m_position.X);
+    xml::SetAttribute(positionNode, "y", m_position.Y);
+    xml::SetAttribute(positionNode, "z", m_position.Z);
 }
 
 bool GoPlacement :: IsDirty () const

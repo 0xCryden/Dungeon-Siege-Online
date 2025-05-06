@@ -109,6 +109,11 @@ Go :: Go (u_int32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspe
 
 Go :: ~Go ()
 {
+	if (m_actor && m_actor->Alignment() == aa_good)
+	{
+		SaveToXml();
+	}
+
 	if (m_actor) delete m_actor;
 	if (m_aspect) delete m_aspect;
 	if (m_attack) delete m_attack;
@@ -610,3 +615,96 @@ void Go :: SetComponentString (const string & component, const string & property
 	}
 }
 */
+
+
+
+void Go :: SaveToXml ()
+{
+	if (HasComponent("player") == false)
+		return;
+
+	// Load the existing XML document
+	const string path = "data/dynamic/actors.xml";
+	xmlDoc* doc = xml::LoadFile(path);
+
+	if (!doc) {
+		std::cerr << "Failed to open actors.xml" << std::endl;
+		return;
+	}
+	// Get the root element of the XML document
+	xmlNodePtr root = xmlDocGetRootElement(doc);
+	if (!root) {
+        std::cerr << "Invalid XML structure (no root node)" << std::endl;
+        xmlFreeDoc(doc);
+        return;
+	}
+
+	const string idStr = std::to_string(Goid());
+	xmlNode* goNode = nullptr;
+
+    // Look for existing <go id="...">
+    for (xmlNode* node = root->children; node; node = node->next)
+    {
+        if (node->type == XML_ELEMENT_NODE && xmlStrEqual(node->name, BAD_CAST "go"))
+        {
+            string existingId = xml::XReadString(node, "id", "");
+            if (existingId == idStr)
+            {
+                goNode = node;
+                break;
+            }
+        }
+    }
+
+    if (!goNode) {
+    	std::cerr << "[GO] Not found GO" << Goid() << "in .xml" << std::endl;
+    	return;
+    }
+
+    // Helper to find or create a child node
+    auto FindOrCreateChild = [](xmlNode* parent, const char* name) -> xmlNode*
+    {
+        for (xmlNode* child = parent->children; child; child = child->next)
+        {
+            if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST name))
+                return child;
+        }
+        std::cerr << "[GO] Not found child: " << name << std::endl;
+        return nullptr;
+    };
+
+	// Add child elements (example for "actor" and other components)
+    if (HasActor()) {
+    	xmlNode* actorNode = FindOrCreateChild(goNode, "actor");
+        Actor()->Save(actorNode); // Assuming Actor class has a Save method
+    }
+    if (HasAspect()) {
+    	xmlNode* aspectNode = FindOrCreateChild(goNode, "aspect");
+        Aspect()->Save(aspectNode); // Assuming Aspect class has a Save method
+    }
+    if (HasAttack()) {
+    	xmlNode* attackNode = FindOrCreateChild(goNode, "attack");
+        Attack()->Save(attackNode); // Assuming Aspect class has a Save method
+    }
+    if (HasCommon()) {
+    	xmlNode* commonNode = FindOrCreateChild(goNode, "common");
+        Common()->Save(commonNode); // Assuming Aspect class has a Save method
+    }
+    /*if (HasMind()) {
+    	xmlNode* mindNode = FindOrCreateChild(goNode, "mind");
+        Mind()->Save(mindNode); // Assuming Aspect class has a Save method
+    }*/
+    if (HasInventory()) {
+    	xmlNode* inventoryNode = FindOrCreateChild(goNode, "inventory");
+        Inventory()->Save(inventoryNode); // Assuming Aspect class has a Save method
+    }
+    if (HasPlacement()) {
+    	xmlNode* placementNode = FindOrCreateChild(goNode, "placement");
+        Placement()->Save(placementNode); // Assuming Aspect class has a Save method
+    }
+
+    if (!xml::SaveFile(doc, path))
+    	std::cerr << "Failed to save XML to " << path << std::endl;
+
+    xmlFreeDoc(doc);
+}

@@ -52,30 +52,153 @@ GoInventory :: GoInventory (Go * go) : GoComponent (go)
 
 GoInventory :: GoInventory (Go * go, xmlNode * node) : GoComponent (go)
 {
-	if (node != NULL)
+	if (node == NULL)
+		return;
+
+	for (xmlNode * current = node->children; current != NULL; current = current->next)
 	{
-		xmlNode * current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
+		if (current->type != XML_ELEMENT_NODE) 				continue;
+		if (!xmlStrEqual(current->name, BAD_CAST "item")) 	continue;
+
+		u_int32_t id = xml::ReadAttribute<u_int32_t> (current, "id", 0);
+		std::string equipSlotStr = xml::ReadAttribute<std::string>(current, "equip_slot", "");
+		std::string invenLocStr = xml::ReadAttribute<std::string>(current, "inven_loc", "");
+
+		Go* item = nullptr;
+
+		item = godb.FindGoById(id);
+		//Goid g (id);
+		// add g to our inventory :)
+		if (!item)
+			continue;
+
+		// Set inventory location
+		eInventoryLocation invenLoc = StringToNumLoc(invenLocStr); // You already have this
+		if (invenLoc != il_main)
+			m_bag[invenLoc] = item;
+
+		// Add to inventory
+		if (Add(item))
 		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "item") != 0)
+			// If equip_slot is present, equip it
+			if (!equipSlotStr.empty())
 			{
-				string template_name = xml::ReadAttribute<string> (current, "template_name", "");
-				u_int32_t id = xml::ReadAttribute<u_int32_t> (current, "id", 0);
-				
-				if (id != 0)
+				eEquipSlot slot = StringToNum(equipSlotStr); // You need to implement this
+				if (slot != es_none)
 				{
-					//Goid g (id);
-					// add g to our inventory :)
-				}
-				else if (template_name != "")
-				{
-					// Go * item = godb.CloneGo (template_name);
-					// add item to our inventory :)
+					Equip(slot, item); // Will only succeed if not already equipped
 				}
 			}
+			/*
+			if (item->HasInventory() && item->Inventory() == nullptr) {
+				item->m_inventory = new GoInventory(item);
+			}
+			  std::cout << "[CHAR LOAD] Item HasInventory: " << item->HasInventory() << std::endl;
+			// Handle nested inventory inside this item
+			if (item->HasInventory() || id == 107)
+			{
+				for (xmlNode* invNode = current->children; invNode != NULL; invNode = invNode->next)
+				{
+					if (invNode->type != XML_ELEMENT_NODE) continue;
+					if (!xmlStrEqual(invNode->name, BAD_CAST "inventory")) continue;
+
+					for (xmlNode* current2 = invNode->children; current2 != NULL; current2 = current2->next)
+					{
+						if (current2->type != XML_ELEMENT_NODE) continue;
+						if (!xmlStrEqual(current2->name, BAD_CAST "item")) continue;
+
+						u_int32_t id2 = xml::ReadAttribute<u_int32_t>(current2, "id", 0);
+						std::string invenLocStr2 = xml::ReadAttribute<std::string>(current2, "inven_loc", "");
+
+						//GoInventory* subInventory = item->Inventory();
+						//if (!subInventory)
+						//	continue;
+
+						Go* item2 = godb.FindGoById(id2);
+						if (!item2)
+							continue;
+
+						eInventoryLocation invenLoc2 = StringToNumLoc(invenLocStr2);
+						if (invenLoc2 != il_main)
+							subInventory->m_bag[invenLoc2] = item2;
+
+						subInventory->Add(item2);
+					}
+				}
+			}*/
 		}
+	}
+}
+
+void GoInventory :: Save (xmlNode* inventoryNode) const
+{
+	if (!inventoryNode)
+			return;
+
+	// Step 1: Remove old <item> nodes
+	xmlNode* current = inventoryNode->children;
+	while (current != NULL)
+	{
+		xmlNode* next = current->next;
+		if (current->type == XML_ELEMENT_NODE && xmlStrEqual(current->name, BAD_CAST "item"))
+		{
+			xmlUnlinkNode(current);
+			xmlFreeNode(current);
+		}
+		current = next;
+	}
+
+	for (GopSet::const_iterator it = m_inventory.begin(); it != m_inventory.end(); ++it)
+	{
+		Go* item = *it;
+		if (!item)
+			continue;
+
+		xmlNode* itemNode = xmlNewChild(inventoryNode, NULL, BAD_CAST "item", NULL);
+
+		uint32_t id = item->Goid();
+		if (id != 0)
+		{
+			xml::SetAttribute(itemNode, "id", id);
+		}
+		else
+		{
+			std::string templateName = item->TemplateName();
+			if (!templateName.empty())
+			{
+				xml::SetAttribute(itemNode, "template_name", templateName);
+			}
+		}
+
+		// Step 3: Add equip_slot if equipped
+		eEquipSlot slot = GetEquippedSlot(item);
+		if (slot != es_none)
+		{
+			std::string slotStr = ToString(slot); // Assumes you have a ToString(eEquipSlot) function
+			xml::SetAttribute(itemNode, "equip_slot", slotStr);
+		}
+		// Step 3: Add equip_slot if equipped
+		eInventoryLocation loc = GetInventoryLocation(item);
+		if (loc != il_main && loc != il_invalid)
+		{
+			xml::SetAttribute(itemNode, "inven_loc", ToString(loc));
+		}
+	}
+
+
+}
+
+void GoInventory :: RemoveFromSpellbook(eInventoryLocation loc)
+{
+	map<eInventoryLocation, Go *>::iterator iterator = m_bag.find ((eInventoryLocation)loc);
+	if (iterator != m_bag.end())
+	{
+		/*
+		 * check if we can actually unequip this item
+		 */
+
+		std::cout << "RsInvenmove3" << std::endl;
+		m_bag.erase (iterator);
 	}
 }
 
@@ -166,6 +289,33 @@ eEquipSlot GoInventory :: GetEquippedSlot (const Go * item) const
 	}
 	
 	return es_none;
+}
+
+void GoInventory :: SetInventoryLocation (Go * item, eInventoryLocation loc)
+{
+	if (item == NULL)
+		return;
+
+	m_bag[loc] = item;
+}
+
+eInventoryLocation GoInventory :: GetInventoryLocation (const Go * item) const
+{
+	if  (item != NULL)
+	{
+		map<eInventoryLocation, Go *>::const_iterator iterator = m_bag.begin();
+		while (iterator != m_bag.end())
+		{
+			if (iterator->second->Goid() == item->Goid())
+			{
+				return iterator->first;
+			}
+
+			iterator++;
+		}
+	}
+
+	return il_main;
 }
 
 bool GoInventory :: IsAnyWeaponEquipped () const

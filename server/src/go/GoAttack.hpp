@@ -27,6 +27,8 @@
 			GoAttack (Go * go);
 			GoAttack (Go * go, xmlNode * node);
 			
+			void Save (xmlNode* attackNode) const;
+
 			float AttackRange () const;
 			float CriticalHitChance () const;
 			float DamageMax () const;

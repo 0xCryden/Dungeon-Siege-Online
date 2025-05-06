@@ -60,6 +60,8 @@
 			~Go ();
 			
 			GoActor * Actor () const;
+
+			void SaveToXml();
 			void AddChild (Go * child);
 			GoAspect * Aspect () const;
 			GoAttack * Attack () const;

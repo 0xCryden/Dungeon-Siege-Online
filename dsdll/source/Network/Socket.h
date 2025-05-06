@@ -9,7 +9,22 @@
 
 	#include "Net.h"
 	#include "wsa.h"
-	
+#include <cstdint>
+
+#include <fstream>
+#include <ctime>
+#include <sstream>  // Add this if you use stringstream
+void LogToFile(const char* message)
+{
+	std::ofstream log("dsdll_log.txt", std::ios::app); // Append mode
+	if (log.is_open())
+	{
+		std::time_t now = std::time(nullptr);
+		log << std::ctime(&now) << " " << message << std::endl;
+		log.close();
+	}
+}
+
 	// Socket Class
 
 	class Socket
@@ -140,6 +155,19 @@
 
 			int Send ( const char * strBuffer, int Size )
 			{
+				if (Size > 2) // make sure we can safely access data[2]
+				{
+					const uint8_t* bytes = reinterpret_cast<const uint8_t*>(strBuffer);
+					uint8_t packetType = bytes[2];  // packet ID usually starts at byte 2
+
+					std::ostringstream oss;
+					oss << "[SEND] Packet Type: " << packetType
+						<< " (id=" << (int)packetType << "), Size: " << Size;
+					LogToFile(oss.str().c_str());
+				}
+				//std::ostringstream oss;
+				//oss << "[NetMan] Manager Constructed";
+				//LogToFile(oss.str().c_str());
 				// Declare a variable to hold the return errors
 				int error;
 
@@ -174,6 +202,16 @@
 
 			int Receive ( char * strBuffer, int Size )
 			{
+				if (Size > 2) // make sure we can safely access data[2]
+				{
+					const uint8_t* bytes = reinterpret_cast<const uint8_t*>(strBuffer);
+					uint8_t packetType = bytes[2];  // packet ID usually starts at byte 2
+
+					std::ostringstream oss;
+					oss << "[RECEIVE] Packet Type: " << packetType
+						<< " (id=" << (int)packetType << "), Size: " << Size;
+					LogToFile(oss.str().c_str());
+				}
 				// Declare a variable to hold the return errors
 				int error;
 

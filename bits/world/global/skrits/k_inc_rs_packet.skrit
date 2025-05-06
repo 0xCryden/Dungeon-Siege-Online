@@ -140,6 +140,33 @@ void RSCast$ (int id$)
 	NetworkManager.DiscardPacket (packet$);
 }
 
+void RSInvenMove$ (int id$, int origLoc$, int destLoc$)
+{
+	Packet packet$ = NetworkManager.CreatePacket();
+	
+	packet$.WriteUInt8 (31);
+	packet$.WriteUInt32 (id$);
+	packet$.WriteUInt8 (origLoc$);
+	packet$.WriteUInt8 (destLoc$);
+	
+	NetworkManager.Send (packet$);
+	NetworkManager.DiscardPacket (packet$);
+}
+
+/*void RSSetLocation$ ( Go go$, int destLoc$, bool boool$)
+{
+	int id$ = MakeInt(go$.GetGoid());
+
+	Packet packet$ = NetworkManager.CreatePacket();
+
+	packet$.WriteUInt8 (31);
+	packet$.WriteUInt32 (id$);
+	packet$.WriteUInt8 (destLoc$);
+
+	NetworkManager.Send (packet$);
+	NetworkManager.DiscardPacket (packet$);
+}*/
+
 void RSJobTravelDistanceReached$ (SiegePos position$)
 {
 	Packet packet$ = NetworkManager.CreatePacket();

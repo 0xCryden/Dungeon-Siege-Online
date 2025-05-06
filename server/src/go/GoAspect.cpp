@@ -101,6 +101,20 @@ GoAspect :: GoAspect (Go * go, xmlNode * node) : GoComponent (go)
 	}
 }
 
+void GoAspect::Save(xmlNode* aspectNode) const
+{
+	xml::SetOrUpdateChildValue(aspectNode, "bounding_sphere_radius", m_bounding_sphere_radius);
+	xml::SetOrUpdateChildValue(aspectNode, "current_life", m_current_life);
+	xml::SetOrUpdateChildValue(aspectNode, "current_mana", m_current_mana);
+	xml::SetOrUpdateChildValue(aspectNode, "flesh", m_textures[0]);
+	xml::SetOrUpdateChildValue(aspectNode, "cloth", m_textures[1]);
+	xml::SetOrUpdateChildValue(aspectNode, "life_state", m_life_state);
+	xml::SetOrUpdateChildValue(aspectNode, "max_life", m_max_life);
+	xml::SetOrUpdateChildValue(aspectNode, "max_mana", m_max_mana);
+	xml::SetOrUpdateChildValue(aspectNode, "model", m_model);
+	xml::SetOrUpdateChildValue(aspectNode, "render_scale", m_render_scale);
+}
+
 float GoAspect :: BoundingSphereRadius () const
 {
 	return m_bounding_sphere_radius;

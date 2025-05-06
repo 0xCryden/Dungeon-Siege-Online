@@ -40,6 +40,7 @@ void Server :: LoadAccounts (const string & filename)
 			{
 				Account * account = new Account (node);
 				m_accounts[username] = account;
+				std::cout << "Loaded account " << username.c_str() << std::endl;
 			}
 		}
 	}

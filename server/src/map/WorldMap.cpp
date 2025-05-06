@@ -68,6 +68,7 @@ void WorldMap :: LoadMap (const string & filename)
 					Region * region = new Region (filename);
 					m_regions[name] = region;
 					m_active.insert (region);
+					std::cout << "Loaded region " << name.c_str() << std::endl;
 				}
 				catch (exception & e)
 				{

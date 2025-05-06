@@ -34,11 +34,17 @@
 			GoInventory (Go * go);
 			GoInventory (Go * go, xmlNode * node);
 			
+			void Save(xmlNode* inventoryNode) const;
 			bool Add (Go * item);
 			bool Contains (const Go * item) const;
 			bool Equip (eEquipSlot slot, Go * item);
 			Go * GetEquipped (eEquipSlot slot) const;
 			eEquipSlot GetEquippedSlot (const Go * item) const;
+
+			eInventoryLocation GetInventoryLocation (const Go * item) const;
+			void SetInventoryLocation (Go * item, eInventoryLocation loc);
+			void RemoveFromSpellbook(eInventoryLocation loc);
+
 			bool IsAnyWeaponEquipped () const;
 			bool IsEquipped (const Go * item) const;
 			bool IsMeleeWeaponEquipped () const;
@@ -52,6 +58,8 @@
 			
 			GopSet m_inventory;
 			map<eEquipSlot, Go *> m_equipment;
+
+			map<eInventoryLocation, Go *> m_bag;
 	};
 
 #endif /* GOINVENTORY_HPP_ */

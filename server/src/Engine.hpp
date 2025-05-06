@@ -38,7 +38,11 @@
 			
 			Engine ();
 			~Engine ();
-			
+
+		    void RegisterPlayer(Go* playerGo);  // Add this
+		    void UnregisterPlayer(Go* playerGo); // Optional, for logout cleanup
+		    bool IsPlayer(Go* obj) const;
+
 			bool IsRunning ();
 			
 			void Loop ();

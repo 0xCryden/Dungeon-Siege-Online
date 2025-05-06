@@ -160,11 +160,42 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				{
 					Go * item = *iterator;
 					eEquipSlot slot = to->Inventory()->GetEquippedSlot (item);
+					eInventoryLocation loc = to->Inventory()->GetInventoryLocation (item);
 					
+					std::cout << "Inventory Loc sent: " << ToString(loc) << std::endl;
+
 					packet.WriteUInt32 (item->Goid());
 					packet.WriteString (item->Common()->ScreenName());
 					packet.WriteUInt8 (slot);
+					packet.WriteUInt8 (loc);
 					packet.WriteString (item->Aspect()->Model());
+
+					std::cout << "[CHAR LOAD] Item HasInventory: " << item->HasInventory() << std::endl;
+					if (item->HasInventory())
+					{
+						std::cout << "[CHAR LOAD] Item HasInventory true" << std::endl;
+						packet.WriteUInt8 (1);
+						const GopSet & inventory2 = item->Inventory()->ListItems();
+						packet.WriteUInt8 (inventory2.size());
+						for (GopSet::const_iterator iterator2 = inventory2.begin(); iterator2 != inventory2.end(); iterator2++)
+						{
+							Go * item2 = *iterator;
+							eEquipSlot slot2 = item->Inventory()->GetEquippedSlot (item2);
+							eInventoryLocation loc2 = item->Inventory()->GetInventoryLocation (item2);
+
+							std::cout << "Sub Inventory Loc sent: " << ToString(loc2) << std::endl;
+
+							packet.WriteUInt32 (item2->Goid());
+							packet.WriteString (item2->Common()->ScreenName());
+							packet.WriteUInt8 (slot2);
+							packet.WriteUInt8 (loc2);
+							packet.WriteString (item2->Aspect()->Model());
+						}
+					}
+					else
+					{
+						packet.WriteUInt8 (0);
+					}
 				}
 				
 				m_connection->Send (packet.Data(), packet.Size());
@@ -198,7 +229,7 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteUInt32 (to->Goid());
 				packet.WriteString (to->Common()->ScreenName());
 				packet.WriteString (to->Aspect()->Model());
-				
+
 				m_connection->Send (packet.Data(), packet.Size());
 			}
 		}

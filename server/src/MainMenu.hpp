@@ -84,6 +84,7 @@
 								
 								go->AddComponent (new Player (m_connection, go));
 								m_connection->SetWorldState (new InGame (*m_connection, go));
+								engine.RegisterPlayer(go);
 							}
 						}
 						else
