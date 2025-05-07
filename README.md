@@ -7,7 +7,7 @@
 
 Use Dungeon Siege 1 Base game without LoA or it will not work. 
 
-To try it out the files are located inside the [bin](https://github.com/0xCryden/Dungeon-Siege-Online/tree/master/bin) folder.
+Download the [bin](https://github.com/0xCryden/Dungeon-Siege-Online/tree/master/bin) folder.
 
 Put [dsmmorpg.dsdll](https://github.com/0xCryden/Dungeon-Siege-Online/blob/master/bin/dsmmorpg.dsdll) where your DungeonSiege.exe is located
 
@@ -35,3 +35,18 @@ Launch the game
 Again make sure accept any new Firewall prompts
 
 Log in as any of the existing [accounts](https://github.com/0xCryden/Dungeon-Siege-Online/blob/master/server/data/dynamic/accounts.xml) (eg. Username "aanderse" and password "a") (Username is case sensitive)
+
+
+# Current Challenges
+
+Saving Spellbooks spells positions / Saving item containers items
+
+(currently spells from your spellbook get moved to your inventory after relogging)
+
+Changing the world map
+
+(currently when changing the map in the client it still tries to place the characters on the old map)
+
+Item non-redundance
+
+(When picking up an item and the server restarts the item will exist twice, once in inventory and once on floor)
