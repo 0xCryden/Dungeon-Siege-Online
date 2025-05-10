@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10007">
+		<aspect>
+			 <model value="spell_book"/>
+		</aspect>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="Spell Book"/>
+		</common>
+		<inventory><item id="10008" equip_slot="es_none" inven_loc="il_spell_1"/></inventory>
+		<placement region="">
+			<position node="1323345966" x="-1.65547" y="0" z="-0.615673"/>
+		</placement>
+	</go>
+</objects>

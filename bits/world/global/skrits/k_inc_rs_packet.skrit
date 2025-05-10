@@ -140,13 +140,15 @@ void RSCast$ (int id$)
 	NetworkManager.DiscardPacket (packet$);
 }
 
-void RSInvenMove$ (int id$, int origLoc$, int destLoc$)
+void RSInvenMove$ (int id$, int containerId$, int destLoc$)
 {
+	report.screenf("[DEBUG INVENMOVE]  id: %d | containerId: %d | destLoc: %d\n", id$, containerId$, destLoc$ );
+            	
 	Packet packet$ = NetworkManager.CreatePacket();
 	
 	packet$.WriteUInt8 (31);
 	packet$.WriteUInt32 (id$);
-	packet$.WriteUInt8 (origLoc$);
+	packet$.WriteUInt32 (containerId$);
 	packet$.WriteUInt8 (destLoc$);
 	
 	NetworkManager.Send (packet$);

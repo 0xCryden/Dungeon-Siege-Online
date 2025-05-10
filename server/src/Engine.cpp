@@ -49,6 +49,13 @@ bool Engine::IsPlayer(Go* obj) const {
     return m_players.find(obj) != m_players.end();
 }
 
+void Engine::RegisterItem(Go* itemGo) {
+    if (itemGo) m_items.insert(itemGo);
+}
+void Engine::UnregisterItem(Go* itemGo) {
+	m_items.erase(itemGo);
+}
+
 
 bool Engine :: IsRunning ()
 {
@@ -80,17 +87,26 @@ void Engine :: Loop ()
 		    Go* go = pair.second;
 		    ...
 		}*/
-		std::cout << "####### [START] 60 Second Timer #######" << std::endl;
+		//logger.Write("[ENGINE] ####### [START] 60 Second Timer #######", true);
 		for (GopSet::iterator iterator = m_players.begin(); iterator != m_players.end(); iterator++)
 		{
-			(*iterator)->SaveToXml();
-			logger.Write("[ENGINE] Save GO..", true);
+			(*iterator)->SaveToXml("actors");
+			//logger.Write("[ENGINE] Saving Character ", true);
 		}
-		std::cout << "Currently tracked players: " << m_players.size() << std::endl;
+		logger.Write("[ENGINE] Players saved", true);
+
+
+
+		for (GopSet::iterator iterator = m_items.begin(); iterator != m_items.end(); iterator++)
+		{
+			(*iterator)->SaveToXml("items");
+			//logger.Write("[ENGINE] Saving Item ", true);
+		}
+		logger.Write("[ENGINE] Items saved", true);
 		//godb.FindGoById(1)->SaveToXml();
 		//logger.Write("[ENGINE] Save GO: 1", true);
 		//std::cout << "[ENGINE] Save GO: " << "1" << std::endl;
-		std::cout << "####### [END] 60 Second Timer #######" << std::endl;
+		//logger.Write("[ENGINE] ####### [END] 60 Second Timer #######", true);
 	}
 }
 
@@ -168,6 +184,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 				if (region.empty() != true)
 				{
 					RemoveGoFromRegion (to);
+
 				}
 				
 				to->Send (message); // scripting event
@@ -427,6 +444,9 @@ void Engine :: MessageAllPlayers (const WorldMessage & message)
 
 void Engine :: AddGoToRegion (Go * go, const string & data)
 {
+	if (!godb.FindGoById(go->Goid()))
+			return;
+
 	Region * region;
 	if (go != NULL)
 	{
@@ -471,7 +491,12 @@ void Engine :: AddGoToRegion (Go * go, const string & data)
 
 void Engine :: RemoveGoFromRegion (Go * go)
 {
+	// Cryden TODO: when picked up add contained items to actors inventory
 	Region * region;
+
+	if (!godb.FindGoById(go->Goid()))
+		return;
+
 	if (go != NULL)
 	{
 		try

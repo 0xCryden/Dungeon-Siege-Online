@@ -2,6 +2,9 @@
 #include "Network.hpp"
 #include <winsock2.h>
 
+#include <chrono>
+#include <iomanip>
+
 Network::Network()
 {
     std::cout << "[INIT] Network constructor entered" << std::endl;
@@ -81,7 +84,10 @@ void Network::Accept()
                     m_sockets.insert(conn.data());
                     FD_SET(conn.data(), &m_descriptors);
 
-                    std::cout << "[ACCEPT] New connection accepted: socket " << conn.data() << std::endl;
+        			auto now = std::chrono::system_clock::now();
+        			std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+        	        std::cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
+        	        		  << "[ACCEPT] New conn: socket " << conn.data() << std::endl;
                 }
                 catch (int& err) {
                     if (err != EWOULDBLOCK) {

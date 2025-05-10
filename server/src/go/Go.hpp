@@ -55,13 +55,15 @@
 		public:
 			
 			Go (xmlNode * node); // ONLY USED FOR CREATING NEW TEMPLATES
+			void LoadFromXml(xmlNode* node);
 			Go (sqlResult * query); // only used for loading a 'save game'
 			Go (u_int32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
+			Go (u_int32_t id); // create empty go for later use
 			~Go ();
 			
 			GoActor * Actor () const;
 
-			void SaveToXml();
+			void SaveToXml(const std::string& folderName);
 			void AddChild (Go * child);
 			GoAspect * Aspect () const;
 			GoAttack * Attack () const;
@@ -123,6 +125,12 @@
 			void AddComponent (GoScriptComponent * component);
 			void RemoveComponent (const string & component);
 			
+			void SetLoc(eInventoryLocation loc) { m_inventoryLocation = loc; }
+			eInventoryLocation GetLoc() { return m_inventoryLocation; }
+
+			void SetOwner(int ownerId) { m_inventoryOwnerId = ownerId; }
+			int GetOwner() { return m_inventoryOwnerId; }
+
 		private:
 			
 			u_int32_t m_goid;
@@ -143,6 +151,9 @@
 			GoMind * m_mind;
 			GoPlacement * m_placement;
 			
+			eInventoryLocation m_inventoryLocation = il_invalid;
+			int m_inventoryOwnerId = 0;
+
 			map<string, GoScriptComponent*> m_scripts;
 	};
 

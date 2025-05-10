@@ -39,9 +39,15 @@
 			Engine ();
 			~Engine ();
 
-		    void RegisterPlayer(Go* playerGo);  // Add this
-		    void UnregisterPlayer(Go* playerGo); // Optional, for logout cleanup
+		    void RegisterPlayer(Go* go);  // Add this
+		    void UnregisterPlayer(Go* go); // Optional, for logout cleanup
 		    bool IsPlayer(Go* obj) const;
+
+		    void RegisterItem(Go* go);  // Add this
+		    void UnregisterItem(Go* go); // Optional, for logout cleanup
+
+		    GopSet GetPlayers() { return m_players; };
+		    GopSet GetItems() { return m_items; };
 
 			bool IsRunning ();
 			
@@ -65,6 +71,7 @@
 			priority_queue<Event *, vector<Event *>, EventComparison> m_EventRegistry;
 			
 			GopSet m_players;
+			GopSet m_items;
 	};
 	
 	extern Engine engine;

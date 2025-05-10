@@ -26,13 +26,17 @@
 	
 	#include "scripts/Player.hpp"
 	
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+
 	class MainMenu : public WorldState
 	{
 		public:
 			
 			MainMenu (Connection & connection) : WorldState (&connection)
 			{
-				cout << "main menu entered" << endl;
+				//cout << "main menu entered" << endl;
 			}
 			
 			~MainMenu ()
@@ -58,8 +62,11 @@
 					{
 						string username = incoming.ReadString();
 						string password = incoming.ReadString();
-						
-						cout << "authentication request for " << username << " with password " << password << endl;
+
+	        			auto now = std::chrono::system_clock::now();
+	        			std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+	        	        cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
+	        	        	 << "[AUTH] Request: " << username << " | " << password << endl;
 						
 						Account * account = server.GetAccount (username);
 						if (account != NULL)
@@ -79,8 +86,11 @@
 									cout << "huge error, null go for player!" << endl;
 									return;
 								}
-								
-								cout << "main menu grabbed player " << account->Username() << " and go with id " << go->Goid() << endl;
+
+			        			now = std::chrono::system_clock::now();
+			        			now_time = std::chrono::system_clock::to_time_t(now);
+			        	        cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
+			        	        	 << "[AUTH] Login success: " << account->Username() << " | ID: " << go->Goid() << endl;
 								
 								go->AddComponent (new Player (m_connection, go));
 								m_connection->SetWorldState (new InGame (*m_connection, go));

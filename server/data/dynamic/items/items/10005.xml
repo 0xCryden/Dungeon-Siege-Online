@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10005">
+		<aspect>
+			 <model value="long_bow"/>
+		</aspect>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="long bow"/>
+		</common>
+		<placement region="1">
+			<position node="182759028" x="-3.69647" y="0" z="-2.57174"/>
+		</placement>
+	</go>
+</objects>

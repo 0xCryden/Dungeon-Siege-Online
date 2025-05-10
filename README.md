@@ -39,14 +39,10 @@ Log in as any of the existing [accounts](https://github.com/0xCryden/Dungeon-Sie
 
 # Current Challenges
 
-Saving Spellbooks spells positions / Saving item containers items
+Dropped Spellbooks leave a false copy of their contents on the ground
 
-(currently spells from your spellbook get moved to your inventory after relogging)
+Network character "portal" doesnt follow you around so your client cant use the network messages if you leave the spawn point too far
 
-Changing the world map
+Players cannot fight
 
-(currently when changing the map in the client it still tries to place the characters on the old map)
-
-Item non-redundance
-
-(When picking up an item and the server restarts the item will exist twice, once in inventory and once on floor)
+Serversided NPCs are missing

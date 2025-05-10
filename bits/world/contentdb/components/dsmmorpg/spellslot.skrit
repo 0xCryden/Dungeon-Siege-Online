@@ -1,0 +1,69 @@
+/*
+ *  This file is part of dsmmorpg.
+ *  
+ *  dsmmorpg is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  dsmmorpg is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with dsmmorpg.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "k_inc_rs_packet" 
+
+owner = GoSkritComponent;
+
+startup state Idle$
+{
+	int id$ = 0;
+	int containerId$ = 0;
+	int destLoc$ = 0;
+
+	trigger OnTimer$ ( 1 )
+    {
+        report.genericf("[DEBUG]    Location: %d\n", MakeInt(owner.Go.Parent.Inventory.GetLocation( owner.Go )) );
+		RSInvenMove$(id$, containerId$, MakeInt(owner.Go.Parent.Inventory.GetLocation( owner.Go )) );
+		id$ = 0;
+		containerId$ = 0;
+		destLoc$ = 0;
+    }
+
+    event OnGoHandleMessage$( eWorldEvent e$, WorldMessage msg$ )
+    {    
+        if ( e$ == WE_PLAYER_CHANGED )
+        {
+			report.screenf("[DEBUG]  Inven event called");
+            if ( owner.Go.Parent != NULL )
+            {
+                report.screenf("[DEBUG]  Spell: %s | Owner: %p : %s\n", owner.Go.TemplateName, owner.Go.Parent.Goid, owner.Go.Parent.TemplateName );
+            	report.screenf("[DEBUG]  Step 1");
+            	
+				id$ = owner.Go.GetComponentInt ("object", "id");
+				if (owner.Go.Parent.HasComponent("object"))
+				{
+					report.screenf("[DEBUG]  Step 2");
+					containerId$ = owner.Go.Parent.GetComponentInt ("object", "id");
+					if ((id$ != 0) && (containerId$ != 0))
+					{
+						report.screenf("[DEBUG]  Step 3");
+						destLoc$ = MakeInt(owner.Go.Parent.Inventory.GetLocation(owner.Go));
+						//report.screenf("[DEBUG] Sending.. id: %d | containerId: %d | destLoc: %d\n", id$, containerId$, destLoc$);
+						this.CreateTimer( 1, 0.01 );
+						//RSInvenMove$(id$, containerId$, destLoc$);
+					}
+				}
+				else
+				{
+					this.CreateTimer( 1, 0.01 );
+					//RSInvenMove$(id$, 0, 21);
+				}
+			}
+        }
+    }
+}

@@ -21,6 +21,9 @@
 #include "Packet.hpp"
 #include <iostream> // For logging output
 
+#include <chrono>
+#include <iomanip>
+
 #ifdef _WIN32
  // #include <winsock2.h>
   //#include <ws2tcpip.h>
@@ -35,10 +38,7 @@
   #include <sys/socket.h> // For socket functions
 #endif
 
-// Logging utility
-static void Log(const std::string& message) {
-    std::cerr << "[Connection] " << message << std::endl;
-}
+#include "../Log.hpp"
 
 Connection::Connection(int descriptor)
 	: m_descriptor(descriptor), m_connected(false), m_state(NULL)
@@ -46,7 +46,7 @@ Connection::Connection(int descriptor)
 	if (m_descriptor != -1)
 	{
 		m_connected = true;
-		Log("New connection created: descriptor = " + std::to_string(m_descriptor));
+		//Log("Request from desc: " + std::to_string(m_descriptor));
 	}
 }
 
@@ -57,7 +57,7 @@ void Connection::SetNonBlockingFlag(bool nonblocking)
 		if (ioctlsocket(m_descriptor, FIONBIO, &mode) != 0)
 		{
 			int err = WSAGetLastError();
-			Log("Failed to set non-blocking mode (Windows): " + std::to_string(err));
+			cout << "Failed to set non-blocking mode (Windows): " << err << endl;
 			throw err;
 		}
 #else
@@ -136,9 +136,13 @@ int Connection::Send(const char* buffer, int size)
 	// Add logging here
 	if (size > 2) // make sure we can safely access data[2]
 	    {
+			auto now = std::chrono::system_clock::now();
+			std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+
 	        const uint8_t* bytes = reinterpret_cast<const uint8_t*>(buffer);
 	        uint8_t packetType = bytes[2];  // packet ID usually starts at byte 2
-	        std::cout << "[SEND] Packet Type: " << GetPacketName(packetType, true)
+	        std::cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
+	        		  << "[SEND] Type: " << GetPacketName(packetType, true)
 					  << " (id=" << (int)packetType << "), Size: " << size << std::endl;
 	    }
 
@@ -154,7 +158,7 @@ int Connection::Send(const char* buffer, int size)
 		if (e != EWOULDBLOCK)
 #endif
 		{
-			Log("Send failed: " + std::to_string(e));
+			cout << "Send failed: " <<  e << endl;
 			throw e;
 		}
 		error = 0;
@@ -169,7 +173,7 @@ int Connection::Receive()
 
 	if (error == 0)
 	{
-		Log("Connection closed gracefully by peer.");
+		cout << "Connection closed gracefully by peer." << endl;
 		throw errno;
 	}
 	if (error == -1)
@@ -179,7 +183,7 @@ int Connection::Receive()
 #else
 		int e = errno;
 #endif
-		Log("Receive failed: " + std::to_string(e));
+		cout << "Receive failed: " << e << endl;
 
 #ifdef _WIN32
 		if (e == WSAECONNRESET)
@@ -188,7 +192,7 @@ int Connection::Receive()
 #endif
 		{
 			m_connected = false;
-			Log("Connection reset by peer.");
+			cout << "Connection reset by peer." << endl;
 		}
 		throw e;
 	}
@@ -206,13 +210,23 @@ int Connection::Receive()
 
 			if (size <= error)
 			{
-				Log("Packet received (size=" + std::to_string(size) + ")");
+
+			    {
+					auto now = std::chrono::system_clock::now();
+					std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+
+			        const uint8_t* bytes = reinterpret_cast<const uint8_t*>(m_buffer);
+			        uint8_t packetType = bytes[2];  // packet ID usually starts at byte 2
+			        std::cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
+			        		  << "[RECV] Type: " << GetPacketName(packetType, true)
+							  << " (id=" << (int)packetType << "), size: " << size << std::endl;
+			    }
+				//cout << "Packet received - size= " <<  size << endl;
 				m_state->Handle(m_buffer + position);
 			}
 			else
 			{
-				Log("Incomplete packet (expected=" + std::to_string(size) +
-				    ", remaining=" + std::to_string(error) + ")");
+				cout << "Incomplete. Remaining, Expected" << error <<  size << endl;
 			}
 
 			error -= size;
@@ -236,7 +250,7 @@ void Connection::Close()
 		if (error == -1)
 		{
 #ifdef _WIN32
-			Log("Shutdown failed: " + std::to_string(WSAGetLastError()));
+			cout << "Shutdown failed: " << WSAGetLastError() << endl;
 			throw WSAGetLastError();
 #else
 			throw errno;
@@ -252,13 +266,13 @@ void Connection::Close()
 	if (error == -1)
 	{
 #ifdef _WIN32
-		Log("Close socket failed: " + std::to_string(WSAGetLastError()));
+		cout << "Close socket failed: " << WSAGetLastError() << endl;
 		throw WSAGetLastError();
 #else
 		throw errno;
 #endif
 	}
-	Log("Connection closed: descriptor = " + std::to_string(m_descriptor));
+	cout << "Connection closed: descriptor = " <<  m_descriptor << endl;
 	m_descriptor = -1;
 	m_connected = false;
 

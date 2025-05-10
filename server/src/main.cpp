@@ -66,10 +66,9 @@ int main(int argc, char** argv)
 
             world.LoadMap(dataDir + "\\static\\map\\main.xml");
 
-            godb.LoadGoDb(dataDir + "\\dynamic\\items.xml");
-            godb.LoadGoDb(dataDir + "\\dynamic\\actors.xml");
+            godb.LoadGoDbFolder("items");
+            godb.LoadGoDbFolder("actors");
 
-            // godb.LoadContentDb(dataDir + "\\static\\items.xml");
             godb.LoadContentDb(dataDir + "\\static\\actors.xml");
 
             server.LoadAccounts(dataDir + "\\dynamic\\accounts.xml");

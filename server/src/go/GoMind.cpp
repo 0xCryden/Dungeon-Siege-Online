@@ -354,3 +354,8 @@ eEquipSlot GoMind :: ActionSlot () const
 {
 	return m_slot;
 }
+
+eInventoryLocation GoMind :: ActionLocation () const
+{
+	return m_location;
+}

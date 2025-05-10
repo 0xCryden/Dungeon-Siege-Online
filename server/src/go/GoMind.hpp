@@ -53,6 +53,7 @@
 			float ActionDistance () const;
 			Go * ActionObject () const;
 			eEquipSlot ActionSlot () const;
+			eInventoryLocation ActionLocation () const;
 			
 		private:
 			
@@ -65,6 +66,7 @@
 			float m_distance;
 			Go * m_object;
 			eEquipSlot m_slot;
+			eInventoryLocation m_location;
 	};
 
 #endif /* GOMIND_HPP_ */

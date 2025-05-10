@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10008">
+		<aspect>
+			 <model value="revive"/>
+		</aspect>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="Revive"/>
+		</common>
+		<placement region="">
+			<position node="319981628" x="0.420955" y="0" z="-1.49339"/>
+		</placement>
+	</go>
+</objects>

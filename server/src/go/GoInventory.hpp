@@ -42,8 +42,7 @@
 			eEquipSlot GetEquippedSlot (const Go * item) const;
 
 			eInventoryLocation GetInventoryLocation (const Go * item) const;
-			void SetInventoryLocation (Go * item, eInventoryLocation loc);
-			void RemoveFromSpellbook(eInventoryLocation loc);
+			void SetInventoryLocation (Go * item, eInventoryLocation loc, int ownerId);
 
 			bool IsAnyWeaponEquipped () const;
 			bool IsEquipped (const Go * item) const;

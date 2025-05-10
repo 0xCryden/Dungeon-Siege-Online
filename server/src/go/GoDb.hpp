@@ -31,7 +31,9 @@
 			
 			~GoDb ();
 			
-			void LoadGoDb (const string & filename); 
+			void LoadGoDbFolder (const std::string& folderName);
+			void LoadGoDbSingleChar (u_int32_t id);
+
 			void LoadContentDb (const string & filename);
 			
 			Go * FindGoById (u_int32_t id);

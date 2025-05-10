@@ -20,19 +20,126 @@
 #include "../net/Connection.hpp"
 
 #include <iostream>
+#include <vector>
 using namespace std;
 
 Player :: Player (Connection * connection, Go * go) : GoScriptComponent (go), m_connection (connection)
 {
 }
 
+void CollectInventoryRecursive(const GopSet& inventorySet,
+                               std::vector<Go*>& itemsWithoutInventory,
+                               std::vector<Go*>& itemsWithInventory)
+{
+    for (Go* item : inventorySet)
+    {
+        if (item->HasInventory())
+        {
+            itemsWithInventory.push_back(item);
+            const GopSet& nestedInventory = item->Inventory()->ListItems();
+            CollectInventoryRecursive(nestedInventory, itemsWithoutInventory, itemsWithInventory);
+        }
+        else
+        {
+            itemsWithoutInventory.push_back(item);
+        }
+    }
+}
+
+// Helper function: writes an item and its contained items recursively
+void WriteItemRecursive(Go* item, Packet& packet)
+{
+	if (!item)
+		return;
+
+	Go* parent = item->Parent();
+	GoInventory* parentInv = parent ? parent->Inventory() : nullptr;
+
+	uint32_t containerId = parent ? parent->Goid() : 0;
+
+	eEquipSlot slot = (parent && parent->Inventory())
+	        ? parent->Inventory()->GetEquippedSlot(item)
+	        : es_none;
+
+    eInventoryLocation loc = il_main;
+    if (parent && parentInv)
+        loc = parentInv->GetInventoryLocation(item);
+
+    std::cout << "Sending item: ID=" << item->Goid()
+                  << ", Slot=" << slot
+                  << ", Loc=" << ToString(loc)
+                  << ", ContainerID=" << containerId << std::endl;
+
+    packet.WriteUInt32(item->Goid());
+    packet.WriteString(item->Common()->ScreenName());
+    packet.WriteUInt8(slot);
+    packet.WriteUInt8(loc);
+    packet.WriteUInt32(containerId);
+    packet.WriteString(item->Aspect()->Model());
+
+    //GoInventory* inv = item->Inventory();
+    if (item->HasInventory() && !item->Inventory()->ListItems().empty())
+    {
+    	GoInventory* inv = item->Inventory();
+        packet.WriteUInt8(1); // has inventory^
+
+        const GopSet& inveen = inv->ListItems();
+        packet.WriteUInt8(inveen.size());
+        for (Go* child : inv->ListItems())
+        {
+            WriteItemRecursive(child, packet);
+        }
+    }
+    else
+    {
+        packet.WriteUInt8(0); // no inventory
+    }
+}
+
+void SendRCCreateItemRecursive(Go* item, Connection* conn)
+{
+	if (!item || !item->IsItem())
+		return;
+
+	Packet packet;
+	packet.WriteUInt8(RCCREATEITEM);
+	packet.WriteUInt32(item->Goid());
+	packet.WriteString(item->Common()->ScreenName());
+	packet.WriteString(item->Aspect()->Model());
+	packet.WriteUInt32(item->Placement()->Position().Node);
+	packet.WriteFloat(item->Placement()->Position().X);
+	packet.WriteFloat(item->Placement()->Position().Y);
+	packet.WriteFloat(item->Placement()->Position().Z);
+
+	// Write nested inventory
+	/*if (item->HasInventory() && !item->Inventory()->ListItems().empty())
+	{
+		GoInventory* inv = item->Inventory();
+		packet.WriteUInt8(1); // has inventory
+		packet.WriteUInt8(inv->ListItems().size()); // how many inside
+		for (Go* child : inv->ListItems())
+		{
+			// Recursively write child items
+			WriteItemRecursive(child, packet);
+		}
+	}
+	else*/
+	{
+		packet.WriteUInt8(0); // no inventory
+	}
+
+	std::cout << "Sending RCCreateItem: ID=" << item->Goid() << std::endl;
+	conn->Send(packet.Data(), packet.Size());
+}
+
 void Player :: OnGoHandleMessage (const WorldMessage & message)
 {
-	// cout << "recevied event " << ToString (message.WorldEvent()) << " from " << message.SendFrom() << " to " << message.SendTo() << endl;
 	eWorldEvent event = message.WorldEvent();
 	Go * from = message.SendFrom();
 	Go * to = message.SendTo();
 	
+	cout << "received event " << ToString (message.WorldEvent()) << " from " << from->Goid() << " to " << to->Goid() << endl;
+
 	switch (event)
 	{
 		case we_entered_world:
@@ -98,7 +205,9 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 						packet.WriteUInt8 (0);
 					}
 				}
-				
+
+			    //std::cout << "From->IsActor()" << std::endl;
+
 				m_connection->Send (packet.Data(), packet.Size());
 				
 				return;
@@ -106,20 +215,10 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 			
 			if (from->IsItem())
 			{
-				Packet packet;
-				packet.WriteUInt8 (RCCREATEITEM);
-				packet.WriteUInt32 (from->Goid());
-				packet.WriteString (from->Common()->ScreenName());
-				packet.WriteString (from->Aspect()->Model());
-				packet.WriteUInt32 (from->Placement()->Position().Node);
-				packet.WriteFloat (from->Placement()->Position().X);
-				packet.WriteFloat (from->Placement()->Position().Y);
-				packet.WriteFloat (from->Placement()->Position().Z);
-				
-				m_connection->Send (packet.Data(), packet.Size());
-				
+				SendRCCreateItemRecursive(from, m_connection);
 				return;
 			}
+
 		}
 		break;
 		
@@ -153,50 +252,17 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteFloat (to->Actor()->GetSkillLevel("nature magic"));
 				packet.WriteFloat (to->Actor()->GetSkillLevel("combat magic"));
 				
-				// inventory
-				const GopSet & inventory = to->Inventory()->ListItems();
-				packet.WriteUInt8 (inventory.size());
-				for (GopSet::const_iterator iterator = inventory.begin(); iterator != inventory.end(); iterator++)
+				// Get top-level inventory items
+				const GopSet& inventory = to->Inventory()->ListItems();
+
+				// Write number of top-level items (not counting nested ones)
+				packet.WriteUInt8(inventory.size());
+
+				for (Go* item : inventory)
 				{
-					Go * item = *iterator;
-					eEquipSlot slot = to->Inventory()->GetEquippedSlot (item);
-					eInventoryLocation loc = to->Inventory()->GetInventoryLocation (item);
-					
-					std::cout << "Inventory Loc sent: " << ToString(loc) << std::endl;
-
-					packet.WriteUInt32 (item->Goid());
-					packet.WriteString (item->Common()->ScreenName());
-					packet.WriteUInt8 (slot);
-					packet.WriteUInt8 (loc);
-					packet.WriteString (item->Aspect()->Model());
-
-					std::cout << "[CHAR LOAD] Item HasInventory: " << item->HasInventory() << std::endl;
-					if (item->HasInventory())
-					{
-						std::cout << "[CHAR LOAD] Item HasInventory true" << std::endl;
-						packet.WriteUInt8 (1);
-						const GopSet & inventory2 = item->Inventory()->ListItems();
-						packet.WriteUInt8 (inventory2.size());
-						for (GopSet::const_iterator iterator2 = inventory2.begin(); iterator2 != inventory2.end(); iterator2++)
-						{
-							Go * item2 = *iterator;
-							eEquipSlot slot2 = item->Inventory()->GetEquippedSlot (item2);
-							eInventoryLocation loc2 = item->Inventory()->GetInventoryLocation (item2);
-
-							std::cout << "Sub Inventory Loc sent: " << ToString(loc2) << std::endl;
-
-							packet.WriteUInt32 (item2->Goid());
-							packet.WriteString (item2->Common()->ScreenName());
-							packet.WriteUInt8 (slot2);
-							packet.WriteUInt8 (loc2);
-							packet.WriteString (item2->Aspect()->Model());
-						}
-					}
-					else
-					{
-						packet.WriteUInt8 (0);
-					}
+				    WriteItemRecursive(item, packet);
 				}
+
 				
 				m_connection->Send (packet.Data(), packet.Size());
 			}
@@ -230,6 +296,40 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteString (to->Common()->ScreenName());
 				packet.WriteString (to->Aspect()->Model());
 
+				if (to->HasInventory() && !to->Inventory()->ListItems().empty())
+			    {
+					packet.WriteUInt8(1); // has inventory
+			        const GopSet& inveen = to->Inventory()->ListItems();
+			        packet.WriteUInt8(inveen.size());
+
+					for (Go* child : to->Inventory()->ListItems())
+			        {
+						Go* parent = child->Parent();
+						GoInventory* parentInv = parent ? parent->Inventory() : nullptr;
+
+						eEquipSlot slot = es_none;
+					    eInventoryLocation loc = il_main;
+
+					    loc = parentInv->GetInventoryLocation(child);
+
+					    std::cout << "Sending item pickup: ID=" << child->Goid()
+					                  << ", Slot=" << slot
+					                  << ", Loc=" << ToString(loc)
+					                  << ", ContainerID=" << to->Goid() << std::endl;
+
+
+					    packet.WriteUInt32(child->Goid());
+					    packet.WriteString(child->Common()->ScreenName());
+					    packet.WriteUInt8(slot);
+					    packet.WriteUInt8(loc);
+					    packet.WriteString(child->Aspect()->Model());
+			        }
+			    }
+			    else
+			    {
+			        packet.WriteUInt8(0); // no inventory
+			    }
+
 				m_connection->Send (packet.Data(), packet.Size());
 			}
 		}
@@ -243,6 +343,8 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteUInt8 (RCDROP);
 				packet.WriteUInt32 (to->Goid());
 				
+				//to->SetOwner(0);
+
 				m_connection->Send (packet.Data(), packet.Size());
 			}
 		}

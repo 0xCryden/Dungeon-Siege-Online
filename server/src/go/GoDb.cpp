@@ -41,7 +41,175 @@ GoDb :: ~GoDb ()
 	}}
 }
 
-void GoDb :: LoadGoDb (const string & filename)
+void GoDb::LoadGoDbFolder(const std::string& folderName)
+{
+    std::string folderPath = "data\\dynamic\\" + folderName + "\\";
+    std::string searchPattern = folderPath + "*.xml";
+
+    WIN32_FIND_DATA findFileData;
+    HANDLE hFind = FindFirstFile(searchPattern.c_str(), &findFileData);
+
+    if (hFind == INVALID_HANDLE_VALUE)
+    {
+        throw std::runtime_error("No actor XML files found in: " + folderPath);
+    }
+
+    std::vector<std::pair<u_int32_t, xmlNode*>> withoutInventory;
+    std::vector<std::pair<u_int32_t, xmlNode*>> withInventory;
+
+    do
+    {
+        std::string filePath = folderPath + findFileData.cFileName;
+        xmlDoc* document = xmlReadFile(filePath.c_str(), NULL, 0);
+        if (!document)
+        {
+            logger.WriteF("Failed to read file: %s", filePath.c_str());
+            continue;
+        }
+
+        xmlNode* root = xmlDocGetRootElement(document);
+        if (!root)
+        {
+            xmlFreeDoc(document);
+            logger.WriteF("Invalid XML in file: %s", filePath.c_str());
+            continue;
+        }
+
+        for (xmlNode* node = root->children; node != nullptr; node = node->next)
+        {
+            if (node->type != XML_ELEMENT_NODE || !xmlStrEqual(node->name, BAD_CAST "go"))
+                continue;
+
+            u_int32_t id = xml::ReadAttribute<u_int32_t>(node, "id", 0);
+            if (id == 0)
+                continue;
+
+            if (m_godb.find(id) != m_godb.end())
+            {
+                logger.WriteF("Duplicate GO ID %u found in file: %s", id, filePath.c_str());
+                continue;
+            }
+
+            // Classify GO node by presence of <inventory>
+            bool hasInventory = false;
+            for (xmlNode* child = node->children; child; child = child->next)
+            {
+                if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST "inventory"))
+                {
+                    hasInventory = true;
+                    break;
+                }
+            }
+
+            auto& targetVec = hasInventory ? withInventory : withoutInventory;
+            targetVec.emplace_back(id, xmlCopyNode(node, 1)); // deep copy so doc can be freed
+
+        }
+
+        xmlFreeDoc(document);
+
+    } while (FindNextFile(hFind, &findFileData) != 0);
+
+    FindClose(hFind);
+
+    auto processNodes = [&](const std::vector<std::pair<u_int32_t, xmlNode*>>& nodes)
+    {
+        for (const auto& [id, node] : nodes)
+        {
+            try
+            {
+                Go* t = new Go(node);
+                m_godb[id] = t;
+
+                if (engine.IsPlayer(t) || folderName == "items")
+                {
+                    std::string region = t->Placement()->GetRegion();
+                    if (!region.empty())
+                    {
+                        SendWorldMessage(we_entered_world, t, t, region);
+                        std::cout << "[GODB] Spawned Item " << id << std::endl;
+                    }
+                }
+
+                if (folderName == "items")
+                {
+                    engine.RegisterItem(t);
+                }
+            }
+            catch (std::exception& e)
+            {
+                logger.WriteF("go %u was not loaded because: %s", id, e.what());
+            }
+
+            xmlFreeNode(node); // free deep copy after use
+        }
+    };
+
+    // 1. Load GOs without inventory
+    processNodes(withoutInventory);
+
+    // 2. Load GOs with inventory
+    processNodes(withInventory);
+}
+
+
+void GoDb :: LoadGoDbSingleChar (u_int32_t id)
+{
+	std::string filePath = "data\\dynamic\\actors\\" + std::to_string(id) + ".xml";
+
+    xmlDoc* document = xmlReadFile(filePath.c_str(), NULL, 0);
+    if (!document)
+    {
+        logger.WriteF("Failed to open file for GO ID %u: %s", id, filePath.c_str());
+        return;
+    }
+
+    xmlNode* root = xmlDocGetRootElement(document);
+    if (!root)
+    {
+        xmlFreeDoc(document);
+        logger.WriteF("Invalid XML structure in file: %s", filePath.c_str());
+        return;
+    }
+
+    for (xmlNode* node = root->children; node != nullptr; node = node->next)
+    {
+        if (node->type != XML_ELEMENT_NODE) continue;
+        if (!xmlStrEqual(node->name, (const xmlChar*)"go")) continue;
+
+        uint32_t nodeId = xml::ReadAttribute<uint32_t>(node, "id", 0);
+        if (nodeId != id) continue;
+
+        try
+        {
+            Go* t = new Go(node);
+            m_godb[id] = t;
+
+            if (t->HasPlacement())
+            {
+                std::string region = t->Placement()->GetRegion();
+                if (!region.empty())
+                {
+                    SendWorldMessage(we_entered_world, t, t, region);
+                    std::cout << "Loaded go " << id << " from " << filePath << std::endl;
+                }
+            }
+            xmlFreeDoc(document);
+            return;
+        }
+        catch (const std::exception& e)
+        {
+            logger.WriteF("Error constructing GO %u from file %s: %s", id, filePath.c_str(), e.what());
+            xmlFreeDoc(document);
+            return;
+        }
+    }
+
+    xmlFreeDoc(document);
+    logger.WriteF("No matching <go> node with ID %u found in file %s", id, filePath.c_str());
+}
+
+/*void GoDb :: LoadGoDb (const string & filename)
 {
 	xmlDoc * document = xmlReadFile (filename.c_str(), NULL, 0);
 	if (document == NULL)
@@ -97,7 +265,7 @@ void GoDb :: LoadGoDb (const string & filename)
 	}
 	
 	xmlFreeDoc (document);
-}
+}*/
 
 void GoDb :: LoadContentDb (const string & filename)
 {

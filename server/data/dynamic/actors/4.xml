@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="4">
+		<actor strength="6" dexterity="4" intelligence="2" charisma="15" wisdom="5" constitution="4"/>
+		<aspect model="humangirl" flesh="b_c_gah_fg_skin_004,b_c_gah_fg_hair_004" cloth="b_c_pos_a1_pant_005,b_c_pos_a1_shrt_008" visible="true"/>
+		<common name="Kenjuudo" description="yet another j00kie dude"/>
+		<mind/>
+		<inventory/>
+		<placement/>
+	</go>
+</objects>

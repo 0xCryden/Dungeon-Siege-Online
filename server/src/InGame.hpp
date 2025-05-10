@@ -27,6 +27,12 @@
 	
 	#include "map/WorldMap.hpp"
 	
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <random>
+#include <iostream>
+
 	class InGame : public WorldState
 	{
 		public:
@@ -87,15 +93,41 @@
 			
 			void OnEnter ()
 			{
-				cout << m_go->Goid() << " entered the game" << endl;
-				
-				m_go->Placement()->SetPosition (SiegePos (0xf1956594, 0.0f, 0.0f, 0.0f));
+				SiegePos pos = m_go->Placement()->Position();
+
+				    /*if (!pos.IsValid())
+				    {*/
+		    			auto now = std::chrono::system_clock::now();
+		    			std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+		    	        cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
+		    	        	 << m_go->Goid() << " entered the game" << endl;
+
+		    	        // Use fallback spawn with randomness
+    	                std::random_device rd;
+    	                std::mt19937 gen(rd());
+    	                std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+
+    	                float randX = dist(gen);
+    	                float randZ = dist(gen);
+
+    	                float baseX = -2.7f;
+    	                float baseZ = -0.8f;
+
+    	                SiegePos fallbackPos(0xf1956594, baseX + randX, 0.0f, baseZ + randZ);
+    	                m_go->Placement()->SetPosition(fallbackPos);
+
+						m_go->Placement()->SetPosition (SiegePos (0xf1956594, 0.0f, 0.0f, 0.0f));
+				    /*}
+				    else
+				    {
+				    	m_go->Placement()->SetPosition(pos);
+				    }*/
 			}
 			
 			void OnExit ()
 			{
 				cout << m_go->Goid() << " left the game" << endl;
-				
+				m_go->SaveToXml("actors");
 				m_go->RemoveComponent ("player");
 				
 				SendWorldMessage (we_left_world, m_go, m_go, "");
@@ -107,8 +139,11 @@
 				
 				u_int8_t type = incoming.ReadUInt8();
 
-		        std::cout << "[HANDLE SEND] Type: " << GetPacketName(type, true)
-						  << " (id=" << (int)type << ")" << std::endl;
+    			/*auto now = std::chrono::system_clock::now();
+    			std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+    	        std::cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
+    	        		  << "[RECV INGAME] Type: " << GetPacketName(type, true)
+						  << " (id=" << (int)type << ")" << std::endl;*/
 
 				switch (type)
 				{
@@ -126,6 +161,8 @@
 						float y = incoming.ReadFloat();
 						float z = incoming.ReadFloat();
 						
+						cout << "RSMOVE: Player " << m_go->Common()->ScreenName() <<  " | Node " << node << " | x: " << x << " y: " << y << " z: " << z << endl;
+
 						m_go->Mind()->Move (SiegePos (node, x, y, z));
 					}
 					break;
@@ -222,36 +259,19 @@
 					
 					case RSINVENMOVE:
 					{
-						std::cout << "RsInvenmove" << std::endl;
 						u_int32_t id = incoming.ReadUInt32();
-						u_int8_t origLoc = incoming.ReadUInt8();
+						u_int32_t ownerId = incoming.ReadUInt32();
 						u_int8_t destLoc = incoming.ReadUInt8();
 
 						Go * item = godb.FindGoById (id);
-						if (item != NULL)
-						{
-							cout << "moving " << id << " from slot " << (eInventoryLocation)origLoc << " to " << (eInventoryLocation)destLoc << endl;
-							if (destLoc == il_main)
-							{
-								std::cout << "RsInvenmove2" << std::endl;
-								//delete item from location llist
-								//GopSet::const_iterator iterator = m_go->Inventory()->m_bag.find ((Go *)item);
-								//m_go->Inventory()->m_bag.erase(iterator);
-								m_go->Inventory()->RemoveFromSpellbook((eInventoryLocation)origLoc);
-								/*map<eInventoryLocation, Go *>::iterator iterator = m_go->Inventory()->m_bag.find ((eInventoryLocation)origLoc);
-								if (iterator != m_go->Inventory()->m_bag.end())
-								{
-									std::cout << "RsInvenmove3" << std::endl;
-									m_go->Inventory()->m_bag.erase (iterator);
-								}*/
-							}
-							else
-							{
-								std::cout << "RsInvenmove4" << std::endl;
-								m_go->Inventory()->SetInventoryLocation(item, (eInventoryLocation)destLoc);
-								//m_go->Inventory()->m_bag[(eInventoryLocation)destLoc] = item;
-							}
-						}
+						if (item == NULL)
+							return;
+
+						if (ownerId == 0)
+							ownerId = m_go->Goid();
+
+						cout << "[RSINVENMOVE] moving " << id << " to " << (eInventoryLocation)destLoc << " inside " << ownerId << endl;
+						m_go->Inventory()->SetInventoryLocation(item, (eInventoryLocation)destLoc, ownerId);
 					}
 					break;
 

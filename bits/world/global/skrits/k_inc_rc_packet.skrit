@@ -21,7 +21,7 @@ Goid CreateAddItem$ (Goid actor$, int id$, bool db$, eEquipSlot slot$, string mo
 {
 	GoCloneReq req$ = MakeGoCloneReq (model$);
 	Goid item$ = GoDb.SCloneGo (req$); 
-	
+	report.screenF("CreateAddItem ID: %d", id$);
 	if (item$.IsValid())
 	{
 		if (db$)
@@ -31,10 +31,15 @@ Goid CreateAddItem$ (Goid actor$, int id$, bool db$, eEquipSlot slot$, string mo
 		}
 		
 		//report.genericF("Item Location: %d", loc$);
-		//report.screenF("Item Location: %d", loc$);
+		//report.screenF("Item Location: %d ID: %d", loc$, id$);
 
 		actor$.Go.Inventory.RSAdd (item$.Go, loc$, ao_human, true);
-		actor$.Go.Inventory.RSSetLocation (item$.Go, loc$, true);
+		report.screenf("[DEBUG CREATEITEM]  loc: %d\n", MakeInt(loc$));
+		if (owner.Go.Parent != NULL)
+		{
+			report.screenf("[DEBUG CREATEITEM]  parentId: %d\n", owner.Go.Parent.GetComponentInt("object", "id"));
+		}
+		//actor$.Go.Inventory.RSSetLocation (item$.Go, loc$, true);
 		
 		if (slot$ != es_none)
 		{
@@ -156,9 +161,10 @@ void RCCreateItem$ (Packet packet$)
 	req$.StartingPos = SiegePos.Make (x$, y$, z$, node$);
 	
 	Goid item$ = GoDb.SCloneGo (req$);
-	
+	report.screenF("CreateAddItem ID: %d | %f, %f, %f ", id$, x$, y$, z$);
 	if (item$.IsValid())
 	{
+		//report.screenF("CreateAddItem ID: %d | %f, %f, %f ", id$, x$, y$, z$);
 		string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
 		GameAuditor.GetDb.SetInt (tmp$, MakeInt (item$));
 		
@@ -170,6 +176,32 @@ void RCCreateItem$ (Packet packet$)
 		if (name$ != "")
 		{
 			item$.Go.Common.SSetScreenName (name$);
+		}
+	
+		int hasInv3$ = packet$.ReadUInt8();
+		if (hasInv3$ == 1)
+		{
+			int count3$ = packet$.ReadUInt8();
+			while (count3$ > 0)
+			{
+				int id3$ = packet$.ReadUInt32();
+				string name3$ = packet$.ReadString();
+				int slot3$ = packet$.ReadUInt8();
+				int loc3$ = packet$.ReadUInt8();
+				int containerId3$ = packet$.ReadUInt32();
+				string model3$ = packet$.ReadString();
+				int hasInv3$ = packet$.ReadUInt8();
+				
+				Goid item3$ = CreateAddItem$ (item$, id3$, false, MakeEquipSlot (slot3$), model3$, MakeInvenLocation (loc3$));
+				
+				if (item3$.IsValid())
+				{
+					item3$.Go.Common.SSetScreenName (name3$);
+					item$.Go.Inventory.RSTransfer(item3$.Go, item$.Go, MakeInvenLocation(loc3$), AO_HUMAN, false);
+				}
+	
+				count3$ -= 1;
+			}
 		}
 	}
 }
@@ -231,17 +263,36 @@ void RCSetScreenHero$ (Packet packet$)
 			string name$ = packet$.ReadString();
 			int slot$ = packet$.ReadUInt8();
 			int loc$ = packet$.ReadUInt8();
+			int containerId$ = packet$.ReadUInt32();
 			string model$ = packet$.ReadString();
 			int hasInv$ = packet$.ReadUInt8();
+			
+			//report.genericF("Item hasInv: %d", hasInv$);
+			//report.screenF("Item hasInv: %d", hasInv$);
+			
+			/*Goid container$;
+			if (containerID$ == 0)
+			{
+				container$ = hero$.Goid;
+			}
+			else
+			{
+				string tmpC$; StringTool.AssignF (tmpC$, "godb:%d", containerID$);
+				container$ = MakeGoid (GameAuditor.GetDb.GetInt (tmpC$));
+			}*/
 
-			report.genericF("Item hasInv: %d", hasInv$);
-			report.screenF("Item hasInv: %d", hasInv$);
 
 			Goid item$ = CreateAddItem$ (hero$.Goid, id$, false, MakeEquipSlot (slot$), model$, MakeInvenLocation (loc$));
 			
+			if ((MakeInvenLocation(loc$) != il_main) && (MakeInvenLocation(loc$) != il_invalid))
+			{   
+			//	actor$.Go.Inventory.RSTransfer(item$.Go, actor$.Go.Inventory.GetEquipped(ES_SPELLBOOK), MakeInvenLocation(loc$), AO_HUMAN, false);
+			}
+
 			if (item$.IsValid())
 			{
 				item$.Go.Common.SSetScreenName (name$);
+				
 			}
 			
 			if (hasInv$ == 1)
@@ -256,7 +307,9 @@ void RCSetScreenHero$ (Packet packet$)
 					string name2$ = packet$.ReadString();
 					int slot2$ = packet$.ReadUInt8();
 					int loc2$ = packet$.ReadUInt8();
+					int containerId2$ = packet$.ReadUInt32();
 					string model2$ = packet$.ReadString();
+					int hasInv2$ = packet$.ReadUInt8();
 
 					Goid item2$ = CreateAddItem$ (hero$.Goid, id2$, false, MakeEquipSlot (slot2$), model2$, MakeInvenLocation (loc2$));
 			
@@ -265,11 +318,17 @@ void RCSetScreenHero$ (Packet packet$)
 						item2$.Go.Common.SSetScreenName (name2$);
 					}
 					count2$ -= 1;
+
+					hero$.Inventory.RSTransfer (item2$.Go, item$.Go , MakeInvenLocation(loc2$), AO_HUMAN, false);
 				}
 			}
 			
 			count$ -= 1;
 		}
+
+		// Find equipped spellbook
+		// RSTransfer or RSSetLocation for all items 
+
 	}
 }
 
@@ -354,12 +413,36 @@ void RCGet$ (Packet packet$)
 	int id$ = packet$.ReadUInt32();
 	string name$ = packet$.ReadString();
 	string model$ = packet$.ReadString();
+	int hasInv$ = packet$.ReadUInt8();
 	
 	Goid item$ = CreateAddItem$ (Server.ScreenHero.Goid, id$, false, es_none, model$, il_main);
 	
 	if (item$.IsValid())
 	{
 		item$.Go.Common.SSetScreenName (name$);
+	}
+
+	if (hasInv$ == 1)
+	{
+		int count2$ = packet$.ReadUInt8();
+		while (count2$ > 0)
+		{
+			int id2$ = packet$.ReadUInt32();
+			string name2$ = packet$.ReadString();
+			int slot2$ = packet$.ReadUInt8();
+			int loc2$ = packet$.ReadUInt8();
+			string model2$ = packet$.ReadString();
+
+			Goid item2$ = CreateAddItem$ (item$, id2$, false, MakeEquipSlot (slot2$), model2$, MakeInvenLocation (loc2$));
+			
+			if (item2$.IsValid())
+			{
+				item2$.Go.Common.SSetScreenName (name2$);
+			}
+			item$.Go.Inventory.RSTransfer (item2$.Go, item$.Go , MakeInvenLocation(loc2$), AO_HUMAN, false);
+
+			count2$ -= 1;
+		}
 	}
 }
 

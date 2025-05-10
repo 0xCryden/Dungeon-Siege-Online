@@ -44,15 +44,15 @@ GoPlacement :: GoPlacement (Go * go, xmlNode * node) : GoComponent (go)
 				m_position.X = xml::ReadAttribute<float> (current, "x", 0.0f);
 				m_position.Y = xml::ReadAttribute<float> (current, "y", 0.0f);
 				m_position.Z = xml::ReadAttribute<float> (current, "z", 0.0f);
-			}
-		}
 
-		// Logging the placement info
+				// Logging the placement info
 				std::cout << "[GoPlacement] Placed object with GO ID=" << go->Goid()
 				          << " in region=\"" << m_region << "\" at node=" << m_position.Node
 				          << " (" << std::fixed
 				          << m_position.X << ", " << m_position.Y << ", " << m_position.Z << ")"
 				          << std::endl;
+			}
+		}
 	}
 }
 

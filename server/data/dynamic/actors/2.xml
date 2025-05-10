@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="2">
+		<actor>
+			<alignment value="aa_good"/>
+			<can_level_up value="true"/>
+			<skills>
+				<skill name="strength" level="10" experience="25000"/>
+				<skill name="intelligence" level="10" experience="25000"/>
+				<skill name="dexterity" level="10" experience="25000"/>
+				<skill name="melee" level="1" experience="250"/>
+				<skill name="ranged" level="0" experience="0"/>
+				<skill name="nature magic" level="3" experience="12000"/>
+				<skill name="combat magic" level="8" experience="200000"/>
+			</skills>
+		</actor>
+		<aspect>
+			 <bounding_sphere_radius value="1"/>
+			 <current_life value="100"/>
+			 <current_mana value="100"/>
+			 <flesh value="b_c_gah_fg_skin_003,b_c_gah_fg_hair_002"/>
+			 <cloth value="b_c_pos_a1_pant_005,b_c_pos_a1_shrt_008"/>
+			 <life_state value="0"/>
+			 <max_life value="100"/>
+			 <max_mana value="100"/>
+			 <model value="humangirl"/>
+			 <render_scale value="1.1"/>
+		</aspect>
+		<attack>
+			<damage_max value="3"/>
+			<damage_min value="1"/>
+		<attack_range value="0"/><critical_hit_chance value="0"/><is_two_handed value="0"/></attack>
+		<body>
+			<avg_move_velocity value="4.5"/>
+			<max_move_velocity value="4.5"/>
+			<min_move_velocity value="4.5"/>
+		</body>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="brkopac"/>
+		</common>
+		<mind/>
+		<inventory/>
+		<placement region="1"><position node="2394861493" x="-3.43656" y="-1.49012e-08" z="0.233566"/></placement>
+	</go>
+</objects>

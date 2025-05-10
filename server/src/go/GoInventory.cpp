@@ -70,7 +70,10 @@ GoInventory :: GoInventory (Go * go, xmlNode * node) : GoComponent (go)
 		//Goid g (id);
 		// add g to our inventory :)
 		if (!item)
+		{
+			cout << "Failed loading item. ID: " << id << " | OwnerGoId: " << m_go->Goid() << endl;
 			continue;
+		}
 
 		// Set inventory location
 		eInventoryLocation invenLoc = StringToNumLoc(invenLocStr); // You already have this
@@ -172,34 +175,26 @@ void GoInventory :: Save (xmlNode* inventoryNode) const
 
 		// Step 3: Add equip_slot if equipped
 		eEquipSlot slot = GetEquippedSlot(item);
-		if (slot != es_none)
+		//if (slot != es_none)
 		{
 			std::string slotStr = ToString(slot); // Assumes you have a ToString(eEquipSlot) function
 			xml::SetAttribute(itemNode, "equip_slot", slotStr);
 		}
-		// Step 3: Add equip_slot if equipped
+
 		eInventoryLocation loc = GetInventoryLocation(item);
+		cout << "Saving Item.. ID: " << item->Goid() << " | loc: " << loc << endl;
 		if (loc != il_main && loc != il_invalid)
 		{
-			xml::SetAttribute(itemNode, "inven_loc", ToString(loc));
+			std::string slotStr2 = ToString(loc);
+			xml::SetAttribute(itemNode, "inven_loc", slotStr2);
+		}
+		else
+		{
+			xml::SetAttribute(itemNode, "inven_loc", "il_main");
 		}
 	}
 
 
-}
-
-void GoInventory :: RemoveFromSpellbook(eInventoryLocation loc)
-{
-	map<eInventoryLocation, Go *>::iterator iterator = m_bag.find ((eInventoryLocation)loc);
-	if (iterator != m_bag.end())
-	{
-		/*
-		 * check if we can actually unequip this item
-		 */
-
-		std::cout << "RsInvenmove3" << std::endl;
-		m_bag.erase (iterator);
-	}
 }
 
 bool GoInventory :: Add (Go * item)
@@ -291,12 +286,94 @@ eEquipSlot GoInventory :: GetEquippedSlot (const Go * item) const
 	return es_none;
 }
 
-void GoInventory :: SetInventoryLocation (Go * item, eInventoryLocation loc)
+void GoInventory :: SetInventoryLocation (Go * item, eInventoryLocation loc, int ownerId)
 {
-	if (item == NULL)
+	if (!item)
+        return;
+
+    Go* owner = godb.FindGoById(ownerId);
+    if (!owner) {
+    	cout << "no owner to set loc" << endl;
+        return;
+	}
+
+    // Remove from previous container if needed
+    if (item->GetOwner() != 0)
+    {
+        Go* prevOwner = godb.FindGoById(item->GetOwner());
+        if (prevOwner && prevOwner->HasInventory())
+        {
+            prevOwner->Inventory()->Remove(item);
+        }
+    }
+
+    // Set new state
+    item->SetLoc(loc);
+    item->SetOwner(ownerId);
+    //item->m_inventoryLocation = loc;
+    //item->m_inventoryOwnerId = ownerId;
+
+    // Update in owner's inventory
+    owner->Inventory()->Add(item);
+
+    // Optional: Update m_bag only if needed
+    if (loc != il_main && loc != il_invalid)
+    {
+        owner->Inventory()->m_bag[loc] = item;
+    }
+
+    std::cout << "[SET ITEM LOC] Item " << item->Goid() << " now at " << loc << " owned by " << ownerId << std::endl;
+
+	/*if (item == NULL)
 		return;
 
-	m_bag[loc] = item;
+	// 1. Get equipped spellbook
+	Go * spellBook = godb.FindGoById(ownerId);
+	// 2. Add item to spellbook
+	if (spellBook == NULL)
+			return;
+
+	switch (loc) {
+	case il_active_primary_spell:
+	case il_active_secondary_spell:
+	case il_spell_1:
+	case il_spell_2:
+	case il_spell_3:
+	case il_spell_4:
+	case il_spell_5:
+	case il_spell_6:
+	case il_spell_7:
+	case il_spell_8:
+	case il_spell_9:
+	case il_spell_10:
+	case il_spell_11:
+	case il_spell_12:
+		{
+			spellBook->Inventory()->m_bag[loc] = item;
+			m_bag[loc] = item;
+			std::cout << "[INVENTORYLOCATION] id " << item->Goid() << " loc: " << loc << std::endl;
+			spellBook->Inventory()->Add(item);
+			item->Parent()->Parent()->Inventory()->Remove(item);
+		}
+		break;
+	case il_invalid:
+	case il_main:
+		{
+			map<eInventoryLocation, Go *>::iterator iterator = m_bag.find ((eInventoryLocation)GetInventoryLocation(item));
+			if (iterator != m_bag.end())
+			{
+				std::cout << "[INVENTORYLOCATION] id " << item->Goid() << " loc: " << loc << std::endl;
+				m_bag.erase (iterator);
+			}
+			std::cout << "[INVENTORYLOCATION] 2 id " << item->Goid() << " loc: " << loc << std::endl;
+			//spellBook->Inventory()->Remove(item);
+			item->Parent()->Inventory()->Remove(item);
+			spellBook->Inventory()->Add(item);
+		}
+		break;
+	default:
+		break;
+	}*/
 }
 
 eInventoryLocation GoInventory :: GetInventoryLocation (const Go * item) const
@@ -425,10 +502,13 @@ const GopSet & GoInventory :: ListItems () const
 
 bool GoInventory :: Remove (Go * item)
 {
+	cout << "remove 1" << endl;
 	if (item != NULL)
 	{
+		cout << "remove 2" << endl;
 		if (Contains (item) != false)
 		{
+			cout << "remove 3 ID: " << item->Goid() << endl;
 			/*
 			 * check if we can actually remove this item 
 			 */

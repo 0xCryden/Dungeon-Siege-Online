@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10004">
+		<aspect>
+			 <model value="special_armor"/>
+		</aspect>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="armor of a thousand GPG pwnage"/>
+		</common>
+		<placement region="">
+			<position node="743120646" x="0.147236" y="0" z="2.24225"/>
+		</placement>
+	</go>
+</objects>
