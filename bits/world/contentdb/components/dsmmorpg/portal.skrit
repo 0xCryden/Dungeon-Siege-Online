@@ -29,6 +29,9 @@ startup state startup$
 	{
 		if (event$ == we_entered_world)
 		{
+			UIShell.HideInterface( "dso_char_select" );
+			UIShell.DeactivateInterface( "dso_char_select" );
+
 			owner.Go.Common.SSetScreenName ("");
 			owner.Go.Aspect.SetRenderScale (0.001);
 			

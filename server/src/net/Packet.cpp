@@ -44,6 +44,13 @@ Packet :: ~Packet ()
 	}
 }
 
+
+void Packet :: WriteUInt64 (u_int64_t data)
+{
+	u_int64_t _data = htonl (data);
+	Append ((const char*)(&_data), sizeof (u_int64_t));
+}
+
 void Packet :: WriteUInt32 (u_int32_t data)
 {
 	u_int32_t _data = htonl (data);

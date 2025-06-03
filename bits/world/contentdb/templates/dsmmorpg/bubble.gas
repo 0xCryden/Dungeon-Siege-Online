@@ -9,11 +9,11 @@
 		// is_usable = false;
 		// rollover_highlight = false;
 		// draw_selection_indicator = false;
-		force_no_render = true;
+		// force_no_render = true;
 		// use_range = -5.0;
 		
-		is_usable = true;
-		use_range = 5.0;
+		//is_usable = true;
+		//use_range = 5.0;
 	}
 	
 	[common]

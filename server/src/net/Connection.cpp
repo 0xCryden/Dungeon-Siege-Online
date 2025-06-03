@@ -91,8 +91,14 @@ const char* GetPacketName(u_int8_t type, bool isServerToClient) {
        // if (isServerToClient == true) {
         case 1: return "RSAUTHENTICATION";
         case 2: return "RSPLAYERREADY";
+        case 6: return "RSCREATEACTOR";
+        case 7: return "RSCREATEITEM";
+        case 9: return "RSDISPLAYMESSAGE";
+        case 10: return "RSCREATEGO";
         case 11: return "RSCHAT";
         case 12: return "RSMOVE";
+        case 13: return "RSDESTROYGO";
+        case 14: return "RSSETSCREENHERO";
         case 20: return "RSGET";
         case 21: return "RSDROP";
         case 22: return "RSEQUIP";
@@ -100,7 +106,13 @@ const char* GetPacketName(u_int8_t type, bool isServerToClient) {
         case 24: return "RSATTACKMELEE";
         case 25: return "RSATTACKRANGED";
         case 26: return "RSCAST";
+        case 27: return "RSAPPROACH";
 	    case 31: return "RSINVENMOVE";
+	    case 32: return "RSREQNODEINFO";
+	    case 33: return "RSUPDATEGO";
+	    case 34: return "RSADDEXP";
+	    case 35: return "RSLEVELUP";
+	    case 36: return "RSSELECTSLOT";
         case 40: return "RSJOBTRAVELDISTANCEREACHED";
 
         default: return "UNKNOWN";
@@ -141,9 +153,17 @@ int Connection::Send(const char* buffer, int size)
 
 	        const uint8_t* bytes = reinterpret_cast<const uint8_t*>(buffer);
 	        uint8_t packetType = bytes[2];  // packet ID usually starts at byte 2
+	        uint8_t typeMove = 12;
+	        uint8_t typeApproach = 27;
+	        uint8_t typeJtdr = 40;
+			if (packetType != typeMove &&
+				packetType != typeApproach &&
+				packetType != typeJtdr)
+			{
 	        std::cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
-	        		  << "[SEND] Type: " << GetPacketName(packetType, true)
-					  << " (id=" << (int)packetType << "), Size: " << size << std::endl;
+	        		  << "[SEND] [" << GetPacketName(packetType, true)
+					  << "] (id=" << (int)packetType << "), Size: " << size << std::endl;
+			}
 	    }
 
 	int error = ::send(m_descriptor, buffer, size, 0);
@@ -217,9 +237,17 @@ int Connection::Receive()
 
 			        const uint8_t* bytes = reinterpret_cast<const uint8_t*>(m_buffer);
 			        uint8_t packetType = bytes[2];  // packet ID usually starts at byte 2
+			        uint8_t typeMove = 12;
+			        uint8_t typeApproach = 27;
+			        uint8_t typeJtdr = 40;
+					if (packetType != typeMove &&
+						packetType != typeApproach &&
+						packetType != typeJtdr)
+			        {
 			        std::cout << "[" << std::put_time(std::localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
-			        		  << "[RECV] Type: " << GetPacketName(packetType, true)
-							  << " (id=" << (int)packetType << "), size: " << size << std::endl;
+			        		  << "[RECV] [" << GetPacketName(packetType, true)
+							  << "] (id=" << (int)packetType << "), size: " << size << std::endl;
+			        }
 			    }
 				//cout << "Packet received - size= " <<  size << endl;
 				m_state->Handle(m_buffer + position);

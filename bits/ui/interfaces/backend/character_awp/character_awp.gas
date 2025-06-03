@@ -2,6 +2,34 @@
 {
 	interface = true;
 	
+	skrit = [[
+		
+		#include "k_inc_rs_packet"
+
+		owner = UIWindow;
+
+		void clicked1$ () 
+		{
+			report.screenf("Selected slot 1");
+			RSSelectSlot$(1);
+		}
+		void clicked2$ () 
+		{
+			report.screenf("Selected slot 2");
+			RSSelectSlot$(2);
+		}
+		void clicked3$ () 
+		{
+			report.screenf("Selected slot 3");
+			RSSelectSlot$(3);
+		}
+		void clicked4$ () 
+		{
+			report.screenf("Selected slot 4");
+			RSSelectSlot$(4);
+		}
+	]];
+
 	[t:window,n:timer01]
 	{
 		[messages]
@@ -172,7 +200,7 @@
 		
 		draw_advance = true;
 		advance_color = 0x0000ff00;
-		advance_duration = 1.0;		
+		advance_duration = 1.0;	
 	}
 	[t:button,n:awp_button_inventory_1]
 	{
@@ -447,7 +475,8 @@
 		{
 			onrollover	=	notify(awp_slot_rollover);			
 			onrolloff	=	notify(awp_slot_rolloff);
-			oncheck		=	drawselectiontexture(true) &
+			oncheck		=	call( clicked1$ ) &
+							drawselectiontexture(true) &
 							notify(character_slot_1);
 			oncreated	=	setstate(1);
 			onuncheck	=	drawselectiontexture(false);
@@ -498,7 +527,8 @@
 		{
 			onrollover	=	notify(awp_slot_rollover);
 			onrolloff	=	notify(awp_slot_rolloff);
-			oncheck		=	drawselectiontexture(true) &
+			oncheck		=	call( clicked2$ ) &
+							drawselectiontexture(true) &
 							notify(character_slot_2);			
 			onuncheck	=	drawselectiontexture(false);
 			onrolloffchecked = notify(awp_slot_rolloff);			
@@ -552,7 +582,8 @@
 			onresetclickdelay = notify(hide_spell_list);
 			onrollover	=	notify(awp_slot_rollover);
 			onrolloff	=	notify(awp_slot_rolloff);
-			oncheck		=	drawselectiontexture(true) &
+			oncheck		=	call( clicked3$ ) &
+							drawselectiontexture(true) &
 							notify(character_slot_3);			
 			onuncheck	=	drawselectiontexture(false);
 			onrolloffchecked = notify(awp_slot_rolloff);			
@@ -606,7 +637,8 @@
 			onresetclickdelay = notify(hide_spell_list);
 			onrollover	=	notify(awp_slot_rollover);
 			onrolloff	=	notify(awp_slot_rolloff);
-			oncheck		=	drawselectiontexture(true) &
+			oncheck		=	call( clicked4$ ) &
+							drawselectiontexture(true) &
 							notify(character_slot_4);			
 			onuncheck	=	drawselectiontexture(false);
 			onrolloffchecked = notify(awp_slot_rolloff);			

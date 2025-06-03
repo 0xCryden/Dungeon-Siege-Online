@@ -89,36 +89,6 @@
 			SetAttribute(newNode, "value", ss.str());
 		}
 
-		// Remove a node by <go id="x">
-		/*inline void RemoveGO(xmlDoc * doc, const string & id)
-		{
-			xmlNode * root = xmlDocGetRootElement(doc);
-			for (xmlNode * node = root->children; node; node = node->next)
-			{
-				if (node->type == XML_ELEMENT_NODE && xmlStrEqual(node->name, BAD_CAST "go"))
-				{
-					xmlChar * prop = xmlGetProp(node, BAD_CAST "id");
-					if (prop && id == (const char *)prop)
-					{
-						xmlUnlinkNode(node);
-						xmlFreeNode(node);
-						xmlFree(prop);
-						break;
-					}
-					if (prop) xmlFree(prop);
-				}
-			}
-		}
-
-		// Add a new <go> node with given id
-		inline xmlNode * AddGO(xmlDoc * doc, const string & id)
-		{
-			xmlNode * root = xmlDocGetRootElement(doc);
-			xmlNode * go = xmlNewChild(root, NULL, BAD_CAST "go", NULL);
-			SetAttribute(go, "id", id);
-			return go;
-		}*/
-
 		// Save modified document to file
 		inline bool SaveFile(xmlDoc * doc, const string & path)
 		{

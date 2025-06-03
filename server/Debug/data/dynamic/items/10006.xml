@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10006">
+		<aspect>
+			 <model value="spell_acid_gas"/>
+		</aspect>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="Acid Gas"/>
+		</common>
+		<magic>
+			<required_level value="1"/>
+			<spell_class value="combat magic"/>
+		</magic>
+		<placement region=""><position node="1323345966" x="-3.71821" y="0" z="-0.776181"/></placement>
+	</go>
+</objects>

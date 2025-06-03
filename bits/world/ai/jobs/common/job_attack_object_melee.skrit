@@ -141,6 +141,11 @@ state RequestAction$
 
 		float attack_loop_duration$ = m_Weapon$.Attack.ReloadDelay;
 		attack_loop_duration$ += m_Go$.Aspect.AspectHandle.Blender.GetBaseDuration(CHORE_ATTACK,stance$);
+		//if (m_Go$ == Server.ScreenHero)
+		//{
+		//	report.screenf ("stance: %d | base duration: %f", stance$, m_Go$.Aspect.AspectHandle.Blender.GetBaseDuration(CHORE_ATTACK,stance$));
+		//	report.screenf ("stance: %d | loop duration: %f", stance$, attack_loop_duration$);
+		//}
 		eReqRetCode ret$;
 
 

@@ -21,8 +21,14 @@
 //####### SEND ##########################
 	#define RSAUTHENTICATION 1
 	#define RSPLAYERREADY 2
+	#define RSCREATEACTOR 6
+	#define RSCREATEITEM 7
+	#define RSDISPLAYMESSAGE 9
+	#define RSCREATEGO 10
 	#define RSCHAT 11
 	#define RSMOVE 12
+	#define RSDESTROYGO 13
+	#define RSSETSCREENHERO 14
 	#define RSGET 20
 	#define RSDROP 21
 	#define RSEQUIP 22
@@ -30,8 +36,20 @@
 	#define RSATTACKMELEE 24
 	#define RSATTACKRANGED 25
 	#define RSCAST 26
+	#define RSAPPROACH 27
 	#define RSINVENMOVE 31
+	#define RSREQNODEINFO 32
+	#define RSUPDATEGO 33
+	#define RSADDEXP 34
+	#define RSLEVELUP 35
+	#define RSSELECTSLOT 36
+
+	#define RSREGISTER 37
+	#define RSREQCHARLIST 38
+	#define RSENTERGAME 39
 	#define RSJOBTRAVELDISTANCEREACHED 40
+	#define RSDELETECHAR 41
+	#define RSCREATECHAR 42
 //####### RECV ##########################
 	#define RCAUTHENTICATION 1
 
@@ -55,5 +73,17 @@
 	#define RCAPPROACH 27
 
 	#define RCINVENMOVE 31
+	#define RCREQNODEINFO 32
+
+	#define RCUPDATEGO 33
+	#define RCADDEXP 34
+	#define RCLEVELUP 35
+	#define RCSELECTSLOT 36
+
+	#define RCREGISTER 37
+	#define RCREQCHARLIST 38
+	#define RCENTERGAME 39
+	#define RCDELETECHAR 41
+	#define RCCREATECHAR 42
 
 #endif /* PACKETS_HPP_ */

@@ -46,8 +46,17 @@
 		    void RegisterItem(Go* go);  // Add this
 		    void UnregisterItem(Go* go); // Optional, for logout cleanup
 
+		    void RegisterPlayerCharacter(Go* go);
+		    void UnregisterPlayerCharacter(Go* go);
+
 		    GopSet GetPlayers() { return m_players; };
+		    GopSet GetPlayerCharacters() { return m_playerChars; };
 		    GopSet GetItems() { return m_items; };
+
+		    void UpdateGo(Go* go);
+		    void UpdateGoHpMp(Go* go, float hp, float mp);
+		    void UpdateGoExp(Go* go, float value);
+		    void UpdateGoLvlup(Go* go, const string & data);
 
 			bool IsRunning ();
 			
@@ -57,6 +66,8 @@
 			
 			void HandleWorldMessage (const WorldMessage & message);
 			
+			void TryRegenerateAllGos(int64_t currentTime);
+
 		private:
 			
 			void MessageKnown (Go * go, const WorldMessage & message);
@@ -71,6 +82,8 @@
 			priority_queue<Event *, vector<Event *>, EventComparison> m_EventRegistry;
 			
 			GopSet m_players;
+			GopSet m_playerChars;
+
 			GopSet m_items;
 	};
 	

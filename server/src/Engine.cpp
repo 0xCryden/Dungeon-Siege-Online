@@ -41,6 +41,7 @@ Engine :: ~Engine ()
 
 void Engine::RegisterPlayer(Go* playerGo) {
     if (playerGo) m_players.insert(playerGo);
+    playerGo->CalculateStatus();
 }
 void Engine::UnregisterPlayer(Go* playerGo) {
     m_players.erase(playerGo);
@@ -54,6 +55,13 @@ void Engine::RegisterItem(Go* itemGo) {
 }
 void Engine::UnregisterItem(Go* itemGo) {
 	m_items.erase(itemGo);
+}
+
+void Engine::RegisterPlayerCharacter(Go* pGo) {
+    if (pGo) m_playerChars.insert(pGo);
+}
+void Engine::UnregisterPlayerCharacter(Go* pGo) {
+	m_playerChars.erase(pGo);
 }
 
 
@@ -82,11 +90,9 @@ void Engine :: Loop ()
 		delete event;
 	}
 
+	TryRegenerateAllGos(current);
+
 	if ((CurrentTime() % 60000) == 0) {
-		/*for (const auto& pair : godb.FindGoById(1)) {
-		    Go* go = pair.second;
-		    ...
-		}*/
 		//logger.Write("[ENGINE] ####### [START] 60 Second Timer #######", true);
 		for (GopSet::iterator iterator = m_players.begin(); iterator != m_players.end(); iterator++)
 		{
@@ -103,9 +109,6 @@ void Engine :: Loop ()
 			//logger.Write("[ENGINE] Saving Item ", true);
 		}
 		logger.Write("[ENGINE] Items saved", true);
-		//godb.FindGoById(1)->SaveToXml();
-		//logger.Write("[ENGINE] Save GO: 1", true);
-		//std::cout << "[ENGINE] Save GO: " << "1" << std::endl;
 		//logger.Write("[ENGINE] ####### [END] 60 Second Timer #######", true);
 	}
 }
@@ -152,6 +155,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 		
 		case we_entered_frustum:
 		{
+			//cout << "we_entered_frustum from: " << from->Goid() << " to: " << to->Goid() << endl;
 			if (from->HasPlacement() && to->HasPlacement())
 			{
 				from->Send (WorldMessage (we_entered_frustum, to, from, ""));
@@ -165,6 +169,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 		
 		case we_left_frustum:
 		{
+			//cout << "we_left_frustum from: " << from->Goid() << " to: " << to->Goid() << endl;
 			if (from->HasPlacement() && to->HasPlacement())
 			{
 				from->Send (WorldMessage (we_left_frustum, to, from, ""));
@@ -200,6 +205,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 				string region = from->Placement()->GetRegion();
 				if (region.empty() != true)
 				{
+					to->Placement()->SetRegion(region);
 					to->Placement()->SetPosition (from->Placement()->Position());
 					AddGoToRegion (to, region);
 				}
@@ -236,6 +242,18 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 		}
 		break;
 		
+		case we_resurrected:
+		{
+			from->Aspect()->SetLifeState(ls_alive_conscious);
+			from->Aspect()->SetCurrentLife(from->Aspect()->MaxLife());
+			from->Aspect()->SetLastDied(0);
+			UpdateGo(from);
+			//to->Send (message); // scripting event
+			//from->Send (message);
+			// scripting
+		}
+		break;
+
 		case we_engaged_hit_lived:
 		{
 			MessageKnown (from, message);
@@ -328,9 +346,12 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 						cout << "successfully unequipped" << endl;
 						MessageKnown (from, message);
 						HandleWorldMessage (WorldMessage (we_unequipped, from, to, ""));
+
+						//to->SetLoc(il_main);
 					}
 					else
 					{
+						cout << "successfully unequipped stopping now" << endl;
 						from->Mind()->Stop();
 					}
 				}
@@ -338,74 +359,152 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			
 			else if (job == "jat_attack_object_melee")
 			{
-				if (from->IsActor() && to->IsActor()) // fix me!
+				if (!from->IsActor() || !to->IsActor()) // fix me!
+					return;
+
+				GoAttack * attacker = from->Attack();
+				//GoAspect * fromAspect = from->Aspect();
+				GoAspect * toAspect = to->Aspect();
+				GoInventory * fromInv = from->Inventory();
+
+				const int hitType = attacker->CalcHitType(to, "melee");
+				const uint64_t attTime = attacker->CalcHitTime();
+				cout << "attTime: " << attTime << endl;
+				if (hitType == 0)
 				{
-					int rnd = rand() % 10 + 1;
-					if (rnd <= 8)
+					HandleWorldMessage (WorldMessage (we_engaged_missed, from, to, ""));
+					PostWorldMessage (we_mind_processing_new_job, from, to, "", attTime);
+					return;
+				}
+
+				float hp = toAspect->CurrentLife();
+				float dmg = attacker->CalcDamage(to, "melee", hitType, nullptr);
+				hp -= dmg;
+
+				if (hp <= 0)
+				{
+					if (toAspect->LifeState() < ls_alive_unconscious)
+						toAspect->SetLifeState(ls_alive_unconscious);
+
+					if (hp <= -(toAspect->MaxLife() * 2.0f / 3.0f))
+						toAspect->SetLifeState(ls_dead_normal);
+				}
+				toAspect->SetCurrentLife(hp);
+
+				// Add exp to attacker used skill
+				if (from->Actor()->CanLevelUp()/*IsPlayer(to) == false*/)
+				{
 					{
-						float hp = to->Aspect()->CurrentLife();
-						
-						int dmg = rand() % 10 + 1;
-						
-						hp -= (float) dmg;
-						
-						if (hp <= 0.0)
+						float targetExp = toAspect->ExperienceValue();
+						if (targetExp == 0)
+							targetExp = 100.0f;
+
+						float addExp = targetExp / toAspect->MaxLife() * dmg;
+						string skill = "melee"; // default
+
+						switch (fromInv->GetSelectedSlot())
 						{
-							// we_engaged_hit_killed
-							cout << "killed, rezzing" << endl;
-							hp = to->Aspect()->MaxLife();
-							HandleWorldMessage (WorldMessage (we_engaged_hit_lived, from, to, ""));
+							case 1: skill = "melee"; break;
+							case 2: skill = "ranged"; break;
+							case 3:
+							case 4:
+							{
+								Go * item = fromInv->ItemFromLocation((eInventoryLocation)(fromInv->GetSelectedSlot() + 1));
+								if (item)
+									skill = item->Magic()->SkillClass();
+								break;
+							}
+							default: break;
 						}
-						else
-						{
-							HandleWorldMessage (WorldMessage (we_engaged_hit_lived, from, to, ""));
-							
-							PostWorldMessage (we_mind_processing_new_job, from, to, "", 2510);
-						}
-					}
-					else
-					{
-						HandleWorldMessage (WorldMessage (we_engaged_missed, from, to, ""));
-						
-						PostWorldMessage (we_mind_processing_new_job, from, to, "", 2510);
+						float maxGain = from->Actor()->GetMaxExpGainForLevel(from->Actor()->GetSkillLevel(skill));
+						if (addExp > maxGain)
+							addExp = maxGain;
+
+						from->Actor()->AddSkillExp(skill, addExp);
+						UpdateGoExp(from, addExp);
 					}
 				}
+
+				UpdateGo(to);
+				HandleWorldMessage (WorldMessage (we_engaged_hit_lived, from, to, ""));
+				if (hp > 0)
+					PostWorldMessage (we_mind_processing_new_job, from, to, "", attTime);
+
 			}
 			
 			else if (job == "jat_attack_object_ranged")
 			{
-				if (from->IsActor() && to->IsActor()) // fix me!
+				if (!from->IsActor() || !to->IsActor()) // fix me!
+					return;
+
+				GoAttack * attacker = from->Attack();
+				//GoAspect * fromAspect = from->Aspect();
+				GoAspect * toAspect = to->Aspect();
+				GoInventory * fromInv = from->Inventory();
+
+				const int hitType = attacker->CalcHitType(to, "ranged");
+				const uint64_t attTime = attacker->CalcHitTime();
+
+				if (hitType == 0)
 				{
-					int rnd = rand() % 10 + 1;
-					if (rnd <= 8)
+					HandleWorldMessage (WorldMessage (we_engaged_missed, from, to, ""));
+					PostWorldMessage (we_mind_processing_new_job, from, to, "", attTime);
+					return;
+				}
+				float hp = toAspect->CurrentLife();
+				float dmg = attacker->CalcDamage(to, "ranged", hitType, nullptr);
+				hp -= dmg;
+
+				if (hp <= 0)
+				{
+					if (toAspect->LifeState() < ls_alive_unconscious)
+						toAspect->SetLifeState(ls_alive_unconscious);
+
+					if (hp <= -(toAspect->MaxLife() * 2.0f / 3.0f))
+						toAspect->SetLifeState(ls_dead_normal);
+				}
+
+				to->Aspect()->SetCurrentLife(hp);
+
+				// Add exp to attacker used skill
+				if (from->Actor()->CanLevelUp()/*IsPlayer(to) == false*/)
+				{
+					if (from->Inventory()->GetEquipped(es_shield_hand) != nullptr)
 					{
-						float hp = to->Aspect()->CurrentLife();
-						
-						int dmg = rand() % 10 + 1;
-						
-						hp -= (float) dmg;
-						
-						if (hp <= 0.0)
+						float targetExp = toAspect->ExperienceValue();
+						if (targetExp == 0)
+							targetExp = 100.0f;
+
+						float addExp = targetExp / toAspect->MaxLife() * dmg;
+						std::string skill = "melee"; // default
+
+						switch (fromInv->GetSelectedSlot())
 						{
-							// we_engaged_hit_killed
-							cout << "killed, rezzing" << endl;
-							hp = to->Aspect()->MaxLife();
-							HandleWorldMessage (WorldMessage (we_engaged_hit_lived, from, to, ""));
+							case 1: skill = "melee"; break;
+							case 2: skill = "ranged"; break;
+							case 3:
+							case 4:
+							{
+								Go * item = fromInv->ItemFromLocation((eInventoryLocation)(fromInv->GetSelectedSlot() + 1));
+								if (item)
+									skill = item->Magic()->SkillClass();
+								break;
+							}
+							default: break;
 						}
-						else
-						{
-							HandleWorldMessage (WorldMessage (we_engaged_hit_lived, from, to, ""));
-							
-							PostWorldMessage (we_mind_processing_new_job, from, to, "", 4510);
-						}
-					}
-					else
-					{
-						HandleWorldMessage (WorldMessage (we_engaged_missed, from, to, ""));
-						
-						PostWorldMessage (we_mind_processing_new_job, from, to, "", 4510);
+						float maxGain = from->Actor()->GetMaxExpGainForLevel(from->Actor()->GetSkillLevel(skill));
+						if (addExp > maxGain)
+							addExp = maxGain;
+
+						from->Actor()->AddSkillExp(skill, addExp);
+						UpdateGoExp(from, addExp);
 					}
 				}
+				UpdateGo(to);
+				HandleWorldMessage (WorldMessage (we_engaged_hit_lived, from, to, ""));
+				if (hp > 0)
+					PostWorldMessage (we_mind_processing_new_job, from, to, "", attTime);
+
 			}
 		}
 		break;
@@ -424,13 +523,13 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 
 void Engine :: MessageKnown (Go * go, const WorldMessage & message)
 {
-	if (go != NULL)
+	if (go == NULL)
+		return;
+
+	const GopSet & frustum = go->Frustum();
+	for (GopSet::const_iterator iterator = frustum.begin(); iterator != frustum.end(); iterator++)
 	{
-		const GopSet & frustum = go->Frustum();
-		for (GopSet::const_iterator iterator = frustum.begin(); iterator != frustum.end(); iterator++)
-		{
-			(*iterator)->Send (message);
-		}
+		(*iterator)->Send (message);
 	}
 }
 
@@ -442,56 +541,106 @@ void Engine :: MessageAllPlayers (const WorldMessage & message)
 	}
 }
 
+void Engine :: UpdateGo(Go* go)
+{
+	if (go == nullptr)
+		return;
+
+	const GopSet & frustum = go->Frustum();
+	for (GopSet::const_iterator iterator = frustum.begin(); iterator != frustum.end(); iterator++)
+	{
+		(*iterator)->Send (WorldMessage(we_go_status_updated, go, (*iterator), ""));
+	}
+}
+
+void Engine :: UpdateGoHpMp(Go* go, float hp, float mp)
+{
+	if (go == nullptr)
+		return;
+
+	const GopSet & frustum = go->Frustum();
+	for (GopSet::const_iterator iterator = frustum.begin(); iterator != frustum.end(); iterator++)
+	{
+		(*iterator)->Send (WorldMessage(we_go_life_updated, go, (*iterator), ""));
+	}
+}
+
+void Engine :: UpdateGoExp(Go* go, float value)
+{
+	if (go == nullptr)
+		return;
+
+	const GopSet & frustum = go->Frustum();
+	for (GopSet::const_iterator iterator = frustum.begin(); iterator != frustum.end(); iterator++)
+	{
+		(*iterator)->Send (WorldMessage(we_add_exp, go, (*iterator), std::to_string(value)));
+	}
+}
+
+void Engine :: UpdateGoLvlup(Go* go, const string & data)
+{
+	if (go == nullptr)
+		return;
+
+	const GopSet & frustum = go->Frustum();
+	for (GopSet::const_iterator iterator = frustum.begin(); iterator != frustum.end(); iterator++)
+	{
+		(*iterator)->Send (WorldMessage(we_leveled_up, go, (*iterator), data));
+	}
+}
+
+
 void Engine :: AddGoToRegion (Go * go, const string & data)
 {
-	if (!godb.FindGoById(go->Goid()))
-			return;
+	//if (!godb.FindGoById(go->Goid()))
+	//		return;
 
 	Region * region;
-	if (go != NULL)
+	if (go == NULL)
+		return;
+
+	if (data.empty() == true)
+		return;
+
+	try
 	{
-		if (data.empty() != true)
+		region = world.GetRegion (data);
+		go->Placement()->SetRegion (data);
+	}
+	catch (exception & e)
+	{
+		// log a useful error
+		return;
+	}
+
+	GopSet & available = region->Objects();
+	available.insert (go);
+
+	for (GopSet::iterator iterator = available.begin(); iterator != available.end(); iterator++)
+	{
+		Go * object = *iterator;
+
+		if (query.IsInRange (go, object, 45.0))
 		{
-			try
-			{
-				region = world.GetRegion (data);
-				go->Placement()->SetRegion (data);
-			}
-			catch (exception & e)
-			{
-				// log a useful error
-				return;
-			}
-			
-			GopSet & available = region->Objects();
-			available.insert (go);
-			
-			for (GopSet::iterator iterator = available.begin(); iterator != available.end(); iterator++)
-			{
-				Go * object = *iterator;
-				
-				if (query.IsInRange (go, object, 45.0))
-				{
-					HandleWorldMessage (WorldMessage (we_entered_frustum, go, object, ""));
-				}
-			}
-			
-			if (go->HasComponent ("player"))
-			{
-				/*
-				if (region->Players().size() == 1)
-				{
-					world.Regions().insert (region);
-				}
-				*/
-			}
+			HandleWorldMessage (WorldMessage (we_entered_frustum, go, object, ""));
 		}
 	}
+
+	if (go->HasComponent ("player"))
+	{
+		/*
+		if (region->Players().size() == 1)
+		{
+			world.Regions().insert (region);
+		}
+		*/
+	}
+
+
 }
 
 void Engine :: RemoveGoFromRegion (Go * go)
 {
-	// Cryden TODO: when picked up add contained items to actors inventory
 	Region * region;
 
 	if (!godb.FindGoById(go->Goid()))
@@ -502,7 +651,10 @@ void Engine :: RemoveGoFromRegion (Go * go)
 		try
 		{
 			region = world.GetRegion (go->Placement()->GetRegion());
-			go->Placement()->SetRegion ("");
+			if (go->IsItem())
+				go->Placement()->SetRegion ("");
+			//else
+			// transition to new zone
 		}
 		catch (exception & e)
 		{
@@ -531,51 +683,132 @@ void Engine :: RemoveGoFromRegion (Go * go)
 	}
 }
 
-void Engine :: CalculateFrustums ()
+void Engine::CalculateFrustums()
 {
-	set<Region *> & regions = world.Regions();
-	for (set<Region *>::iterator iterator = regions.begin(); iterator != regions.end(); iterator++)
+    set<Region*>& regions = world.Regions();
+
+    for (set<Region*>::iterator region_iter = regions.begin(); region_iter != regions.end(); ++region_iter)
+    {
+        Region* region = *region_iter;
+        GopSet& objects = region->Objects();
+
+        for (GopSet::iterator i = objects.begin(); i != objects.end(); ++i)
+        {
+            Go* object = *i;
+
+            for (GopSet::iterator j = objects.begin(); j != objects.end(); ++j)
+            {
+                Go* go = *j;
+
+                if (go == object)
+                    continue; // Skip comparing object with itself
+
+                //std::cout << "Calculating Frustum between GO " << object->Goid()
+                 //         << " and GO " << go->Goid() << std::endl;
+
+                // Only perform update if object has moved
+                if (go->Placement()->IsDirty())
+                {
+                    //std::cout << go->Goid() << " is dirty, checking against " << object->Goid() << std::endl;
+
+                    bool is_in_frustum = object->Frustum().find(go) != object->Frustum().end();
+                    bool should_be_in_frustum = query.IsInRange(go, object, 45.0);
+
+                    if (is_in_frustum && !should_be_in_frustum)
+                    {
+                        HandleWorldMessage(WorldMessage(we_left_frustum, object, go, ""));
+                    }
+                    else if (!is_in_frustum && should_be_in_frustum)
+                    {
+                        HandleWorldMessage(WorldMessage(we_entered_frustum, object, go, ""));
+                    }
+                    go->Placement()->MarkAsClean();
+                }
+            }
+        }
+    }
+}
+
+void Engine::TryRegenerateAllGos(int64_t current)
+{
+	// Regeneration logic
+	auto regenerate = [&](Go* go)
 	{
-		Region * region = *iterator;
-		
-		GopSet & objects = region->Objects();
-		
-		GopSet::iterator i = objects.begin();
-		while (i != objects.end())
-		{
-			Go * object = *i;
-			
-			GopSet::iterator j = i++;
-			
-			while (j != objects.end())
-			{
-				Go * go = *j;
-				
-				if (go->Placement()->IsDirty())
-				{
-					if (go->Goid() != object->Goid())
-					{
-						//cout << go->Id() << " is grinding " << object->Id() << endl;
-						bool is_in_frustum = object->Frustum().find (go) != object->Frustum().end(); 
-						bool should_be_in_frustum = query.IsInRange (go, object, 45.0);
-						
-						if (is_in_frustum == true && should_be_in_frustum == false)
-						{
-							HandleWorldMessage (WorldMessage (we_left_frustum, object, go, ""));
-						}
-						else if (is_in_frustum == false && should_be_in_frustum == true)
-						{
-							HandleWorldMessage (WorldMessage (we_entered_frustum, object, go, ""));
-						}
-					}
-				}
-				
-				j++;
+		if (!go || go->IsItem()) return;
+
+		GoAspect* aspect = go->Aspect();
+		if (!aspect) return;
+
+		if (aspect->LifeState() > ls_alive_unconscious)
+			return;
+
+		bool updated = false;
+
+		// Life regen
+		int64_t lifePeriodMs = (int64_t)(aspect->LifeRecoveryPeriod() * 1000.0f);
+		if (lifePeriodMs > 0.0f && current >= aspect->LastLifeReg() + lifePeriodMs) {
+			float currentLife = aspect->CurrentLife();
+			float maxLife = aspect->MaxLife();
+			float unit = aspect->LifeRecoveryUnit();
+
+			if (currentLife < maxLife) {
+				currentLife = std::min(currentLife + unit, maxLife);
+				aspect->SetCurrentLife(currentLife);
+				updated = true;
+				//cout << "Regging " << unit << " hp for Go " << go->Goid() << endl;
 			}
-			
-			object->Placement()->MarkAsClean();
+			else if (currentLife > maxLife)
+			{
+				aspect->SetCurrentLife(maxLife);
+				updated = true;
+			}
+
+			if ((currentLife >= maxLife) &&
+				(aspect->LifeState() == ls_alive_unconscious)) {
+				PostWorldMessage(we_resurrected, go, go, "", 0);
+			}
+
+			aspect->SetLastLifeReg(current);
 		}
+
+		// Mana regen
+		int64_t manaPeriodMs = (int64_t)(aspect->ManaRecoveryPeriod() * 1000.0f);
+		if (manaPeriodMs > 0.0f && current >= aspect->LastManaReg() + manaPeriodMs) {
+			float currentMana = aspect->CurrentMana();
+			float maxMana = aspect->MaxMana();
+			float unit = aspect->ManaRecoveryUnit();
+
+			if (currentMana < maxMana) {
+				currentMana = std::min(currentMana + unit, maxMana);
+				aspect->SetCurrentMana(currentMana);
+				updated = true;
+				//cout << "Regging " << unit << " mp for Go " << go->Goid() << endl;
+			}
+			else if (currentMana > maxMana)
+			{
+				aspect->SetCurrentMana(maxMana);
+				updated = true;
+			}
+
+			aspect->SetLastManaReg(current);
+		}
+
+		if (updated) {
+			UpdateGo(go);
+		}
+	};
+
+	// Iterate players
+	GopSet::iterator it_player;
+	for (it_player = m_players.begin(); it_player != m_players.end(); ++it_player)
+	{
+		regenerate(*it_player);
 	}
-	
-	//cout << "resolving frustums @ " << CurrentTime() << endl;
+
+	// Iterate mobs — future-proofed; define m_mobs in Engine later
+	/*GopSet::iterator it_mob;
+	for (it_mob = m_mobs.begin(); it_mob != m_mobs.end(); ++it_mob)
+	{
+		regenerate(*it_mob);
+	}*/
 }

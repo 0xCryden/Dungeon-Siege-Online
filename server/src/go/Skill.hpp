@@ -27,7 +27,7 @@
 	{
 		string name;
 		float level;
-		u_int64_t experience;
+		float experience;
 	};
 
 #endif /* SKILL_HPP_ */

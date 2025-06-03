@@ -35,6 +35,7 @@
 		
 		we_frustum_active_state_changed,
 		
+		we_resurrected,
 		/*
 		 * we_collided
 		 * we_glanced
@@ -72,6 +73,11 @@
 		we_dropped,
 		we_equipped,
 		we_unequipped,
+		we_unknown_node,
+		we_go_status_updated,
+		we_add_exp,
+		we_leveled_up,
+		we_go_life_updated,
 	};
 	
 	inline string ToString (eWorldEvent e)
@@ -90,6 +96,8 @@
 			
 			case we_frustum_active_state_changed: return "we_frustum_active_state_changed";
 			
+			case we_resurrected: return "we_resurrected";
+
 			
 			
 			case we_engaged_hit_killed: return "we_engaged_killed";
@@ -112,6 +120,10 @@
 			case we_dropped: return "we_dropped";
 			case we_equipped: return "we_equipped";
 			case we_unequipped: return "we_unequipped";
+			case we_unknown_node: return "we_unknown_node";
+			case we_go_status_updated: return "we_go_status_updated";
+			case we_add_exp: return "we_add_exp";
+			case we_leveled_up: return "we_leveled_up";
 			
 			default: break;
 		} /* switch (e) */

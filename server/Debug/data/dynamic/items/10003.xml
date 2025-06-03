@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10003">
+		<aspect>
+			 <model value="sh_m_g_c_r_s_avg"/>
+		</aspect>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="Metal buckler"/>
+		</common>
+		<defend>
+			<defense value="7"/>
+			<defend_class value="dc_shield"/>
+		</defend>
+		<placement region="">
+			<position node="1482942462" x="0.788253" y="0" z="0.51486"/>
+		</placement>
+	</go>
+</objects>

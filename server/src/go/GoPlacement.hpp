@@ -20,7 +20,8 @@
 
 	#include "GoComponent.hpp"
 	#include "../SiegePos.hpp"
-	
+	#include "../vector_3.hpp"
+
 	class Region;
 	
 	class GoPlacement : public GoComponent
@@ -41,11 +42,20 @@
 			SiegePos Position () const;
 			void SetPosition (const SiegePos & position);
 			
+			vector_3 WorldPosition () const;
+			void SetWorldPosition (vector_3 worldPosition);
+			void SetWorldPosition (float x, float y, float z);
+
 		private:
 			
 			bool m_dirty;
 			string m_region;
 			SiegePos m_position;
+			vector_3 m_worldPosition;
+
+			u_int8_t lastRotation;
+			vector_3 lastLocal;
+			SiegePos lastSiegePos;
 	};
 
 #endif /* GOPLACEMENT_HPP_ */

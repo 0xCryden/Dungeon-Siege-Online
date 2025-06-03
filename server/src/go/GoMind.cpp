@@ -138,9 +138,39 @@ void GoMind :: Equip (eEquipSlot slot, Go * item)
 	{
 		if (slot != es_none)
 		{
+			if (slot == es_any)
+			{
+				slot = item->IntendedSlot();
+			    cout << "Equip: auto-mapped item " << item->Goid() << "(location to slot " << slot << endl;
+			}
+			/*if (item->GetLoc() == il_shield)
+			{
+				if (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon) != NULL)
+				{
+					if (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon)->Attack()->IsTwoHanded() == false)
+					{
+						//maybe use message/event instead of inven function
+						m_go->Inventory()->Equip(es_weapon_hand, m_go->Inventory()->ItemFromLocation(il_active_melee_weapon));
+					}
+					else if (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon)->Attack()->IsTwoHanded())
+					{
+						// unequip weapon
+						//maybe use message/event instead of inven function
+						m_go->Inventory()->Unequip(es_weapon_hand);
+					}
+				}
+
+				if ((m_go->Inventory()->ItemFromLocation(il_active_melee_weapon) != NULL) &&
+				  	  (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon)->Attack()->IsTwoHanded() == false))
+				{
+					m_go->Inventory()->Equip(es_weapon_hand, m_go->Inventory()->ItemFromLocation(il_active_melee_weapon));
+				}
+			}*/
+
 			if (m_go->Inventory()->Contains (item))
 			{
 				Go * existing = m_go->Inventory()->GetEquipped (slot);
+
 				if (m_go->Inventory()->IsEquipped (item))
 				{
 					cout << "eww 1" << endl;
@@ -149,7 +179,7 @@ void GoMind :: Equip (eEquipSlot slot, Go * item)
 					m_distance = 0.0f;
 					m_object = item;
 					m_slot = m_go->Inventory()->GetEquippedSlot (item);
-				
+
 					SendWorldMessage (we_mind_processing_new_job, m_go, item, "jat_unequip");
 					
 					ContinueLastAction();
@@ -162,19 +192,25 @@ void GoMind :: Equip (eEquipSlot slot, Go * item)
 					m_distance = 0.0f;
 					m_object = item;
 					m_slot = slot;
-					
+
 					SendWorldMessage (we_mind_processing_new_job, m_go, existing, "jat_unequip");
 					
+
 					ContinueLastAction();
 				}
 				else
 				{
+					if (m_jat == jat_unequip)
+					{
+						cout << "calling jat_remember_loc" << endl;
+						m_object->SetLoc(m_object->IntendedLoc());
+					}
 					m_jat = jat_equip;
 					m_position = m_go->Placement()->Position();
 					m_distance = 0.0f;
 					m_object = item;
 					m_slot = slot;
-					
+
 					SendWorldMessage (we_mind_processing_new_job, m_go, item, "jat_equip");
 					
 					Stop();
@@ -190,55 +226,62 @@ void GoMind :: Equip (eEquipSlot slot, Go * item)
 
 void GoMind :: Unequip (eEquipSlot slot)
 {
+	//cout << "GoMind:: Unequip slot " << ToString(slot) << endl;
 	Go * item = m_go->Inventory()->GetEquipped (slot);
 	if (item != NULL)
 	{
+		item->SetLoc(il_main);
+
 		m_jat = jat_unequip;
 		m_position = m_go->Placement()->Position();
 		m_distance = 0.0f;
 		m_object = item;
 		m_slot = slot;
-		
+
 		SendWorldMessage (we_mind_processing_new_job, m_go, item, "jat_unequip");
 	}
 	
-	Stop();
+	//Stop();
 }
 
 void GoMind :: AttackMelee (Go * target)
 {
-	if (target != NULL)
+	if (target == NULL)
 	{
-		int64_t now = CurrentTime();
-		{
-			if (query.IsInRange (m_go, target, 2.5f))
-			{
-				m_jat = jat_attack_object_melee;
-				m_position = m_go->Placement()->Position();
-				m_distance = 0.0f;
-				m_object = target;
-				m_slot = es_none;
-			
-				SendWorldMessage (we_mind_processing_new_job, m_go, target, "jat_attack_object_melee");
-				
-				m_melee = now;
-			}
-			else
-			{
-				m_jat = jat_attack_object_melee;
-				m_position = target->Placement()->Position();
-				m_distance = 2.4f;
-				m_object = target;
-				m_slot = es_none;
-			
-				SendWorldMessage (we_mind_processing_new_job, m_go, target, "jat_approach");
-			}
-		}
-		
+		Stop();
 		return;
 	}
-	
-	Stop();
+	if (target->Aspect()->LifeState() > ls_alive_unconscious)
+	{
+		Stop();
+		return;
+	}
+
+	int64_t now = CurrentTime();
+	{
+		if (query.IsInRange (m_go, target, 2.5f))
+		{
+			m_jat = jat_attack_object_melee;
+			m_position = m_go->Placement()->Position();
+			m_distance = 0.0f;
+			m_object = target;
+			m_slot = es_none;
+
+			SendWorldMessage (we_mind_processing_new_job, m_go, target, "jat_attack_object_melee");
+			
+			m_melee = now;
+		}
+		else
+		{
+			m_jat = jat_attack_object_melee;
+			m_position = target->Placement()->Position();
+			m_distance = 2.4f;
+			m_object = target;
+			m_slot = es_none;
+		
+			SendWorldMessage (we_mind_processing_new_job, m_go, target, "jat_approach");
+		}
+	}
 }
 
 void GoMind :: AttackRanged (Go * target)

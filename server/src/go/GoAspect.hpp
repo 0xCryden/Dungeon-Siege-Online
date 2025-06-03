@@ -30,18 +30,20 @@
 			
 			GoAspect (Go * go);
 			GoAspect (Go * go, xmlNode * node);
-			
+
 			void Save(xmlNode* aspectNode) const;
 
 			float BoundingSphereRadius () const;
 			float CurrentLife () const;
 			float CurrentMana () const;
 			string GetDynamicTexture (int index);
+			string GetModelName ();
 			bool IsInvincible () const;
 			bool IsVisible () const;
 			int16_t LifeRecoveryPeriod () const;
 			float LifeRecoveryUnit () const;
 			eLifeState LifeState () const;
+			int64_t LastDied () const;
 			int16_t ManaRecoveryPeriod () const;
 			float ManaRecoveryUnit () const;
 			float MaxLife () const;
@@ -53,28 +55,43 @@
 			void SetDynamicTexture (int index, const string & texture);
 			void SetIsVisible (bool visible);
 			void SetLifeState (eLifeState state);
+			void SetLastDied (int64_t time) { m_last_died = time; };
 			void SetMaxLife (float life);
 			void SetMaxMana (float mana);
 			void SetModel (const string & model);
 			void SetRenderScale (float scale);
+
+			float ExperienceValue() const { return m_experience_value; }
+			int64_t LastLifeReg () const { return m_last_life_regen; };
+			void SetLastLifeReg (int64_t time) { m_last_life_regen = time; };
+			int64_t LastManaReg () const { return m_last_mana_regen; };
+			void SetLastManaReg (int64_t time) { m_last_mana_regen = time; };
 			
+			void SetHpRecUnit (float rate) { m_life_recovery_unit = rate; };
+			void SetMpRecUnit (float rate) { m_mana_recovery_unit = rate; };
+
 		private:
 			
 			float m_bounding_sphere_radius;
 			float m_current_life;
 			float m_current_mana;
+			int64_t m_last_life_regen;
+			int64_t m_last_mana_regen;
 			string m_textures[2];
 			bool m_invincible;
 			bool m_visible;
 			int16_t m_life_recovery_period;
 			float m_life_recovery_unit;
 			eLifeState m_life_state;
+			int64_t m_last_died;
 			int16_t m_mana_recovery_period;
 			float m_mana_recovery_unit;
 			float m_max_life;
 			float m_max_mana;
-			string m_model;
+			string m_model; // template name?
 			float m_render_scale;
+
+			float m_experience_value;
 	};
 
 #endif /* GOASPECT_HPP_ */

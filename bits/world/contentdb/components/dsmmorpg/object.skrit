@@ -39,10 +39,10 @@ startup state startup$
 		
 		else if (event$ == we_unmousehover)
 		{
-			int owner$ = MakeInt (owner.Goid);
-			int hovered$ = GameAuditor.GetDb.GetInt ("game:hovered:goid");
+			//int owner$ = MakeInt (owner.Goid);
+			//int hovered$ = GameAuditor.GetDb.GetInt ("game:hovered:goid");
 			
-			if (hovered$ == owner$)
+			//if (hovered$ == owner$)
 			{
 				//GameAuditor.GetDb.SetInt ("game:hovered:goid", 0);
 				//report.screen ("hovering no one anymore");
@@ -53,18 +53,21 @@ startup state startup$
 		{
 			go$ = owner.Go;
 			
-			if (go$.IsActor())
+			if (go$.IsActor() && go$ != Server.ScreenHero)
 			{
-				/*
 				SiegePos position$ = go$.Placement.Position;
-				position$.Pos.Y = position$.Pos.Y + 2.0;
+				//position$.Pos.Y = position$.Pos.Y - 3.0;
 				
 				GoCloneReq req$ = MakeGoCloneReq ("bubble_name");
 				req$.StartingPos = position$;
 				
 				bubble$ = GoDb.SCloneGo (req$);
-				bubble$.Go.Common.SSetScreenName (name$);
-				
+				String ScreenName$;
+				go$.Common.GetScreenName(ScreenName$);
+				bubble$.Go.Common.SSetScreenName (ScreenName$);
+				bubble$.Go.Aspect.SetRenderScale (0.9);
+				bubble$.Go.Aspect.AspectHandle.SetHideMeshFlag( true );
+
 				MCPManager.MakeRequest (bubble$, pl_follow, go$.Goid);
 				
 				if (bubble$.Go.HasComponent ("bubble"))
@@ -72,7 +75,7 @@ startup state startup$
 					bubble$.Go.SetComponentInt ("bubble", "id", id$);
 					bubble$.Go.SetComponentInt ("bubble", "goid", MakeInt (go$.Goid));
 				}
-				*/
+				
 				return;
 			}
 			
@@ -88,7 +91,7 @@ startup state startup$
 		{
 			if (go$.IsActor())
 			{
-				// PostWorldMessage (we_req_delete, bubble$, bubble$, 0.0);
+				PostWorldMessage (we_req_delete, bubble$, bubble$, 0.0);
 			}
 		}
 	}

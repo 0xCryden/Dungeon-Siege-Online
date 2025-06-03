@@ -461,3 +461,31 @@
 	{
 	}
 }
+
+
+[t:template,n:humanboy]
+{
+	doc = "Farmboy";
+	specializes = base_farmboy;
+	[actor]
+	{
+		is_hero=false;
+		screen_class = "Farmer";
+	}
+	[aspect]
+	{
+		megamap_override = true; // RAID#7185: MP: Teammates in MP should be non-Line of Sight on map.  -MM 02.03.2002
+		is_invincible		= true;
+	}
+	[inventory]
+	{
+	}
+	[mind]
+	{
+		jat_brain = world\ai\jobs\dsmmorpg\job_nothing.skrit;
+	}
+	[water_effects] {}
+	[object]
+	{
+	}
+}

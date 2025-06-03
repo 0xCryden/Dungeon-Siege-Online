@@ -19,6 +19,7 @@
 #define GOINVENTORY_HPP_
 
 	#include "../enum/eEquipSlot.hpp"
+	#include "../enum/eInventoryLocation.hpp"
 	#include "GoComponent.hpp"
 	
 	#include <map>
@@ -37,15 +38,26 @@
 			void Save(xmlNode* inventoryNode) const;
 			bool Add (Go * item);
 			bool Contains (const Go * item) const;
+			// transfer item, to container, loc,
+			void Transfer (Go * item, Go * container, eInventoryLocation loc);
+
 			bool Equip (eEquipSlot slot, Go * item);
 			Go * GetEquipped (eEquipSlot slot) const;
 			eEquipSlot GetEquippedSlot (const Go * item) const;
 
-			eInventoryLocation GetInventoryLocation (const Go * item) const;
-			void SetInventoryLocation (Go * item, eInventoryLocation loc, int ownerId);
+			Go * ItemFromLocation (eInventoryLocation loc) const;
+			//Go * GetLocated (eInventoryLocation loc) const;
+			//eInventoryLocation GetInventoryLocation (const Go * item) const;
+			//void SetInventoryLocation (Go * item, eInventoryLocation loc, int ownerId);
+			//void SetBagLoc (Go * item, eInventoryLocation loc);
+
+			void SetSelectedSlot(int num);
+			int GetSelectedSlot() { return m_selectedSlot; };
 
 			bool IsAnyWeaponEquipped () const;
 			bool IsEquipped (const Go * item) const;
+
+			//eEquipSlot GetSelectedWeaponSlot();
 			bool IsMeleeWeaponEquipped () const;
 			bool IsRangedWeaponEquipped () const;
 			bool IsSlotEquipped (eEquipSlot slot) const;
@@ -56,9 +68,10 @@
 		private:
 			
 			GopSet m_inventory;
+			int m_selectedSlot;
 			map<eEquipSlot, Go *> m_equipment;
 
-			map<eInventoryLocation, Go *> m_bag;
+			//map<eInventoryLocation, Go *> m_bag;
 	};
 
 #endif /* GOINVENTORY_HPP_ */

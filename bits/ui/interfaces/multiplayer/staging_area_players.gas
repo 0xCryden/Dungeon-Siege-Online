@@ -75,6 +75,7 @@
 			
 			if (connect$ == 0)
 			{
+				// cryden TODO set to staging_select_team or anything else to use select char for real char creation
 				Messenger.Notify ("staging_select_character", owner);
 			}
 			else if (connect$ != 0)

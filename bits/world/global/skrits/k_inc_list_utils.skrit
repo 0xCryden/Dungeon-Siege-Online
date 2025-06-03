@@ -1,0 +1,213 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File     :  k_inc_list_utils.skrit
+// Author(s):  Starfall
+//
+//----------------------------------------------------------------------------
+//  Revision: 1.0              Date: 2022-06-14
+//----------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+
+/*	Collection of methods to manage Lists/Arrays in skrit
+
+	Skrit doesn't normally support Lists/Arrays, but it DOES have methods for interacting with Delimited Strings
+	Taking advantage of this, we can infer Lists from Comma Delimited Strings
+	
+	Elements of any Type can be inserted into a List,
+	However once they're in a List, they can only be extracted as Strings, so keep that in mind
+	
+	Method Reference:
+		ListPushString$(list, string):			Appends a new string to the end of the List
+		ListPushInt$(list, int):				Appends a new int to the end of the List
+		ListPushFloat$(list, float):			Appends a new float to the end of the List
+		ListPushBool$(list, bool):				Appends a new bool to the end of the List
+		ListPop$(list):							Removes the last element in the List
+		ListPeek$(list):						Returns the last element in a List
+		ListLength$(list):						Returns the length of a List (shortcut for StringTool.GetNumDelimitedValues())
+		ListIndex$(list, string):				Returns the first available index of a given element; defaults to -1
+		ListCount$(list, string):				Returns the the number of times a given element appears in the List; defaults to 0
+		ListInsertString$(list, string, index):	Inserts a new string at the given index
+		ListInsertInt$(list, int, index):		Inserts a new int at the given index
+		ListInsertFloat$(list, float, index):	Inserts a new float at the given index
+		ListInsertBool$(list, bool, index):		Inserts a new bool at the given index
+		ListRemove$(list, index):				Removes the element at the given index
+		ListReverse$(list):						Reverse the order of the elements in a List
+	
+	There is no Create/Clear method (because you can just create a new string directly)
+	
+	----------------USER BEWARE----------------
+	Skrit wasn't really designed for this, this is all just for convenience
+	Pop, Index, Insert, Remove and Reverse are not super efficient, use them with care on large lists
+	Floats may lose precision when converted to strings via StringTool, I recommend using the ~= operator when extracting them
+*/
+
+string slist$;	// Skrit restriction: Methods with a return type of string must return a global scoped string
+
+string ListPushString$ ( string l$, string s$ )
+{
+	slist$ = l$ + "," + s$;
+	return slist$;
+}
+
+string ListPushInt$ ( string l$, int i$ )
+{
+	string s$;
+	StringTool.AssignF(s$, "%d", i$);
+	slist$ = l$ + "," + s$;
+	return slist$;
+}
+
+string ListPushFloat$ ( string l$, float f$ )
+{
+	string s$;
+	StringTool.AssignF(s$, "%.9g", f$);
+	slist$ = l$ + "," + s$;
+	return slist$;
+}
+
+string ListPushBool$ ( string l$, bool b$ )
+{
+	string s$ = (b$ ? "true" : "false");
+	slist$ = l$ + "," + s$;
+	return slist$;
+}
+
+string ListPop$ ( string l$ )
+{
+	slist$ = "";
+	int v1$ = StringTool.GetNumDelimitedValues(l$) - 1;
+	int v2$ = v1$ - 1;
+	int i$ = 0;
+	while( i$ < v1$ )
+	{
+		slist$ += StringTool.GetDelimitedString(l$, i$) + (i$ == v2$ ? "" : ",");
+		i$ += 1;
+	}
+	return slist$;
+}
+
+string ListPeek$ ( string l$ )
+{
+	slist$ = "";
+	int v$ = (StringTool.GetNumDelimitedValues(l$) - 1);
+	if( v$ > -1 )	{ slist$ = StringTool.GetDelimitedString(l$, v$); }
+	return slist$;
+}
+
+int ListLength$ ( string l$ )
+{
+	return StringTool.GetNumDelimitedValues(l$);
+}
+
+int ListIndex$ ( string l$, string e$ )
+{
+	int v$ = StringTool.GetNumDelimitedValues(l$);
+	int i$ = 0;
+	while( i$ < v$ )
+	{
+		if( e$ == StringTool.GetDelimitedString(l$, i$, ',', "") )	{ break; }
+		i$ += 1;
+	}
+	if( i$ == v$) { i$ = -1;}
+	return i$;
+}
+
+int ListCount$ ( string l$, string e$ )
+{
+	int v$ = StringTool.GetNumDelimitedValues(l$);
+	int i$ = 0;
+	int c$ = 0;
+	while( i$ < v$ )
+	{
+		if( e$ == StringTool.GetDelimitedString(l$, i$, ',', "") )	{ c$ += 1; }
+		i$ += 1;
+	}
+	return c$;
+}
+
+string ListInsertString$ ( string l$, string e$, int i1$ )
+{
+	slist$ = "";
+	int v1$ = StringTool.GetNumDelimitedValues(l$);
+	int v2$ = v1$ - 1;
+	int i2$ = 0;
+	if ( i1$ == v1$ )
+	{ 
+		slist$ += l$ + "," + e$;
+	}
+	else if ( i1$ > v1$ )
+	{
+		report.errorf("ListInsertString$: Index %d out of bounds for List of length %d!\n", i1$, v1$);
+		slist$ = l$;
+	}
+	else
+	{
+		while( i2$ < v1$ )
+		{
+			if ( i2$ == i1$ )	{ StringTool.AppendF(slist$, "%s,", e$); }
+			slist$ += StringTool.GetDelimitedString(l$, i2$);
+			if ( i2$ != v2$ )	{ StringTool.Append(slist$, ","); }
+			i2$ += 1;
+		}
+	}
+	return slist$;
+}
+
+string ListInsertInt$ ( string l$, int e$, int i1$ )
+{
+	string s$;
+	StringTool.AssignF(s$, "%d", e$);
+	return ListInsertString$(l$, s$, i1$);
+}
+
+string ListInsertFloat$ ( string l$, float e$, int i1$ )
+{
+	string s$;
+	StringTool.AssignF(s$, "%.9g", e$);
+	return ListInsertString$(l$, s$, i1$);
+}
+
+string ListInsertBool$ ( string l$, bool e$, int i1$ )
+{
+	string s$ = (e$ ? "true" : "false");
+	return ListInsertString$(l$, s$, i1$);
+}
+
+string ListRemove$ ( string l$, int i1$ )
+{
+	slist$ = "";
+	int v1$ = StringTool.GetNumDelimitedValues(l$);
+	int v2$ = v1$ - 1;
+	int i2$ = 0;
+	if ( i1$ > v2$ )
+	{
+		report.errorf("ListRemove$: Index %d out of bounds for List of length %d!\n", i1$, v1$);
+		slist$ = l$;
+	}
+	else if ( i1$ == v2$)
+	{
+		ListPop$(l$);
+	}
+	else
+	{
+		while( i2$ < v1$ )
+		{
+			if ( i2$ != i1$ )	{ slist$ += StringTool.GetDelimitedString(l$, i2$) + (i2$ == v2$ ? "" : ","); }
+			i2$ += 1;
+		}
+	}
+	return slist$;
+}
+
+string ListReverse$ ( string l$ )
+{
+	slist$ = "";
+	int v$ = StringTool.GetNumDelimitedValues(l$);
+	int i$ = v$ - 1;
+	while( i$ > -1 )
+	{
+		slist$ += StringTool.GetDelimitedString(l$, i$) + (i$ == 0 ? "" : ",");
+		i$ -= 1;
+	}
+	return slist$;
+}

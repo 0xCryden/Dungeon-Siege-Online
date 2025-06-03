@@ -1,0 +1,44 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File     :	print_occupants_in_sphere.skrit
+// Author(s):	Starfall
+//
+// Summary  :	Prints occupants in sphere after loading
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#include "k_inc_list_utils"
+
+property float	radius$		= 8.0	doc = "Radius to search for Go's";
+
+
+owner = GoSkritComponent;
+
+
+startup state Idle$
+{
+    event OnGoHandleMessage$( eWorldEvent e$, WorldMessage msg$ )
+    {    
+        if ( e$ == WE_ENTERED_WORLD )
+        {
+			if (owner.Go.HasComponent ("object"))
+			{
+				int objId$ = owner.Go.GetComponentInt ("object", "id");
+				report.screenf ("object ID: %d", objId$);
+			}
+			report.screenf ("Evil Actor ID: %d", owner);
+			report.screenf ("template name: %s", owner.Go.TemplateName);
+			report.screenf ("Placement: x:%f/y:%f/z:%f node: %p", owner.Go.Placement.Position.Pos.X, owner.Go.Placement.Position.Pos.Y, owner.Go.Placement.Position.Pos.Z, owner.Go.Placement.Position.Node);
+			
+		}
+	}
+
+	/*event OnEnterState$
+	{	
+		//lastRotation$ = 0;
+		//lastAbsPos$ = GetZeroVector();
+		//lastSiegePos$ = SiegePos.MakeDefault();
+
+		//this.CreateTimer( 1, 5.0 );
+	}*/
+}

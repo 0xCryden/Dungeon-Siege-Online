@@ -17,10 +17,11 @@
 
 #include "Go.hpp"
 #include "GoAspect.hpp"
+#include "../events/SendWorldMessageEvent.hpp"
+#include <cmath>
 
 GoAspect :: GoAspect (Go * go) : GoComponent (go)
 {
-	//m_model = go->Aspect()->m_model;
 }
 
 GoAspect :: GoAspect (Go * go, xmlNode * node) : GoComponent (go)
@@ -70,8 +71,15 @@ GoAspect :: GoAspect (Go * go, xmlNode * node) : GoComponent (go)
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "life_state") != 0)
 			{
-				string life_state = xml::XReadString (current, "value", "ls_ignore");
-				if (FromString (life_state, m_life_state) != true) m_life_state = ls_ignore;
+				string life_state = xml::XReadString (current, "value", "");
+				if (FromString (life_state, m_life_state) != true)
+				{ m_life_state = ls_alive_conscious; }
+				else
+				{ m_life_state = ToState(life_state); }
+			}
+			else if (xmlStrEqual (current->name, (const xmlChar *) "last_died") != 0)
+			{
+				m_last_died = xml::ReadAttribute<int64_t> (current, "value", 0);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "mana_recovery_period") != 0)
 			{
@@ -97,7 +105,14 @@ GoAspect :: GoAspect (Go * go, xmlNode * node) : GoComponent (go)
 			{
 				m_render_scale = xml::ReadAttribute<float> (current, "value", 1.0);
 			}
+			else if (xmlStrEqual (current->name, (const xmlChar *) "experience_value") != 0)
+			{
+				m_experience_value = xml::ReadAttribute<float> (current, "value", 1.0);
+			}
 		}
+		int64_t now = CurrentTime();
+		m_last_life_regen = now;
+		m_last_mana_regen = now;
 	}
 }
 
@@ -108,7 +123,8 @@ void GoAspect::Save(xmlNode* aspectNode) const
 	xml::SetOrUpdateChildValue(aspectNode, "current_mana", m_current_mana);
 	xml::SetOrUpdateChildValue(aspectNode, "flesh", m_textures[0]);
 	xml::SetOrUpdateChildValue(aspectNode, "cloth", m_textures[1]);
-	xml::SetOrUpdateChildValue(aspectNode, "life_state", m_life_state);
+	xml::SetOrUpdateChildValue(aspectNode, "life_state", ToString(m_life_state));
+	xml::SetOrUpdateChildValue(aspectNode, "last_died", m_last_died);
 	xml::SetOrUpdateChildValue(aspectNode, "max_life", m_max_life);
 	xml::SetOrUpdateChildValue(aspectNode, "max_mana", m_max_mana);
 	xml::SetOrUpdateChildValue(aspectNode, "model", m_model);
@@ -140,6 +156,11 @@ string GoAspect :: GetDynamicTexture (int index)
 	return "";
 }
 
+string GoAspect :: GetModelName ()
+{
+	return m_model;
+}
+
 bool GoAspect :: IsInvincible () const
 {
 	return m_invincible;
@@ -163,6 +184,11 @@ float GoAspect :: LifeRecoveryUnit () const
 eLifeState GoAspect :: LifeState () const
 {
 	return m_life_state;
+}
+
+int64_t GoAspect :: LastDied () const
+{
+	return m_last_died;
 }
 
 int16_t GoAspect :: ManaRecoveryPeriod () const
@@ -221,6 +247,12 @@ void GoAspect :: SetIsVisible (bool visible)
 void GoAspect :: SetLifeState (eLifeState state)
 {
 	m_life_state = state;
+
+	if (state == ls_dead_normal)
+	{
+		m_last_died = CurrentTime();
+		PostWorldMessage(we_resurrected, GetGo(), GetGo(), "", 60000);
+	}
 }
 
 void GoAspect :: SetMaxLife (float life)

@@ -1,0 +1,175 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File     :	print_occupants_in_sphere.skrit
+// Author(s):	Starfall
+//
+// Summary  :	Prints occupants in sphere after loading
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#include "k_inc_list_utils"
+
+property float	radius$		= 8.0	doc = "Radius to search for Go's";
+
+/*string spawnedNodes$ = "";
+Vector lastAbsPos$;
+SiegePos lastSiegePos$;
+bool hasLastPos$ = false;
+int lastRotation$;
+Goid lastObject$;*/
+
+owner = GoSkritComponent;
+
+/*Goid spawn_base$ (int node$)
+{
+	GoCloneReq req$ = MakeGoCloneReq ("cow_black_white");
+	req$.SnapToTerrain = true;
+	req$.StartingPos = SiegePos.Make (0.000000, 0.000000, 0.00000, node$);
+	
+	return GoDb.SCloneGo (req$);
+}
+
+Goid spawn_offset$ (int node$)
+{
+	GoCloneReq req$ = MakeGoCloneReq ("cow_brown");
+	req$.SnapToTerrain = true;
+	req$.StartingPos = SiegePos.Make (1.000000, 0.000000, 1.00000, node$);
+	
+	return GoDb.SCloneGo (req$);
+}
+
+startup state Idle$
+{
+	// first timer executes once
+	trigger OnTimer$( 1 )
+	{
+
+		this.CreateTimer( 2, 5.0 );
+	}
+
+	// second timer executes 1/s after first timer
+	trigger OnTimer$( 2 )
+	{
+		int count$ = MapMaker.ReadNodesDotGasFrom ("C:\\Users\\Cryden\\Desktop\\dsmmorpg-code-r428-trunk\\bits\\world\\maps\\multiplayer_world\\regions\\town_center\\terrain_nodes\\nodes.gas");
+
+		report.screenf ("%d nodes were found", count$);
+		while (count$ > 0)
+		{
+			count$ -= 1;
+			int guid$ = MapMaker.GetNodeGuidAt (count$);
+			Siegedatabase_guid nodeGuid$ = Siegedatabase_guid.Make( guid$ );
+
+			if ( nodeGuid$.IsNodeInAnyFrustum()) //only scan in range
+			{
+				string guidStr$;
+				StringTool.AssignF(guidStr$, "%d", guid$);
+
+				if (ListCount$(spawnedNodes$, guidStr$) == 0) // only the ones not in list 
+				{
+					Goid object$ = spawn_base$ (guid$);
+					Goid offset$ = spawn_offset$ (guid$);
+					//Goid lastObject$ = Server.ScreenHero.Goid;
+
+					SiegePos siegePosB$ = object$.Go.Placement.Position;
+					SiegePos siegePosO$ = offset$.Go.Placement.Position;
+
+					// Determine rotation based on azimuth from white cow to brown cow
+					int rotation$ = 1;
+					if (hasLastPos$)
+					{
+						Vector relVec$ = GetZeroVector();
+						GetSiegeDifference(relVec$, lastSiegePos$, siegePosB$);
+
+						float dx$ = relVec$.X;
+						float dz$ = relVec$.Z;
+
+						// Determine cardinal direction based on dominant axis
+						if (Math.Abs(dx$) > Math.Abs(dz$))
+						{
+							if (dx$ > 0)
+								{ rotation$ = 2; } // East
+							else
+								{ rotation$ = 4; } // West
+						}
+						else
+						{
+							if (dz$ > 0)
+								{ rotation$ = 3; } // South
+							else
+								{ rotation$ = 1; } // North
+						}
+					}
+
+
+					Vector absVec$ = GetZeroVector();
+
+					if (!hasLastPos$)
+					{
+						// First node, just use its local position directly (or define as zero)
+						absVec$ = GetZeroVector();
+					}
+					else
+					{
+						Vector relVec$ = GetZeroVector();
+						GetSiegeDifference(relVec$, lastSiegePos$, siegePosB$);
+
+						// Rotate relVec$ by previous rotation
+						if (lastRotation$ == 1)       // North
+						{
+							absVec$.X = lastAbsPos$.X + relVec$.Z;
+							absVec$.Y = lastAbsPos$.Y + relVec$.Y;
+							absVec$.Z = lastAbsPos$.Z + relVec$.X;
+						}
+						else if (lastRotation$ == 2)  // East
+						{
+							absVec$.X = lastAbsPos$.X + relVec$.Z;
+							absVec$.Y = lastAbsPos$.Y + relVec$.Y;
+							absVec$.Z = lastAbsPos$.Z - relVec$.X;
+						}
+						else if (lastRotation$ == 3)  // South
+						{
+							absVec$.X = lastAbsPos$.X - relVec$.X;
+							absVec$.Y = lastAbsPos$.Y + relVec$.Y;
+							absVec$.Z = lastAbsPos$.Z - relVec$.Z;
+						}
+						else if (lastRotation$ == 4)  // West
+						{
+							absVec$.X = lastAbsPos$.X - relVec$.Z;
+							absVec$.Y = lastAbsPos$.Y + relVec$.Y;
+							absVec$.Z = lastAbsPos$.Z + relVec$.X;
+						}
+					}
+
+					// Save current as "last"
+					lastAbsPos$.X = absVec$.X;
+					lastAbsPos$.Y = absVec$.Y;
+					lastAbsPos$.Z = absVec$.Z;
+
+					lastSiegePos$ = SiegePos.Copy(siegePosB$);
+					lastRotation$ = rotation$;
+					hasLastPos$ = true;
+					lastObject$ = object$;
+
+					float rx$ = Math.Round(absVec$.X);
+					float ry$ = Math.Round(absVec$.Y);
+					float rz$ = Math.Round(absVec$.Z);
+
+					// Add to list to prevent double-processing
+					spawnedNodes$ = ListPushInt$(spawnedNodes$, guid$);
+					Log("\t<node id=\"%u\" x=\"%f\" y=\"%f\" z=\"%f\" rotation=\"%i\" />", guid$, rx$, rz$, ry$, rotation$);
+				
+				}
+			}
+		}
+		this.CreateTimer( 2, 5.0 );
+	}
+
+	event OnEnterState$
+	{	
+		//lastRotation$ = 0;
+		//lastAbsPos$ = GetZeroVector();
+		//lastSiegePos$ = SiegePos.MakeDefault();
+
+		//this.CreateTimer( 1, 5.0 );
+	}
+}*/

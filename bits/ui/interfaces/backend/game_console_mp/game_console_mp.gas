@@ -20,12 +20,12 @@
 			
 			string grab$; grab$ = StringTool.Left (message$, 1);
 			
-			if (grab$ == "/")
+			/*if (grab$ == "/")
 			{
 				string command$; command$ = StringTool.Right (message$, 1);
 				report.screenf ("firing slash command to the server: %s", command$);
 			}
-			else
+			else*/
 			{
 				RSChat$ (message$);
 			}

@@ -17,6 +17,8 @@
 
 #include "Go.hpp"
 #include "GoPlacement.hpp"
+#include "../map/WorldMap.hpp"
+#include "../Engine.hpp"
 
 GoPlacement :: GoPlacement (Go * go) : GoComponent (go)
 {
@@ -46,11 +48,11 @@ GoPlacement :: GoPlacement (Go * go, xmlNode * node) : GoComponent (go)
 				m_position.Z = xml::ReadAttribute<float> (current, "z", 0.0f);
 
 				// Logging the placement info
-				std::cout << "[GoPlacement] Placed object with GO ID=" << go->Goid()
+				/*std::cout << "[GoPlacement] Placed object with GO ID=" << go->Goid()
 				          << " in region=\"" << m_region << "\" at node=" << m_position.Node
 				          << " (" << std::fixed
 				          << m_position.X << ", " << m_position.Y << ", " << m_position.Z << ")"
-				          << std::endl;
+				          << std::endl;*/
 			}
 		}
 	}
@@ -91,6 +93,7 @@ bool GoPlacement :: IsDirty () const
 
 void GoPlacement :: MarkAsClean ()
 {
+	//cout << "marked GO as clean " << endl;
 	m_dirty = false;
 }
 
@@ -111,6 +114,74 @@ SiegePos GoPlacement :: Position () const
 
 void GoPlacement :: SetPosition (const SiegePos & position)
 {
+	//cout << "marking as dirty" << endl;
 	m_dirty = true;
 	m_position = position;
+
+
+	Region * region = world.GetRegion (GetRegion());
+	Node * node = region->GetNode(position.Node);
+
+	if (node != nullptr)
+	{
+		vector_3 local;
+		local.x = node->X();
+		local.y = node->Y();
+		local.z = node->Z();
+
+		int rotation = node->Rotation();
+		switch (rotation) // 0 - unknow, 1 - north, 2 - east, 3 - south, 4 - west
+		{
+			case 1: local.x += position.X; local.z += position.Z; break;
+			case 2: local.x -= position.Z; local.z += position.X; break;
+			case 3: local.x -= position.X; local.z -= position.Z; break;
+			case 4: local.x += position.Z; local.z -= position.X; break;
+			default: throw runtime_error("invalid node");
+		}
+
+		lastLocal.x = node->X();
+		lastLocal.y = node->Y();
+		lastLocal.z = node->Z();
+		//save new SiegePos (X/Y/Z inside a node and NodeID)
+		lastSiegePos = position;
+		//save new Rotation
+		lastRotation = node->Rotation();
+		SetWorldPosition(local);
+	}
+	else
+	{
+		cout << "MakeLocalPosition: missing node ID " << position.Node << endl;
+		Go* playerChar = GetGo();
+		cout << "Player: " << playerChar->Common()->ScreenName() << endl;
+		if ((engine.IsPlayer(playerChar) == true) && (playerChar->WaitForNodeInfo() == false))
+		{
+			playerChar->SetLastPos(lastSiegePos);
+			playerChar->SetLastLocal(lastLocal);
+			playerChar->SetLastRota(lastRotation);
+			playerChar->Send(WorldMessage (we_unknown_node, playerChar, playerChar, ""));
+			playerChar->SetWaitForNodeInfo(true);
+		}
+		else
+		{
+			cout << "Still waiting for node info.." << endl;
+		}
+
+	}
+}
+
+vector_3 GoPlacement :: WorldPosition () const
+{
+	return m_worldPosition;
+}
+
+void GoPlacement :: SetWorldPosition (vector_3 worldPosition)
+{
+	m_worldPosition = worldPosition;
+}
+
+void GoPlacement :: SetWorldPosition (float x, float y, float z)
+{
+	m_worldPosition.x = x;
+	m_worldPosition.y = y;
+	m_worldPosition.z = z;
 }

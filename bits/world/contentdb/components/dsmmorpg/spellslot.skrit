@@ -27,8 +27,9 @@ startup state Idle$
 
 	trigger OnTimer$ ( 1 )
     {
-        report.genericf("[DEBUG]    Location: %d\n", MakeInt(owner.Go.Parent.Inventory.GetLocation( owner.Go )) );
+        //report.genericf("[DEBUG]    Location: %d\n", MakeInt(owner.Go.Parent.Inventory.GetLocation( owner.Go )) );
 		RSInvenMove$(id$, containerId$, MakeInt(owner.Go.Parent.Inventory.GetLocation( owner.Go )) );
+
 		id$ = 0;
 		containerId$ = 0;
 		destLoc$ = 0;
@@ -38,11 +39,11 @@ startup state Idle$
     {    
         if ( e$ == WE_PLAYER_CHANGED )
         {
-			report.screenf("[DEBUG]  Inven event called");
+			report.screenf("[DEBUG]  Step 1");
             if ( owner.Go.Parent != NULL )
             {
                 report.screenf("[DEBUG]  Spell: %s | Owner: %p : %s\n", owner.Go.TemplateName, owner.Go.Parent.Goid, owner.Go.Parent.TemplateName );
-            	report.screenf("[DEBUG]  Step 1");
+            	//report.screenf("[DEBUG]  Step 1");
             	
 				id$ = owner.Go.GetComponentInt ("object", "id");
 				if (owner.Go.Parent.HasComponent("object"))
@@ -55,13 +56,11 @@ startup state Idle$
 						destLoc$ = MakeInt(owner.Go.Parent.Inventory.GetLocation(owner.Go));
 						//report.screenf("[DEBUG] Sending.. id: %d | containerId: %d | destLoc: %d\n", id$, containerId$, destLoc$);
 						this.CreateTimer( 1, 0.01 );
-						//RSInvenMove$(id$, containerId$, destLoc$);
 					}
 				}
 				else
 				{
 					this.CreateTimer( 1, 0.01 );
-					//RSInvenMove$(id$, 0, 21);
 				}
 			}
         }

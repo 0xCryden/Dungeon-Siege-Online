@@ -18,33 +18,50 @@
 #ifndef GOATTACK_HPP_
 #define GOATTACK_HPP_
 
-	#include "GoComponent.hpp"
+#include "../enum/eAttackClass.hpp"
+#include "GoComponent.hpp"
+#include "GoMagic.hpp"
 	
-	class GoAttack : public GoComponent
-	{
-		public:
-			
-			GoAttack (Go * go);
-			GoAttack (Go * go, xmlNode * node);
-			
-			void Save (xmlNode* attackNode) const;
+class GoAttack : public GoComponent
+{
+	public:
 
-			float AttackRange () const;
-			float CriticalHitChance () const;
-			float DamageMax () const;
-			float DamageMin () const;
-			bool IsInProjectileRange (const Go * go);
-			bool IsTwoHanded () const;
-			float ReloadDelay () const;
-			
-		private:
-			
-			float m_attack_range;
-			float m_critical_hit_chance;
-			float m_damage_max;
-			float m_damage_min;
-			bool m_two_handed;
-			int16_t m_reload_delay;
-	};
+		GoAttack (Go * go);
+		GoAttack (Go * go, xmlNode * node);
+
+		void Save (xmlNode* attackNode) const;
+
+		int CalcHitType (Go * target, const string & skill, GoMagic * magic = nullptr);
+		float CalcDamage (Go * target, const string & skill, int hitType, GoMagic * magic = nullptr);
+		uint64_t CalcHitTime ();
+
+		float AttackRange () const;
+		float CriticalHitChance () const;
+
+		float DamageMax () const;
+		void SetDamageMax(float value) { m_damage_max = value; };
+
+		float DamageMin () const;
+		void SetDamageMin(float value) { m_damage_min = value; };
+
+		bool IsInProjectileRange (const Go * go);
+		bool IsTwoHanded () const;
+		float ReloadDelay () const;
+		eAttackClass AttackClass () const;
+
+		bool IsMelee();
+		bool IsRanged();
+		bool IsMagic();
+
+	private:
+
+		float m_attack_range;
+		float m_critical_hit_chance;
+		float m_damage_max;
+		float m_damage_min;
+		bool m_two_handed;
+		int16_t m_reload_delay;
+		eAttackClass m_attack_class;
+};
 
 #endif /* GOATTACK_HPP_ */

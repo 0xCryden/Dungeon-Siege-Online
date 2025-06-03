@@ -34,16 +34,24 @@
 			void SaveSkills(xmlNode* actorNode) const;
 
 			eActorAlignment Alignment () const;
+			bool CanLevelUp();
+			float GetLevelFromXP(uint64_t xp);
+			uint64_t GetXPFromLevel(float level);
+			float GetMaxExpGainForLevel(float level);
 			void ChangeSkillLevel (const string & skill, float delta);
 			float GetSkillLevel (const string & skill) const;
+			float GetSkillExp (const string & skill) const;
 			float HighestSkillLevel () const;
 			void SetAlignment (eActorAlignment alignment);
 			void SetSkillLevel (const string & skill, float value);
-			
+
+			void AddSkillExp (const string & skill, float value);
+
 		private:
 			
 			eActorAlignment m_alignment;
 			map<string, Skill *> m_skills;
+			bool m_can_level_up;
 	};
 
 #endif /* GOACTOR_HPP_ */

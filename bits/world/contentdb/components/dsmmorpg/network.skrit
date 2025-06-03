@@ -39,6 +39,10 @@ startup state startup$
 				{
 					RCCreateItem$( packet$);
 				}
+				else if (type$ == 9)
+				{
+					RCDisplayMessage$ (packet$);
+				}
 				else if (type$ == 11)
 				{
 					RCChat$ (packet$);
@@ -99,7 +103,27 @@ startup state startup$
 				{
 					RCInvenMove$ (packet$);
 				}
-				
+				else if (type$ == 32)
+				{
+					RCReqNodeInfo$ (packet$);
+				}
+				else if (type$ == 33)
+				{
+					RCUpdateGo$ (packet$);
+				}
+				else if (type$ == 34)
+				{
+					RCAddExp$ (packet$);
+				}
+				else if (type$ == 35)
+				{
+					RCLevelUp$ (packet$);
+				}
+				else
+				{
+					report.screenf ("Unknown packet type: ID %d", type$);
+				}
+
 				NetworkManager.DiscardPacket (packet$);
 				received$ -= 1;
 			}

@@ -21,6 +21,8 @@ AIQuery query;
 
 bool AIQuery :: IsInRange (const Go * a, const Go * b, double range)
 {
+	//cout << "IsInRange begin" << endl;
+
 	if (a == NULL || b == NULL)
 	{
 		return false;
@@ -42,6 +44,7 @@ bool AIQuery :: IsInRange (const Go * a, const Go * b, double range)
 	}
 	
 	Region * region = world.GetRegion (a->Placement()->GetRegion());
-	
-	return range >= region->GetSiegeDistance (a->Placement()->Position(), b->Placement()->Position());
+	double dist = region->GetSiegeDistance (a->Placement()->Position(), b->Placement()->Position());
+	//cout << a->Goid() << " is in range of " << b->Goid() << " | Range: " << (double)dist << endl;
+	return range >= dist;
 }

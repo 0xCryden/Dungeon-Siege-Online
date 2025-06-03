@@ -1,0 +1,1637 @@
+[dso_char_select]
+{
+	interface = true;
+
+	skrit = [[
+
+		owner = UIWindow;
+		
+		#include "k_inc_ui"
+		#include "k_inc_rs_packet"
+
+		select1$()
+		{
+			UIShell.FindUIWindow ("character1_sel", "dso_char_select").ProcessAction(action_setvisible, "true");
+			UIShell.FindUIWindow ("character2_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			string selectSlot$ = "1";
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected", "dso_char_select" ) );
+			uiText$.SetText( selectSlot$, true );
+		}
+
+		select2$()
+		{
+			UIShell.FindUIWindow ("character1_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_sel", "dso_char_select").ProcessAction(action_setvisible, "true");
+			UIShell.FindUIWindow ("character3_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			string selectSlot$ = "2";
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected", "dso_char_select" ) );
+			uiText$.SetText( selectSlot$, true );
+		}
+
+		select3$()
+		{
+			UIShell.FindUIWindow ("character1_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_sel", "dso_char_select").ProcessAction(action_setvisible, "true");
+			UIShell.FindUIWindow ("character4_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			string selectSlot$ = "3";
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected", "dso_char_select" ) );
+			uiText$.SetText( selectSlot$, true );
+		}
+
+		select4$()
+		{
+			UIShell.FindUIWindow ("character1_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_sel", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+			string selectSlot$ = "4";
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected", "dso_char_select" ) );
+			uiText$.SetText( selectSlot$, true );
+		}
+
+		begin$()
+		{
+			RSReqCharList$();
+
+			UIShell.HideInterface( "dso_login" );
+			UIShell.DeactivateInterface( "dso_login" );
+
+			UIShell.HideInterface( "dso_char_create" );
+			UIShell.DeactivateInterface( "dso_char_create" );
+			
+			UIShell.FindUIWindow ("character1_bg", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_icon_melee", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_icon_ranged", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_icon_nmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_icon_cmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character1_name", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_class", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_skills", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character1_melee", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_ranged", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_nmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character1_cmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character2_bg", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_icon_melee", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_icon_ranged", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_icon_nmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_icon_cmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character2_name", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_class", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_skills", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character2_melee", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_ranged", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_nmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_cmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+
+			UIShell.FindUIWindow ("character3_bg", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_icon_melee", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_icon_ranged", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_icon_nmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_icon_cmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character3_name", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_class", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_skills", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character3_melee", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_ranged", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_nmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_cmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character4_bg", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_icon_melee", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_icon_ranged", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_icon_nmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_icon_cmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character4_name", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_class", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_skills", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character4_melee", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_ranged", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_nmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_cmagic", "dso_char_select").ProcessAction(action_setvisible, "false");
+
+			UIShell.FindUIWindow ("character1_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character2_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character3_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+			UIShell.FindUIWindow ("character4_sel", "dso_char_select").ProcessAction(action_setvisible, "false");
+		}
+
+		selectChar$()
+		{
+			string selectSlot$;
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected", "dso_char_select" ) );
+			uiText$.GetText( selectSlot$);
+
+			int selectedSlot$ = 0;
+			if (selectSlot$ == "1")
+			{
+				selectedSlot$ = 1;
+			}
+			else if (selectSlot$ == "2")
+			{
+				selectedSlot$ = 2;
+			}
+			else if (selectSlot$ == "3")
+			{
+				selectedSlot$ = 3;
+			}
+			else if (selectSlot$ == "4")
+			{
+				selectedSlot$ = 4;
+			}
+
+			RSEnterGame$(selectedSlot$);
+		}
+
+		deleteChar$()
+		{
+			string selectSlot$;
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected", "dso_char_select" ) );
+			uiText$.GetText( selectSlot$);
+
+			int selectedSlot$ = 0;
+			if (selectSlot$ == "1")
+			{
+				selectedSlot$ = 1;
+			}
+			else if (selectSlot$ == "2")
+			{
+				selectedSlot$ = 2;
+			}
+			else if (selectSlot$ == "3")
+			{
+				selectedSlot$ = 3;
+			}
+			else if (selectSlot$ == "4")
+			{
+				selectedSlot$ = 4;
+			}
+
+			RSDeleteChar$(selectedSlot$);
+		}
+
+		createChar$()
+		{
+			UIShell.ActivateInterface( "ui:interfaces:multiplayer:dso_char_create", true);
+		}
+
+		logout$()
+		{
+			UIShell.ActivateInterface( "ui:interfaces:multiplayer:dso_login", true);
+		}
+
+		poll$()
+		{
+			bool transition$ = false;
+			
+			if (NetworkManager.IsConnected())
+			{
+				int received$ = NetworkManager.Receive();
+				if (received$ > 0)
+				{
+					Packet packet$ = NetworkManager.NextPacket();
+					
+					int type$ = packet$.ReadUInt8();
+					if (type$ == 38)
+					{
+						int success$ = packet$.ReadUInt8();
+						if (success$ == 1)
+						{
+							DisplayMessage$ ("Incorrent username or password");
+						}
+						else if (success$ == 2)
+						{
+							DisplayMessage$ ("Invalid characters used");
+						}
+						else
+						{
+							int charsAmount$ = packet$.ReadUInt8();
+							if (charsAmount$ == 0)
+							{
+								UIShell.FindUIWindow ("staging_character_ok", "dso_char_select").ProcessAction(action_setvisible, "false");
+								UIShell.FindUIWindow ("staging_character_delete", "dso_char_select").ProcessAction(action_setvisible, "false");
+							}
+							if (charsAmount$ > 0)
+							{
+								select1$();
+
+								UIShell.FindUIWindow ("character1_bg", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_icon_melee", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_icon_ranged", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_icon_nmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_icon_cmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								
+								UIShell.FindUIWindow ("character1_name", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_class", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_skills", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								UIShell.FindUIWindow ("character1_melee", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_ranged", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_nmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character1_cmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								string charName$ = packet$.ReadString();
+								UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "character1_name", "dso_char_select" ) );
+								uiText$.SetText( charName$, true );
+
+								string charTitle$ = packet$.ReadString();
+								UIText uiText2$ = QueryDerivedText( UIShell.FindUIWindow( "character1_class", "dso_char_select" ) );
+								uiText2$.SetText( charTitle$, true );
+
+								string charStats$ = packet$.ReadString();
+								UIText uiText3$ = QueryDerivedText( UIShell.FindUIWindow( "character1_skills", "dso_char_select" ) );
+								uiText3$.SetText( charStats$, true );
+
+								string charMelee$ = packet$.ReadString();
+								UIText uiText4$ = QueryDerivedText( UIShell.FindUIWindow( "character1_melee", "dso_char_select" ) );
+								uiText4$.SetText( charMelee$, true );
+
+								string charRanged$ = packet$.ReadString();
+								UIText uiText5$ = QueryDerivedText( UIShell.FindUIWindow( "character1_ranged", "dso_char_select" ) );
+								uiText5$.SetText( charRanged$, true );
+
+								string charNmagic$ = packet$.ReadString();
+								UIText uiText6$ = QueryDerivedText( UIShell.FindUIWindow( "character1_nmagic", "dso_char_select" ) );
+								uiText6$.SetText( charNmagic$, true );
+
+								string charCmagic$ = packet$.ReadString();
+								UIText uiText7$ = QueryDerivedText( UIShell.FindUIWindow( "character1_cmagic", "dso_char_select" ) );
+								uiText7$.SetText( charCmagic$, true );
+							}
+							if (charsAmount$ > 1)
+							{
+								UIShell.FindUIWindow ("character2_bg", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_icon_melee", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_icon_ranged", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_icon_nmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_icon_cmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								UIShell.FindUIWindow ("character2_name", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_class", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_skills", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								UIShell.FindUIWindow ("character2_melee", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_ranged", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_nmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character2_cmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								string charName$ = packet$.ReadString();
+								UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "character2_name", "dso_char_select" ) );
+								uiText$.SetText( charName$, true );
+
+								string charTitle$ = packet$.ReadString();
+								UIText uiText2$ = QueryDerivedText( UIShell.FindUIWindow( "character2_class", "dso_char_select" ) );
+								uiText2$.SetText( charTitle$, true );
+
+								string charStats$ = packet$.ReadString();
+								UIText uiText3$ = QueryDerivedText( UIShell.FindUIWindow( "character2_skills", "dso_char_select" ) );
+								uiText3$.SetText( charStats$, true );
+
+								string charMelee$ = packet$.ReadString();
+								UIText uiText4$ = QueryDerivedText( UIShell.FindUIWindow( "character2_melee", "dso_char_select" ) );
+								uiText4$.SetText( charMelee$, true );
+
+								string charRanged$ = packet$.ReadString();
+								UIText uiText5$ = QueryDerivedText( UIShell.FindUIWindow( "character2_ranged", "dso_char_select" ) );
+								uiText5$.SetText( charRanged$, true );
+
+								string charNmagic$ = packet$.ReadString();
+								UIText uiText6$ = QueryDerivedText( UIShell.FindUIWindow( "character2_nmagic", "dso_char_select" ) );
+								uiText6$.SetText( charNmagic$, true );
+
+								string charCmagic$ = packet$.ReadString();
+								UIText uiText7$ = QueryDerivedText( UIShell.FindUIWindow( "character2_cmagic", "dso_char_select" ) );
+								uiText7$.SetText( charCmagic$, true );
+							}
+							if (charsAmount$ > 2)
+							{
+								UIShell.FindUIWindow ("character3_bg", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_icon_melee", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_icon_ranged", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_icon_nmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_icon_cmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								UIShell.FindUIWindow ("character3_name", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_class", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_skills", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								UIShell.FindUIWindow ("character3_melee", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_ranged", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_nmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character3_cmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								string charName$ = packet$.ReadString();
+								UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "character3_name", "dso_char_select" ) );
+								uiText$.SetText( charName$, true );
+
+								string charTitle$ = packet$.ReadString();
+								UIText uiText2$ = QueryDerivedText( UIShell.FindUIWindow( "character3_class", "dso_char_select" ) );
+								uiText2$.SetText( charTitle$, true );
+
+								string charStats$ = packet$.ReadString();
+								UIText uiText3$ = QueryDerivedText( UIShell.FindUIWindow( "character3_skills", "dso_char_select" ) );
+								uiText3$.SetText( charStats$, true );
+
+								string charMelee$ = packet$.ReadString();
+								UIText uiText4$ = QueryDerivedText( UIShell.FindUIWindow( "character3_melee", "dso_char_select" ) );
+								uiText4$.SetText( charMelee$, true );
+
+								string charRanged$ = packet$.ReadString();
+								UIText uiText5$ = QueryDerivedText( UIShell.FindUIWindow( "character3_ranged", "dso_char_select" ) );
+								uiText5$.SetText( charRanged$, true );
+
+								string charNmagic$ = packet$.ReadString();
+								UIText uiText6$ = QueryDerivedText( UIShell.FindUIWindow( "character3_nmagic", "dso_char_select" ) );
+								uiText6$.SetText( charNmagic$, true );
+
+								string charCmagic$ = packet$.ReadString();
+								UIText uiText7$ = QueryDerivedText( UIShell.FindUIWindow( "character3_cmagic", "dso_char_select" ) );
+								uiText7$.SetText( charCmagic$, true );
+							}
+							if (charsAmount$ > 3)
+							{
+								UIShell.FindUIWindow ("character4_bg", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_icon_melee", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_icon_ranged", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_icon_nmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_icon_cmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								UIShell.FindUIWindow ("character4_name", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_class", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_skills", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								UIShell.FindUIWindow ("character4_melee", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_ranged", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_nmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+								UIShell.FindUIWindow ("character4_cmagic", "dso_char_select").ProcessAction(action_setvisible, "true");
+
+								string charName$ = packet$.ReadString();
+								UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "character4_name", "dso_char_select" ) );
+								uiText$.SetText( charName$, true );
+
+								string charTitle$ = packet$.ReadString();
+								UIText uiText2$ = QueryDerivedText( UIShell.FindUIWindow( "character4_class", "dso_char_select" ) );
+								uiText2$.SetText( charTitle$, true );
+
+								string charStats$ = packet$.ReadString();
+								UIText uiText3$ = QueryDerivedText( UIShell.FindUIWindow( "character4_skills", "dso_char_select" ) );
+								uiText3$.SetText( charStats$, true );
+
+								string charMelee$ = packet$.ReadString();
+								UIText uiText4$ = QueryDerivedText( UIShell.FindUIWindow( "character4_melee", "dso_char_select" ) );
+								uiText4$.SetText( charMelee$, true );
+
+								string charRanged$ = packet$.ReadString();
+								UIText uiText5$ = QueryDerivedText( UIShell.FindUIWindow( "character4_ranged", "dso_char_select" ) );
+								uiText5$.SetText( charRanged$, true );
+
+								string charNmagic$ = packet$.ReadString();
+								UIText uiText6$ = QueryDerivedText( UIShell.FindUIWindow( "character4_nmagic", "dso_char_select" ) );
+								uiText6$.SetText( charNmagic$, true );
+
+								string charCmagic$ = packet$.ReadString();
+								UIText uiText7$ = QueryDerivedText( UIShell.FindUIWindow( "character4_cmagic", "dso_char_select" ) );
+								uiText7$.SetText( charCmagic$, true );
+
+
+								SetUIWindowState$ ("staging_character_create", "dso_char_select", true, false);
+							}
+						}
+					}
+					if (type$ == 39)
+					{
+						int success$ = packet$.ReadUInt8();
+						if (success$ == 1)
+						{
+							DisplayMessage$ ("Account has no characters");
+						}
+						else if (success$ == 2)
+						{
+							DisplayMessage$ ("Character already in use");
+						}
+						else
+						{
+							transition$ = true;
+						}
+					}
+					if (type$ == 41)
+					{
+						int success$ = packet$.ReadUInt8();
+						begin$();
+					}
+					NetworkManager.DiscardPacket (packet$);
+				}
+			}
+			
+			if (transition$ == true)
+			{
+				string name$;
+
+				string selectSlot$;
+				UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected", "dso_char_select" ) );
+				uiText$.GetText( selectSlot$);
+
+				if (selectSlot$ == "1")
+				{
+					QueryDerivedText (UIShell.FindUIWindow ("character1_name", "dso_char_select")).GetText(name$);
+				}
+				else if (selectSlot$ == "2")
+				{
+					QueryDerivedText (UIShell.FindUIWindow ("character2_name", "dso_char_select")).GetText(name$);
+				}
+				else if (selectSlot$ == "3")
+				{
+					QueryDerivedText (UIShell.FindUIWindow ("character3_name", "dso_char_select")).GetText(name$);
+				}
+				else if (selectSlot$ == "4")
+				{
+					QueryDerivedText (UIShell.FindUIWindow ("character4_name", "dso_char_select")).GetText(name$);
+				}
+				
+				QueryDerivedEditBox (UIShell.FindUIWindow ("staging_char_name_edit_box", "dso_char_select")).SetText (name$);
+				
+				Player player$ = Server.LocalHumanPlayer;
+				
+				// Cryden TODO add new UI screen after this, dont staging start game
+				Messenger.Notify ("staging_create_character_ok", owner);
+				Messenger.Notify ("staging_start_game", owner);
+				
+				if (player$ != NULL)
+				{
+					player$.RSSetHeroCloneSourceTemplate ("portal");
+					// RSSetHeroHead
+					player$.RSSetHeroSkin (MakePlayerSkin (0), "b_c_gah_fg_skin_002,b_c_gah_fg_hair_001");
+					player$.RSSetHeroSkin (MakePlayerSkin (1), "b_c_pos_a1_pant_006,b_c_pos_a1_shrt_009");
+					report.screen ("SET SUCCESSFULLY!");
+					
+					UICharacterSelect.RSGeneratePortrait (player$.Id);
+				}
+			}
+			else
+			{
+				// keep polling
+				UIWindow window$ = UIShell.FindUIWindow ("timer02", "dso_char_select");
+				window$.ProcessAction (action_alphaanimation, "0.2,0,0");
+			}
+		}
+
+		onescape$()
+		{
+			if (NetworkManager.IsConnected())
+			{
+				NetworkManager.Disconnect();
+			}
+			
+			Messenger.Notify ("staging_create_character_cancel", owner);
+		}
+	]];
+
+	[t:window,n:timer01]
+	{
+		[messages]
+		{
+			onshow = alphaanimation(0.01,0.0,0.0);
+			onanimcomplete = call (begin$);
+		}
+	}
+
+	[t:window,n:timer02]
+	{
+		[messages]
+		{
+			onshow = alphaanimation(0.05,0.0,0.0);
+			onanimcomplete = call (poll$);
+		}
+	}
+
+	[t:text,n:selected]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	[t:text,n:select_character_header]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 44,326,200,342;
+		text = "Select Character";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:dialog_box,n:characters_background]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = cpbox;
+		draw_order = 1;
+		rect = 44, 350,740,550;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:dialog_box,n:characters_header_background]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = cpbox;
+		draw_order = 0;
+		rect = 48,354,752,378;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		visible = false;
+	}
+
+	[t:text,n:character_name_header]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 50,358,240,374;
+		text = "Character";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character_class_header]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 245,358,370,374;
+		text = "Class";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character_skills_header]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 375,358,600,374;
+		text = "Skills";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	/*[t:slider,n:scroll_characters]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = ;
+		draw_order = 80;
+		rect = 736,130,752,296;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		min_value = 0;
+		max_value = 100;
+		step_value = 10;
+		dynamic_button = true;
+		has_scroll_buttons = true;
+		[messages] { onchange=notify(slider_scroll_characters); }
+		[t:window,n:scroll_wheel_listen]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 2;
+			rect = 44,100,756,300;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+			[messages]
+			{
+				onwheelup = notify(scroll_characters_up);
+				onwheeldown = notify(scroll_characters_down);
+			}
+		}
+	}*/
+
+
+	[t:window,n:character1_sel]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 3;
+		rect = 50,381,730,420;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		has_border = true;
+		border_color = 0xFF00FF00;
+	}
+	[t:window,n:character1_bg]
+	{
+		alpha = 0.300000;
+		common_control = false;
+		draw_order = 2;
+		rect = 50,384,730,416;
+		texture = b_gui_fe_m_mp_staging_player_bg;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		tag = 0;
+		[messages]
+		{
+			onlbuttondown = call(select1$);
+			onldoubleclick = notify(staging_select_character_ok);
+		}
+	}
+	[t:window,n:character1_portrait]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 59,384,86,416;
+		texture = none;
+		uvcoords = 0.0, 0.28125, 0.609375, 1.0;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character1_name]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 90,392,240,408;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:text,n:character1_class]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 250,392,370,408;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:text,n:character1_skills]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 380,392,530,408;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:window,n:character1_icon_melee]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 530,392,546,408;
+		texture = b_gui_ig_mnu_combat;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character1_melee]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 550,392,580,408;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character1_icon_ranged]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 580,392,596,408;
+		texture = b_gui_ig_mnu_ranged;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character1_ranged]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 600,392,630,408;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character1_icon_nmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 630,392,646,408;
+		texture = b_gui_ig_mnu_nature-magic;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character1_nmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 650,392,680,408;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character1_icon_cmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 680,392,696,408;
+		texture = b_gui_ig_mnu_combat-magic;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character1_cmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 700,392,730,408;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	[t:window,n:character2_sel]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 3;
+		rect = 50,421,730,460;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		has_border = true;
+		border_color = 0xFF00FF00;
+	}
+	[t:window,n:character2_bg]
+	{
+		alpha = 0.200000;
+		common_control = false;
+		draw_order = 2;
+		rect = 50,424,730,456;
+		texture = b_gui_fe_m_mp_staging_player_bg;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		tag = 1;
+		[messages]
+		{
+			onlbuttondown = call(select2$);//notify(on_select_character);
+			onldoubleclick = notify(staging_select_character_ok);
+		}
+	}
+	[t:window,n:character2_portrait]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 59,424,86,456;
+		texture = none;
+		uvcoords = 0.0, 0.28125, 0.609375, 1.0;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character2_name]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 90,432,240,448;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:text,n:character2_class]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 250,432,370,448;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:text,n:character2_skills]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 380,432,530,448;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:window,n:character2_icon_melee]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 530,432,546,448;
+		texture = b_gui_ig_mnu_combat;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character2_melee]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 550,432,580,448;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character2_icon_ranged]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 580,432,596,448;
+		texture = b_gui_ig_mnu_ranged;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character2_ranged]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 600,432,630,448;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character2_icon_nmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 630,432,646,448;
+		texture = b_gui_ig_mnu_nature-magic;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character2_nmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 650,432,680,448;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character2_icon_cmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 680,432,696,448;
+		texture = b_gui_ig_mnu_combat-magic;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character2_cmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 700,432,730,448;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	
+	
+	[t:window,n:character3_sel]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 3;
+		rect = 50,461,730,500;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		has_border = true;
+		border_color = 0xFF00FF00;
+	}
+	[t:window,n:character3_bg]
+	{
+		alpha = 0.300000;
+		common_control = false;
+		draw_order = 2;
+		rect = 50,464,730,496;
+		texture = b_gui_fe_m_mp_staging_player_bg;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		tag = 2;
+		[messages]
+		{
+			onlbuttondown = call(select3$);//notify(on_select_character);
+			onldoubleclick = notify(staging_select_character_ok);
+		}
+	}
+	[t:window,n:character3_portrait]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 59,464,86,496;
+		texture = none;
+		uvcoords = 0.0, 0.28125, 0.609375, 1.0;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character3_name]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 90,472,240,488;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:text,n:character3_class]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 250,472,370,488;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:text,n:character3_skills]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 380,472,530,488;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:window,n:character3_icon_melee]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 530,472,546,488;
+		texture = b_gui_ig_mnu_combat;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character3_melee]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 550,472,580,488;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character3_icon_ranged]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 580,472,596,488;
+		texture = b_gui_ig_mnu_ranged;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character3_ranged]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 600,472,630,488;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character3_icon_nmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 630,472,646,488;
+		texture = b_gui_ig_mnu_nature-magic;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character3_nmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 650,472,680,488;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character3_icon_cmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 680,472,696,488;
+		texture = b_gui_ig_mnu_combat-magic;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character3_cmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 700,472,730,488;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+
+	[t:window,n:character4_sel]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 3;
+		rect = 50,501,730,540;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		has_border = true;
+		border_color = 0xFF00FF00;
+	}
+	[t:window,n:character4_bg]
+	{
+		alpha = 0.200000;
+		common_control = false;
+		draw_order = 2;
+		rect = 50,504,730,536;
+		texture = b_gui_fe_m_mp_staging_player_bg;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		tag = 3;
+		[messages]
+		{
+			onlbuttondown = call(select4$);//notify(on_select_character);
+			onldoubleclick = notify(staging_select_character_ok);
+		}
+	}
+	[t:window,n:character4_portrait]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 59,504,86,536;
+		texture = none;
+		uvcoords = 0.0, 0.28125, 0.609375, 1.0;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character4_name]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 90,512,240,528;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:text,n:character4_class]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 250,512,370,528;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:text,n:character4_skills]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 380,512,530,528;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		truncate = true;
+	}
+	[t:window,n:character4_icon_melee]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 530,512,546,528;
+		texture = b_gui_ig_mnu_combat;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character4_melee]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 550,512,580,528;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character4_icon_ranged]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 580,512,596,528;
+		texture = b_gui_ig_mnu_ranged;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character4_ranged]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 600,512,630,528;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character4_icon_nmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 630,512,646,528;
+		texture = b_gui_ig_mnu_nature-magic;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character4_nmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 650,512,680,528;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:window,n:character4_icon_cmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		draw_order = 5;
+		rect = 680,512,696,528;
+		texture = b_gui_ig_mnu_combat-magic;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:character4_cmagic]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = left;
+		rect = 700,512,730,528;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	[t:button,n:staging_character_create]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = button_4;		
+		draw_order = 18;
+		rect = 44,558,244,574;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=playsound(s_e_frontend_tiny_button) & call(createChar$); }
+		[t:text,n:staging_character_create_text]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 68;
+			font_color = -1;
+			font_size = 12;
+			font_type = b_gui_fnt_12p_copperplate-light;
+			justify = center;
+			rect = 44,200,300,216;
+			text = "Create New Character";
+			texture = none;
+			type = text;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+		}
+	}
+	/*[t:button,n:staging_character_import]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = button_4;		
+		draw_order = 18;
+		rect = 556,76,756,92;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] { onbuttonpress=playsound(s_e_frontend_tiny_button) & notify(staging_import_character); }
+		[t:text,n:staging_character_import_text]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 68;
+			font_color = -1;
+			font_size = 12;
+			font_type = b_gui_fnt_12p_copperplate-light;
+			justify = center;
+			rect = 44,200,300,216;
+			text = "Import Character...";
+			texture = none;
+			type = text;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+		}
+	}*/
+	[t:button,n:staging_character_delete]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = button_4;		
+		draw_order = 18;
+		rect = 564,358,732,374;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] { onbuttonpress=playsound(s_e_frontend_tiny_button) & call(deleteChar$); }
+		[t:text,n:staging_character_delete_text]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 68;
+			font_color = -1;
+			font_size = 12;
+			font_type = b_gui_fnt_12p_copperplate-light;
+			justify = center;
+			rect = 44,200,300,216;
+			text = "Delete Character";
+			texture = none;
+			type = text;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+		}
+	}
+
+	[t:button,n:staging_character_ok]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = button_4;		
+		draw_order = 18;
+		rect = 252,558,392,574;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] { onbuttonpress=playsound(s_e_frontend_tiny_button) & call(selectChar$); }
+		[t:text,n:ok_text]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 68;
+			font_color = -1;
+			font_size = 12;
+			font_type = b_gui_fnt_12p_copperplate-light;
+			justify = center;
+			rect = 527,8,621,21;
+			text = "Select";
+			texture = none;
+			type = text;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+		}
+	}
+	[t:button,n:staging_character_cancel]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = button_4;		
+		draw_order = 18;
+		rect = 408,558,548,574;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] { onbuttonpress=playsound(s_e_frontend_tiny_button) & call(logout$); }
+		[t:text,n:cancel_text]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 68;
+			font_color = -1;
+			font_size = 12;
+			font_type = b_gui_fnt_12p_copperplate-light;
+			justify = center;
+			rect = 527,8,621,21;
+			text = "Logout";
+			texture = none;
+			type = text;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+		}
+	}
+	[t:edit_box,n:staging_char_name_edit_box]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		rect = 10564,10094,10776,10110;
+		text = ;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		excluded_chars = [["<>:/\|?*.%;]];
+		[prompt]
+		{
+			texture = b_gui_fe_m_single_prompt;
+			width=1;
+		}
+	}
+}

@@ -19,7 +19,7 @@
 {
 	[settings]
 	{
-		default_multiplayer_map = dsmmorpg;
+		default_multiplayer_map = multiplayer_world;
 		ghost_timeout = 60;  // seconds until ghosting wears off
 	}
 
@@ -27,6 +27,17 @@
 	{
 		* = portal;
 	}
+	/*[characters]
+	{
+		//* = portal;
+		* = dsx_mp_farmboy; // 		X
+		* = dsx_mp_farmgirl; // 	X
+		* = dsx_mp_dwarf; //	 	
+		* = dsx_mp_skeleton;
+		* = utraean_boy;
+		* = utraean_girl;
+		* = halfgiant;
+	}*/
 
 	[ingame]
 	{

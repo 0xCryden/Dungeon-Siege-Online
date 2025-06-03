@@ -83,6 +83,19 @@ state RequestAction$
   			return;
   		}
   			
+		if( (m_Target$.Go.TemplateName == "bubble_speech") ||
+			(m_Target$.Go.TemplateName == "bubble_text") ||
+			(m_Target$.Go.TemplateName == "bubble_name"))
+		{
+			//int ownrId$ = m_Target$.Go.GetComponentInt("bubble", "goid");
+			//string tmp$; StringTool.AssignF (tmp$, "godb:%d", ownrId$);
+			//m_Target$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
+			//report.screenf ("ownrId: %d | targetId: %d", ownrId$, m_Target$);
+
+			//SetState Exiting$;
+  			//return;
+		}	
+
   		eReqRetCode ret$ = MCPManager.MakeRequest(
   									m_Go$.Goid, 
   									PL_APPROACH, 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10002">
+		<aspect>
+			 <model value="book_glb_magic_04"/>
+		</aspect>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="Spell Book"/>
+		</common>
+		<inventory><item id="10008" equip_slot="es_none" inven_loc="il_spell_1"/><item id="10006" equip_slot="es_none" inven_loc="il_spell_2"/></inventory>
+		<placement region=""><position node="1482942462" x="0.335728" y="0" z="0.944598"/></placement>
+	</go>
+</objects>

@@ -1,0 +1,853 @@
+[zconversation_directions]
+{
+	[text*]
+	{
+		screen_text = "There are a few routes to the town of Crystwind, but I suggest you follow the road east. You'll travel near the Iliarth River through Iliarth Valley, then across the deep gorge in Iliarth Divide, and into the Ancient Crypt to the south. If you can get past the undead, you'll find yourself emerging back outside in Hovart Marsh. It's a bit of a trek to Hovart's Folly, but the scenery is worth the journey. Once you clear your way through the Folly, it's a quick walk south through Elddim Glade to the Crystwind Mines. And the mines exit right into the town of Crystwind itself.";
+	}
+}
+
+[conversation_blacksmith_zabar_treseck]
+{
+	[text*]
+	{
+		order = 0;
+		choice = shop;	
+		screen_text = "'Ello there youngling! Wot can ole Zabar do fer ye today? I don' recognize yer face, ye must be new in town. If yer lookin' fer work, the Guard Cap'n is lookin' fer an adventurous sort ta deal with ole Lord Hovart. Ye kin find 'im around the corner thar to the east, near the old 'UB platform.";
+       	activate_quest* = quest_zabar_hovart;
+       	button_1_text = "Directions";
+       	button_1_value = d_0x03200c26;
+       	quest_dialog = true;	
+       	 }
+
+	[text*]
+	{
+        	order = 1;
+		choice = shop;
+
+		screen_text = "If yer lookin' fer adventure, ye really should talk to the Cap'n. The Legion's always got itty bitty tasks fer anyone who's got the stomach for such shenanigans. If it's equipment yer wantin, I'm sure I kin git ye set up good in no time!";
+		button_1_text = "Directions";
+       	button_1_value = d_0x03200c26;
+	}
+
+    [text*]
+	{
+
+		choice = shop;
+
+		screen_text = "Back again? Shop's always open, and there's always more Krug to fight, so take a look at my wares. We here in the middle lands are always well prepared for anything.";
+		button_1_text = "Directions";
+       	button_1_value = d_0x03200c26;
+	}
+
+}
+[conversation_blacksmith_zabar_treseck_red]
+{
+	[text*]
+	{
+		choice = shop;
+		screen_text = "Wot's the world coming to? I seen the strangest critters running into the baker's shop. An' this red fog everywhere is makin' me all jumpy!";
+		button_1_text = "Directions";
+       	button_1_value = d_0x03200c26;
+	}
+}
+
+[conversation_mage_trianna_lelaine]
+{
+	[text*]
+	{
+		order = 0;
+		choice = shop;
+
+		screen_text = "Well, I suppose you'll be wanting to get patched up so you can run out and get yourself torn up by the Krug again. There are so many of them in these parts lately. Now if I was you, I'd learn myself some spells quick as a cat, and blast them all from afar.";
+		button_1_text = "Directions";
+       	button_1_value = d_0x03200c27;
+	}
+	[text*]
+	{
+        
+		choice = shop;
+
+		screen_text = "Perhaps you'd like a few healing tonics to take the bite from your wounds? I hear that the dead walk again in the crypts to the east. Might be a good opportunity for a young mage to learn something new.";
+		button_1_text = "Directions";
+       	button_1_value = d_0x03200c27;
+	}
+
+}
+[conversation_mage_trianna_lelaine_red]
+{
+	[text*]
+	{
+		choice = shop;
+		screen_text = "Come, child, let us pray for the safety of the town. Evil cannot invade the sanctuary of the Shrine of Passion.";
+		button_1_text = "Directions";
+       	button_1_value = d_0x03200c27;
+	}
+}
+[conversation_kale]
+{
+	[text*]
+	{
+
+		screen_text = "'Tis a sad day when thy family is driven out of house and home by filthy marauding beasts. We tended the ruined temple to the west just outside of the Great Northern Forest. There must have been a terrible battle there once upon a time, if the strength of the newly awakened dead is any indication.";
+		button_1_text = "Directions";
+       	button_1_value = d_0x03200cc8;
+	}
+}
+[conversation_kale_red]
+{
+	[text*]
+	{
+
+		screen_text = "Och, my bleedin' ears! If that red wind keeps howling, I may never sleep again.";
+		button_1_text = "Directions";
+       	button_1_value = d_0x03200cc8;
+	}
+}
+[conversation_guard_captain_hub_quest]
+{
+    [text*]
+    {
+		// if quest is active
+		order = 0;
+		choice = more;
+		screen_text = "Zabar sent you, did he? I'm sure you've heard of Hovart's Folly, yes? No? Well, old Lord Hovart was once the master of these parts. He taxed everything that moved, down to our very gravestones, all to build an underground fortress for his bride-to-be. After the fortress was built, strange things started occurring. At first it was just a missing farmer or oxen every now and then, but then the disappearances became more frequent.";
+		button_2_text = "Directions";
+		button_2_value = d_0x03200da1;
+    }
+    [text*]
+    {
+		
+		screen_text = "We tried to protect the outlying farms, but we weren't prepared for an entire undead army. Seems Hovart's grand palace had become nothing more than a haunted, spider-infested mausoleum. I have in my possession a journal written by one of Lord Hovart's guardsmen, Relran. Guard Relran mentions an Artifact located in the Ancient Crypt to the east. He claims the Artifact is a Gavel of Convening that Hovart's vizier had created. Lord Hovart should be drawn to anyone who possesses the Gavel. You must find the Gavel of Convening, confront Lord Hovart, and destroy him.";
+		activate_quest* = quest_zabar_hovart,1;
+		button_1_text = "Directions";
+		button_1_value = d_0x03200da1;
+		quest_dialog = true;
+    }
+}
+[conversation_guard_captain_hub_generic]
+{
+    [text*]
+    {
+		screen_text = "That's all I know. Relran's journal is the best source we have. I pray that it is accurate. May Azunai's shield protect you on your quest. The entire town will be praying for your success.";
+		button_1_text = "Directions";
+		button_1_value = d_0x03200da1;
+    }
+}
+
+[conversation_guard_captain_hub]
+{
+		//if quest is inactive
+    [text*]
+    {
+		screen_text = "You look like the adventurous sort. If you're looking for a job, go get yourself suited up over at Zabar's. I'd be willing to talk to you after you purchase some decent equipment.";
+		button_1_text = "Directions";
+		button_1_value = d_0x03200da1;
+    }
+}
+[conversation_guard_captain_hub_quest_complete]
+{
+		//if quest is in stage 5
+    [text*]                              //Give reward
+    {
+		screen_text = "You have earned the gratitude and respect of the town of Elddim. You will be recorded in the history of the town as the savior to our people.";
+		complete_quest* = quest_zabar_hovart;
+		button_1_text = "Directions";
+		button_1_value = d_0x03200da1;
+    }
+}
+[conversation_guard_captain_red]
+{
+	[text*]
+	{
+		screen_text = "This could be a cover up for an invasion. Either get someplace safe or pick up a weapon and help us maintain vigilance!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200da1;
+	}
+}
+
+[conversation_thiette]
+{
+	[text*]
+	{
+		screen_text = "It's a wild day as usual here in the middle lands. Krug all around, spiders infesting the northern orchard house, and the swamp grows closer every day in the west.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5a;
+	}
+}
+[conversation_thiette_red]
+{
+	[text*]
+	{
+		screen_text = "There are attackers in the fog. Run for your life!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5a;
+	}
+}
+[conversation_morelle]
+{
+	[text*]
+	{
+
+
+		screen_text = "The Krug are going to invade Elddim from the Great Northern Forest! We are all going to die! Run away!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200950;
+	}
+
+}
+[conversation_morelle_red]
+{
+	[text*]
+	{
+		screen_text = "I'm blinded, auggggg!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200950;
+	}
+}
+[conversation_berenthi]
+{
+	[text*]
+	{
+
+
+		screen_text = "Maybe I should join the Legion. I wouldn't mind winning my very own undead blade next time one of Lord Hovart's skeletal minions is spotted in the woods. If you venture east along the road, you'll probably get one too. Most of the new recruits have one already!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c4c;
+	}
+}
+[conversation_berenthi_red]
+{
+	[text*]
+	{
+
+		screen_text = "By the gods, this is not right! Only something terribly evil could have the power to turn the sky red!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c4c;
+	}
+}
+
+[conversation_belille]
+{
+	[text*]
+	{
+        order = 0;
+        choice = more;
+		screen_text = "Our specials today are gremal stew, gremal pie, and fried gremal with eggs.";
+		button_2_text = "Directions";
+       		button_2_value = d_0x03200c58;
+	}
+	[text*]
+	{
+		screen_text = "The butcher is keeping all the pork to himself; he keeps going on about a famine coming, seeing as the Krug have killed most of our livestock. Gremal loaf?";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c58;
+	}
+}
+[conversation_belille_red]
+{
+	[text*]
+	{
+
+		screen_text = "Heavily seasoned, russet gremal is our special today, care to have a taste?";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c58;
+	}
+
+
+}
+[conversation_celine]
+{
+	[text*]
+	{
+
+		screen_text = "I used to live on a farm in between the Ancient Crypt and Hovart's Folly. Wonderful pasture lands there... So quiet and peaceful. That is, until the undead started coming at us from both sides. I barely escaped with my life, but my cousins were taken by the hordes! I don't think I'll ever see them again... alive.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200cb3;
+	}
+
+}
+[conversation_celine_red]
+{
+	[text*]
+	{
+
+		screen_text = "Ye gods, the smell of the undead was nothing compared to this! I think I'm going to be sick...";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200cb3;
+	}
+
+}
+[conversation_sanje]
+{
+
+	[text*]
+	{
+		screen_text = "I've been meeting with Priestess Kelti ever since the troubles began. I think I might join the Utraean Society. I've always wanted to be a counselor to people and to help them with their problems. I'm not cut out to fight the Krug with a blade. Maybe I can learn to fry them with magic?";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a1c;
+	}
+}
+[conversation_sanje_red]
+{
+
+	[text*]
+	{
+		screen_text = "Priestess Kelti is refusing to speak to me! I... I did not cause the sun to disappear! I swear it! All I did was cast a fireball at Azutha's dog. And...and then the world turned red and lightning flashed and...terrible creatures! Oh! I won't ever touch magic again!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a1c;
+	}
+}
+
+[conversation_banik]
+{
+	[text*]
+	{
+		screen_text = "Are you here to buy bread? I thought you adventurers didn't have to eat.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c57;
+	}
+}
+[conversation_banik_red]
+{
+	[text*]
+	{
+		screen_text = "I swear by the shield of Azunai, when the sun comes out again, I'm going to throw away my apron and join the Legion! Urp. I think I'm going to be sick... ";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c57;
+	}
+}
+[conversation_elias]
+{
+	[text*]
+	{
+
+		screen_text = "I'm killing all my pigs and salting the meat; with all these Krug about, we won't be able to send caravans to trade with other lands. Even if we could reach other villages, I hear they're just as bad off.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x032004f4;
+	}
+
+}
+[conversation_elias_red]
+{
+	[text*]
+	{
+		screen_text = "Death! Death and skulls! Aaaaaagh!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x032004f4;
+	}
+}
+[conversation_jornus]
+{
+	[text*]
+	{
+
+
+		screen_text 	= "I used to tend a farmstead to the east along the road to the Ancient Crypts, but the fiends beloning to that old ghoul Hovart kept tapping on the windows while I slept and ate the brains of all my livestock! Now I tend to miller Brienne's corn, or at least I did until my scythe disappeared.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a1f;
+
+	}
+}
+[conversation_jornus_red]
+{
+	[text*]
+	{
+		screen_text = "That's it, I'm going back to my farm! A few skeletons are nothing compared to this. At least on the farm there's room to move.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a1f;
+	}
+}
+[conversation_azutha]
+{
+
+	[text*]
+	{
+        order = 0;
+
+		screen_text = "If I was a weapons crafter, I could make a fortune right now; it's a seller's market for weapons, what with every farm boy and farm girl in the country wandering around killing phraks with paring knives. Who bashes vermin with baskets?";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c52;
+	}
+    [text*]
+	{
+		screen_text = "Shh, can't you see Kavern's still sleeping? He needs his rest if he's going to join me in clearing the vermin out of the Crystwind Mines.";
+		button_2_text = "Directions";
+       		button_2_value = d_0x03200c52;
+	}
+}
+[conversation_azutha_red]
+{
+	[text*]
+	{
+		screen_text = "That bugger Kavern. The world is on fire and he's still sleeping! Men!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c52;
+	}
+}
+[conversation_eolin]
+{
+	[text*]
+	{
+		screen_text = "There's a bumper crop of corn this year, and Jornus still hasn't started harvesting. If he doesn't get his act together, there'll be no bread for the winter, and we'll all starve. I'd fire him, but it's not like there's anyone else to do the work with all the young men off fighting Krug in the Crystwind Mines.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5f;
+	}
+}
+[conversation_eolin_red]
+{
+	[text*]
+	{
+		screen_text = "I...I'm dizzy...must...stay...awake...";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5f;
+	}
+}
+[conversation_guard_1]
+{
+	[text*]
+	{
+        order = 0;
+        choice = more;
+		screen_text = "This here takes you up to the H.U.B. I hear it was built by those olden day mages, the Utraeans. Those who are part of the Utraean Society of the Circle study it and the ancients, but even they can't get it to work. Sure wish they could; legend says it'll take you anywhere in the land!";
+		button_2_text = "Directions";
+       		button_2_value = d_0x03200c5d;
+	}
+    [text*]
+	{
+
+		screen_text = "Priestess Kelti says it's only activated by those with the mark of Azunai the Defender upon them. Seems like a bunch of hogwash to me. Dratted thing is just plain broke, is all!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5d;
+	}
+}
+[conversation_guard_1_red]
+{
+	[text*]
+	{
+		screen_text = "Ever since the sky turned red I've been feeling ill. I'm not sure how much longer I can stay on my watch...";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5d;
+	}
+}
+[conversation_guard_2]
+{
+	[text*]
+	{
+        order = 0;
+        choice = more;
+		screen_text = "Don't listen to him. The Priestess knows her lore, she does. She asked me to be on the lookout for someone who can visit the Basilicus. Seems the Society has some sort of job in mind for such a person.";
+		button_2_text = "Directions";
+       		button_2_value = d_0x03200d48;
+	}
+    [text*]
+	{
+        order = 1;
+        choice = more;
+		screen_text = "Hmm, Priestess Kelti didn't mention anything about secrecy. Supposedly the uprising isn't confined to the Krug. Seems all of the kingdom is reporting troubles, and some towns are in threat of being overwhelmed. High Priest Kavaren in Hiroth has ordered the Townstone Circle to be built for the first time in living memory. If it's assembled in time, it may be enough to protect us...";
+		button_2_text = "Directions";
+       		button_2_value = d_0x03200d48;
+	}
+    [text*]
+	{
+
+		screen_text = "That's all I know. Talk to Utraean Priestess Kelti in the Shrine of Passion if you want to learn more.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200d48;
+	}
+}
+[conversation_guard_2_red]
+{
+	[text*]
+	{
+		screen_text = "I can't believe how the air stings my face! I can hardly hold my weapon up.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200d48;
+	}
+}
+[conversation_guard_3_high]
+{
+	[text*]  // if you are level 4+
+	{
+
+		screen_text = "Maybe ye noticed, but it's a bit unruly these days. If ye are 'eading to the town of Crystwind, ye might consider following the river 'stead of going through the mines. Aye, it's goodly bit longer, and ye never know wot's crawling along the banks, but at least ye won't be trapped underground when all 'ell breaks loose!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5e;
+	}
+}
+[conversation_guard_3]
+{
+	[text*] // if you are level 0 - 3
+	{
+
+		screen_text = "If ye stick close to the path, ye should be able to make it through to the Ancient Crypt without too much worry.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5e;
+	}
+}
+
+[conversation_guard_3_red]
+{
+	[text*]
+	{
+
+		screen_text = "Och, my 'ead! I'm tryin' ta do my job, but who can see wot's lurkin' in this bloody red fog?";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5e;
+	}
+}
+[conversation_guard_4_low]
+{
+	[text*]
+	{                            //if you are level 9 or lower
+
+		screen_text = "Well met, traveller. You'd be wise not to travel that way, if you value your neck. Krug raiding parties have been scouted all week, and they're not the friendly sort. If you really must go to the Crystwind Mines, I'd advise you to go east through the Ancient Crypts.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5b;
+	}
+}
+[conversation_guard_4]
+{
+	[text*]
+	{                            //if you are level 10 -12
+
+		screen_text = "Well met, traveller. The road to the Crystwind Mines is crawling with Krug, but you look like the sort who doesn't mind a few hazards.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5b;
+	}
+}
+[conversation_guard_4_high]
+{
+	[text*]
+	{                            //if you are level 13+
+
+		screen_text = "Hail, friend. If you're off for a jaunt in the Crystwind Mines, you might find it a tad on the slow side. While they certainly won't pose any danger to one as experienced as yourself, the Krug in these parts will pursue you just the same.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5b;
+	}
+}
+[conversation_guard_4_red]
+{
+	[text*]
+	{                            //if the world is red
+
+		screen_text = "I don't trust this weather. There's something evil behind it, that's for sure.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200c5b;
+	}
+}
+[conversation_guard_5]
+{
+	[text*]
+	{
+
+		screen_text = "Don't tell Jornus, but I'm afraid he'll never see his scythe nor brother again. A couple of Crystwind mine workers broke through yesterday via that ancient Crypt to the east. They weren't able to stop for long, but they said Forben Heald's home was in shambles and there was nary a sign of him nor his family.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200d6c;
+	}
+}
+[conversation_guard_5_red]
+{
+	[text*]
+	{
+		screen_text = "This cannot be Lord Hovart's doing! Even he was not this powerful while he still lived!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200d6c;
+	}
+}
+[conversation_guard_6_high]
+{
+	[text*]                          //if you are level 13+
+	{
+
+		screen_text = "Pshaw. Everyone's worked up about nothing. I'm sure the Krug will settle down soon enough and this will all blow over in a week or two. Now if you really want a challenge, try fighting your way to Lang in the west. Not many have the guts to handle giant fly season in the swamps!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200d83;
+	}
+}
+[conversation_guard_6_low]
+{
+	[text*]
+	{                            //if you are level 9 or lower
+
+		screen_text = "Halt, stranger, this road is closed. I'd rather not find your body in a Krug stewpot, so please don't make a fuss. You should travel by the eastern road instead.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200d83;
+	}
+}
+[conversation_guard_6]
+{
+	[text*]
+	{                            //if you are level 10-12
+
+		screen_text = "The road to Crystwind is a bit overrun with Krug right now, but you look like the type who will be able to handle it.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200d83;
+	}
+}
+[conversation_guard_6_red]
+{
+	[text*]
+	{
+		screen_text = "Can't...breathe...help...me...";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200d83;
+	}
+}
+[conversation_guard_swamp]	//needs to be moved to farmland_and_chapel
+{
+	[text*]
+	{                            //if you are level 23 or less
+
+		screen_text = "Hail traveller! You have no business coming through the swamp without a full Legion contingent! Only the most experienced warriors should venture this way.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a29;
+	}
+}
+[conversation_guard_swamp_high]	//needs to be moved to farmland_and_chapel
+{
+	[text*]
+	{                            //if you 24 or higher
+
+		screen_text = "Hail traveller! You look to be a most distinguished adventurer. Safe travels on your journeys, and I hope the swamp creatures don't give you much trouble on the way to the town of Lang!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a29;
+	}
+}
+[conversation_guard_7_high]
+{
+	[text*]	//if you are level 8+
+	{
+
+		screen_text = "You look well-enough equipped to remove an entire army of Krug, let alone a few scouts. Happy hunting!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a29;
+	}
+}
+[conversation_guard_7]
+{
+	[text*]		// if you are level 5 - 7
+	{
+
+		screen_text = "It's a bit wild to the west, but you look like one who can take a few bashes. Best not go any farther than the edge of the Lang Mire, though.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a29;
+	}
+}
+[conversation_guard_7_low]
+{
+	[text*]	//if you are level 4 or lower
+	{
+
+		screen_text = "You won't venture into the Elddim Lowlands if you value you life, traveler. It's a dangerous place for one so inexperienced as yourself.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a29;
+	}
+}
+[conversation_guard_7_red]
+{
+	[text*]
+	{
+
+		screen_text = "The town is under siege, pick up a weapon if you are able and fight the evil scourge!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200a29;
+	}
+}
+[conversation_guard_8_low]
+{
+	[text*]
+	{                            //if you are level 0
+
+		screen_text = "It takes experience to travel the Great Northern Forest and live to tell about it. You look like you could use a little more training before entering the forest.";
+		button_1_text = "Directions";
+       		button_1_value = d_d_0x03200b94;
+	}
+}
+[conversation_guard_8] // HOW TO SETUP??
+{
+	[text*]
+	{                            //if you are level 1+
+
+		screen_text = "Safe travels to you, friend. If you stay near the path, you might make it through the Great Northern Forest alive. Leave the path, and you're sure to become lost in the woods. The forest is called 'Great' for a reason.";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200b94;
+	}
+}
+[conversation_guard_8_red]
+{
+	[text*]
+	{
+
+		screen_text = "They didn't cover this sort of situation in training camp!";
+		button_1_text = "Directions";
+       		button_1_value = d_0x03200b94;
+	}
+}
+[conversation_guard_recruiter]
+{
+	[text*]
+	{
+        screen_text = "This town is in trouble, but I don't think anyone is taking it seriously. What with Krug setting up camp just outside town, and Lord Hovart's undead slaves terrifying the countryside, you'd think everyone would want to join the Legion and aid Elddim's defense!";
+        button_1_text = "Directions";
+       		button_1_value = d_0x03200c59;
+	}
+}
+[conversation_guard_recruiter_red]
+{
+	[text*]
+	{
+        screen_text = "With half the town sick and the guards exhausted, it's only a matter of time until we all fall. If the townspeople had listened to me and joined up, we'd still have a chance!";
+        button_1_text = "Directions";
+       		button_1_value = d_0x03200c59;
+	}
+}
+[conversation_kelti]  //Elddim Townstone Quest
+{
+	[text*]     //No quests, no stone, no ring
+	{
+        order = 0;
+        choice = more;
+        screen_text = "So, you are up to the task of aiding the Society, are you? I'm sure you've heard of the Townstones and how nearly all have been lost over the centuries, yes? Well, it's time for them to be found. The Society has called for the unification of the Townstones in Hiroth, and all must be present.";
+        complete_quest* = goto_elddim;
+        complete_quest* = goto_elddim_b;
+        button_2_text = "Directions";
+       	button_2_value = d_0x032007b5;
+       
+	}
+    [text*]
+	{
+        screen_text = "The Elddim Sunrise Stone was last in the possession of my great grandmother, who served as the Legion Protectorate of the Crypts to the east. When old Lord Hovart betrayed us, she hid the stone somewhere in the tombs. He held her prisoner until she was old and gray, but she never revealed the secret. She died just hours after her release, and only had time enough to tell my mother that the stone was safely hidden.";
+        activate_quest* = quest_elddim;
+        button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+       	quest_dialog = true;
+	}
+}
+[conversation_kelti_local]     //local quest active AND no stone
+{
+    [text*]
+	{
+        order = 0;
+
+        screen_text = "You are welcome to peruse my shelves for anything which might be of use to you. If you are able to find the Elddim Townstone, I will give you my signet ring to help you on your journies.";
+        button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+	}
+    [text*]
+	{
+
+
+        screen_text = "The longer the Townstones remain scattered, the greater the danger for us all. May Azunai bless you and send you luck!";
+        button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+	}
+}
+
+[conversation_kelti_quest]
+{                   //local quest active AND stone
+	[text*]
+	{
+        order = 0;
+        choice = more;
+        screen_text = "By the gods, you found it! We are lucky indeed to have one as resourceful as you! You have proved yourself to the Society, and are a stranger no more. If you would be willing to further aid the Circle, we would be much indebted to you. If you show my signet ring to others of my sect, they will know you are a friend.";
+        button_2_text = "Directions";
+       	button_2_value = d_0x032007b5;
+        }
+    [text*]
+	{
+        order = 1;
+
+        screen_text = "Here is my ring. Our Townstone needs to be brought to High Priest Kavaren in Hiroth. However, I am certain we are not the only town who could use your help. Seek out Utraean Priest Sarden in Crystwind.";
+        activate_quest* = goto_crystwind;
+        activate_quest* = quest_townstones;
+        complete_quest* = quest_elddim;
+        button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+       	quest_dialog = true;
+        //give signet ring
+
+	}
+}
+[conversation_kelti_goto]    //goto Crystwind quest active
+{
+    [text*]
+	{
+        screen_text = "There is nothing more you can do to help us in Elddim.";
+        button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+	}
+}
+
+[conversation_kelti_stone]     //if you have the stone AND NO local quest AND no ring
+{
+	[text*]
+	{
+        order = 0;
+        choice = more;
+        screen_text = "So, you are up to the task of aiding the Society, are you? I'm sure you've heard of the Townstones and how nearly all have been lost over the centuries, yes? Well, it's time for them to be found. The Circle has called for the unification of the Townstones in Hiroth, and all must be present.";
+        button_2_text = "Directions";
+       	button_2_value = d_0x032007b5;
+	}
+    [text*]
+	{
+        order = 1;
+         choice = more;
+        screen_text = "The Elddim Sunrise Stone was last in the possession of my great grandmother, who served as the Legion Protectorate of the Crypts to the east. When old Lord Hovart betrayed us, she hid the stone somewhere in the tombs. He held her prisoner until she was old and gray, but she never revealed the secret. She died just hours after her release, and only had time enough to tell my mother that the stone was safely hidden.";
+        button_2_text = "Directions";
+       	button_2_value = d_0x032007b5;
+	}
+    [text*]
+	{
+        order = 2;
+        choice = more;
+        screen_text = "You are welcome to peruse my shelves for anything which might be of use to you. If you are able to find the Elddim Townstone -- what, you already have the stone? By the stars, we are lucky indeed to have one as resourceful as you! If you would be willing to further aid the Society, we would be much indebted to you. If you show my signet ring to others of my sect, they will know you are a friend.";
+        button_2_text = "Directions";
+       	button_2_value = d_0x032007b5;
+	}
+
+    [text*]
+	{
+        order = 3;
+
+        screen_text = "Here is my ring. Our Townstown needs to be brought to High Priest Kavaren in Hiroth. However, I am certain we are not the only town who could use your help. Seek out Utraean Priest Sarden in Crystwind.";
+        activate_quest* = goto_crystwind;
+        activate_quest* = quest_townstones;
+        button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+       	quest_dialog = true;
+
+        //give signet ring
+
+	}
+}
+[conversation_kelti_stone_ring]    //If you have the ring AND stone AND NO quest_elddim
+{
+    [text*]
+	{
+        screen_text = "There is nothing more you can do to help us in Elddim; you may best serve the Society by helping Utraean Priest Sarden in Crystwind.";
+        activate_quest* = goto_crystwind;
+        activate_quest* = quest_townstones;
+        button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+       	quest_dialog = true;
+	}
+}
+
+[conversation_kelti_red]
+{
+	[text*]
+	{
+		screen_text = "No! This cannot be! High Priest Kavaren has thoroughly studied the Circle! Oh, what have we done?";
+		button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+	}
+}
+[conversation_hub_complete]
+{
+	[text*]
+	{
+		screen_text = "Your courage has saved us all. The Kingdom is forever in your debt. If there is ever anything the Society can do for you, please let me know.";
+		button_1_text = "Directions";
+       	button_1_value = d_0x032007b5;
+	}
+}

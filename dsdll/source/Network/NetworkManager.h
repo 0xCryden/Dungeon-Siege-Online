@@ -44,6 +44,7 @@ const char* GetPacketName(u_int8_t type, bool isClientToServer) {
 		case 24: return "RSATTACKMELEE";
 		case 25: return "RSATTACKRANGED";
 		case 26: return "RSCAST";
+		case 32: return "RSREQNODEINFO";
 		case 40: return "RSJOBTRAVELDISTANCEREACHED";
 
 		default: return "UNKNOWN";
@@ -67,6 +68,7 @@ const char* GetPacketName(u_int8_t type, bool isClientToServer) {
 		case 24: return "RCATTACKMELEE";
 		case 25: return "RCATTACKRANGED";
 		case 27: return "RCAPPROACH";
+		case 32: return "RCREQNODEINFO";
 
 		default: return "UNKNOWN";
 		}

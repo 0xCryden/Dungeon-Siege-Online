@@ -18,6 +18,8 @@
 #include "GoDb.hpp"
 #include "../Engine.hpp"
 
+#include "../Gas.hpp"
+
 GoDb godb;
 
 GoDb :: GoDb ()
@@ -32,13 +34,48 @@ GoDb :: ~GoDb ()
 		delete iterator->second;
 		iterator++;
 	}}
-	
+
 	{map<string, Go *>::iterator iterator = m_contentdb.begin();
 	while (iterator != m_contentdb.end())
 	{
 		delete iterator->second;
 		iterator++;
 	}}
+}
+
+void GoDb::LoadGasToGo()
+{
+    size_t totalLoaded = 0;
+	for (const auto& [instanceName, placement] : placementManager.GetAll())
+	{
+		const std::string& templateName = placement.templateName;
+
+		// Skip if already instantiated
+		if (m_contentdb.find(templateName) != m_contentdb.end())
+			continue;
+
+		if (templateName.empty())
+			continue;
+
+		try
+		{
+			const TemplateData* tmpl = manager.GetTemplate(templateName);
+			if (!tmpl)
+				throw std::runtime_error("template not found in TemplateManager");
+
+			// Construct a new Go using your custom constructor
+			Go* go = new Go(*tmpl);  // Uses Go(const TemplateData&, const PlacementData&) constructor
+			m_contentdb[templateName] = go;
+
+			++totalLoaded;
+			//std::cout << "Instantiated Go from template: " << templateName << std::endl;
+		}
+		catch (const std::exception& e)
+		{
+			logger.WriteF("Failed to instantiate Go from template %s: %s", templateName.c_str(), e.what());
+		}
+	}
+	std::cout << "[INFO] Finished converting Gas to Gos. Total: " << totalLoaded << std::endl;
 }
 
 void GoDb::LoadGoDbFolder(const std::string& folderName)
@@ -121,19 +158,25 @@ void GoDb::LoadGoDbFolder(const std::string& folderName)
                 Go* t = new Go(node);
                 m_godb[id] = t;
 
-                if (engine.IsPlayer(t) || folderName == "items")
+                //if (t->HasPlacement())
+                if (engine.IsPlayer(t) || folderName == "items" || t->Goid() == 5)
                 {
                     std::string region = t->Placement()->GetRegion();
                     if (!region.empty())
                     {
                         SendWorldMessage(we_entered_world, t, t, region);
-                        std::cout << "[GODB] Spawned Item " << id << std::endl;
+                        std::cout << "[GODB] Spawned Go " << id << std::endl;
                     }
                 }
 
                 if (folderName == "items")
                 {
                     engine.RegisterItem(t);
+                }
+
+                if (folderName == "actors")
+                {
+                    engine.RegisterPlayerCharacter(t);
                 }
             }
             catch (std::exception& e)
@@ -151,7 +194,6 @@ void GoDb::LoadGoDbFolder(const std::string& folderName)
     // 2. Load GOs with inventory
     processNodes(withInventory);
 }
-
 
 void GoDb :: LoadGoDbSingleChar (u_int32_t id)
 {
@@ -185,7 +227,7 @@ void GoDb :: LoadGoDbSingleChar (u_int32_t id)
             Go* t = new Go(node);
             m_godb[id] = t;
 
-            if (t->HasPlacement())
+            if (engine.IsPlayer(t))
             {
                 std::string region = t->Placement()->GetRegion();
                 if (!region.empty())
@@ -194,6 +236,9 @@ void GoDb :: LoadGoDbSingleChar (u_int32_t id)
                     std::cout << "Loaded go " << id << " from " << filePath << std::endl;
                 }
             }
+
+            engine.RegisterPlayerCharacter(t);
+
             xmlFreeDoc(document);
             return;
         }
@@ -208,64 +253,71 @@ void GoDb :: LoadGoDbSingleChar (u_int32_t id)
     xmlFreeDoc(document);
     logger.WriteF("No matching <go> node with ID %u found in file %s", id, filePath.c_str());
 }
-
-/*void GoDb :: LoadGoDb (const string & filename)
+/*
+void GoDb::LoadContentDbFolder(const string & folderName)
 {
-	xmlDoc * document = xmlReadFile (filename.c_str(), NULL, 0);
-	if (document == NULL)
-	{
-		throw runtime_error ("file does not exist");
-	}
-	
-	xmlNode * root = xmlDocGetRootElement (document);
-	if (root == NULL)
-	{
-		xmlFree (document);
-		throw runtime_error ("file is not valid xml");
-	}
-	
-	xmlNode * node = NULL;
-	for (node = root->children; node != NULL; node = node->next)
-	{
-		if (node->type != XML_ELEMENT_NODE) continue;
-		
-		if (xmlStrEqual (node->name, (const xmlChar *) "go") != 0)
-		{
-			u_int32_t id = xml::ReadAttribute<u_int32_t> (node, "id", 0);
-			
-			map<u_int32_t, Go *>::iterator iterator = m_godb.find (id);
-			if (iterator != m_godb.end())
-			{
-				throw runtime_error ("go already exists in godb");
-			}
-			
-			if (id != 0)
-			{
-				try
-				{
-					Go * t = new Go (node);
-					m_godb[id] = t;
-					
-					if (t->HasPlacement())
-					{
-						string region = t->Placement()->GetRegion();
-						if (region.empty() != true)
-						{
-							SendWorldMessage (we_entered_world, t, t, region);
-							std::cout << "Loaded go " << id << std::endl;
-						}
-					}
-				}
-				catch (exception & e)
-				{
-					logger.WriteF ("go %u was not loaded because : %s", id, e.what());
-				}
-			}
-		}
-	}
-	
-	xmlFreeDoc (document);
-}*/
+    std::string folderPath = "data\\static\\" + folderName + "\\";
+    std::string searchPattern = folderPath + "*.xml";
+
+    WIN32_FIND_DATA findFileData;
+    HANDLE hFind = FindFirstFile(searchPattern.c_str(), &findFileData);
+
+    if (hFind == INVALID_HANDLE_VALUE)
+    {
+        throw std::runtime_error("No template XML files found in: " + folderPath);
+    }
+
+    do
+    {
+        std::string filePath = folderPath + findFileData.cFileName;
+        xmlDoc* document = xmlReadFile(filePath.c_str(), NULL, 0);
+        if (!document)
+        {
+            logger.WriteF("Failed to read file: %s", filePath.c_str());
+            continue;
+        }
+
+        xmlNode* root = xmlDocGetRootElement(document);
+        if (!root)
+        {
+            xmlFreeDoc(document);
+            logger.WriteF("Invalid XML in file: %s", filePath.c_str());
+            continue;
+        }
+
+        for (xmlNode* node = root->children; node != nullptr; node = node->next)
+        {
+            if (node->type != XML_ELEMENT_NODE || !xmlStrEqual(node->name, BAD_CAST "template"))
+                continue;
+
+            std::string name = xml::ReadAttribute<std::string>(node, "template_name", "");
+            if (name.empty())
+                continue;
+
+            if (m_contentdb.find(name) != m_contentdb.end())
+            {
+                logger.WriteF("Duplicate template name '%s' found in file: %s", name.c_str(), filePath.c_str());
+                continue;
+            }
+
+            try
+            {
+                Go* t = new Go(node);
+                m_contentdb[name] = t;
+                std::cout << "[CONTENTDB] Loaded template " << name << std::endl;
+            }
+            catch (const std::exception& e)
+            {
+                logger.WriteF("Template '%s' was not loaded because: %s", name.c_str(), e.what());
+            }
+        }
+
+        xmlFreeDoc(document);
+    } while (FindNextFile(hFind, &findFileData) != 0);
+
+    FindClose(hFind);
+}
+*/
 
 void GoDb :: LoadContentDb (const string & filename)
 {

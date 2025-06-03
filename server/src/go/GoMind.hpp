@@ -66,6 +66,8 @@
 			float m_distance;
 			Go * m_object;
 			eEquipSlot m_slot;
+			eEquipSlot m_oldslot;
+			eEquipSlot m_oldslot2;
 			eInventoryLocation m_location;
 	};
 

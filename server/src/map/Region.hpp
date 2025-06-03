@@ -30,18 +30,26 @@
 		friend class AIQuery;
 		public:
 			
-			Region (const string & filename);
+			Region (const string & filename, const string & name);
 			
 			~Region ();
 			
+			void AddNode(u_int32_t id, float x, float y, float z, u_int8_t rota);
+
+			Node * GetNode(u_int32_t id);
+
 			GopSet & Objects ();
+			map<u_int32_t, Node *> GetNodes() { return m_nodes; };
+			const string & Name() { return m_name; };
 			
 		private:
-			
-			vector_3 MakeLocalPosition (const SiegePos & position);
+
+			vector_3 MakeLocalPosition (const SiegePos & position, bool mapMaker);
+			void CheckNode (const SiegePos & position);
 			
 			double GetSiegeDistance (const SiegePos & position, const SiegePos & destination);
 			
+			string m_name;
 			GopSet m_objects;
 			map<u_int32_t, Node *> m_nodes;
 	};

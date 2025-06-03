@@ -55,6 +55,50 @@
 		return "";
 	}
 	
+	inline eLifeState ToState (const string & value)
+	{
+		if (value == "ls_ignore")
+		{
+			return ls_ignore;
+		}
+		else if (value == "ls_alive_conscious")
+		{
+			return ls_alive_conscious;
+		}
+		else if (value == "ls_alive_unconscious")
+		{
+			return ls_alive_unconscious;
+		}
+		else if (value == "ls_dead_charred")
+		{
+			return ls_dead_charred;
+		}
+		else if (value == "ls_decay_fresh")
+		{
+			return ls_decay_fresh;
+		}
+		else if (value == "ls_decay_bones")
+		{
+			return ls_decay_bones;
+		}
+		else if (value == "ls_decay_dust")
+		{
+			return ls_decay_dust;
+		}
+		else if (value == "ls_gone")
+		{
+			return ls_gone;
+		}
+		else if (value == "ls_ghost")
+		{
+			return ls_ghost;
+		}
+		else
+		{
+			return ls_alive_conscious;
+		}
+	}
+
 	inline bool FromString (const string & value, eLifeState & e)
 	{
 		if (value == "ls_ignore")

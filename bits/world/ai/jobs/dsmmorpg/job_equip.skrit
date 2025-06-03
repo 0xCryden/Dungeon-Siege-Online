@@ -27,9 +27,12 @@ event OnJobInit$ (Job job$)
 	Goid item$ = job$.GoalObject;
 	eEquipSlot slot$ = job$.GoalSlot;
 	
+	//report.screenf("called job_equip slot: %d", MakeInt (slot$));
+	
 	if (item$ == Goid.NoneGoid)
 	{
 		actor$.Inventory.RSUnequip (slot$, ao_human);
+		//report.screenf("called rsUnequip job client for item NONE slot: %d", MakeInt (slot$));
 		RSUnequip$ (MakeInt (slot$));
 	}
 	else
@@ -39,9 +42,10 @@ event OnJobInit$ (Job job$)
 			int id$ = item$.Go.GetComponentInt ("object", "id");
 			if (id$ != 0)
 			{
+				//report.screenf("called rsEquip job client for item %s slot: %d", item$.Go.TemplateName, MakeInt (slot$));
 				RSEquip$ (id$, MakeInt (slot$));
 			}
-			
+			//report.screenf("called rsAutoequip job client for item %s slot: %d", item$.Go.TemplateName, MakeInt (slot$));
 			actor$.Inventory.RSAutoEquip (slot$, item$, ao_human, false);
 		}
 	}

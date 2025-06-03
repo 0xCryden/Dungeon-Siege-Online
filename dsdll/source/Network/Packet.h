@@ -47,6 +47,12 @@
 				}
 			}
 
+			FEX void WriteUInt64(u_int64_t data)
+			{
+				u_int64_t _data = htonl(data);
+				Append((unsigned char*)(&_data), sizeof(u_int64_t));
+			}
+
 			FEX void WriteUInt32 (u_int32_t data)
 			{
 				u_int32_t _data = htonl (data);
@@ -105,7 +111,18 @@
 				m_size += size;
 				m_data[m_size - 1] = '\0';
 			}
-			
+
+			FEX u_int64_t ReadUInt64()
+			{
+				u_int16_t size = sizeof(u_int64_t);
+
+				u_int64_t data;
+				memcpy(((unsigned char*)(&data)), (m_data + m_position), size);
+				m_position += size;
+
+				return ntohl(data);
+			}
+
 			FEX u_int32_t ReadUInt32 ()
 			{
 				u_int16_t size = sizeof (u_int32_t);

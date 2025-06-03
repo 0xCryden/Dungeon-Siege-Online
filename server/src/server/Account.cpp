@@ -7,6 +7,7 @@ Account :: Account (xmlNode * node)
 	{
 		m_username = xml::ReadAttribute<string> (node, "username", "");
 		m_password = xml::ReadAttribute<string> (node, "password", "");
+		m_id = xml::ReadAttribute<u_int32_t> (node, "id", 0);
 		
 		xmlNode * current = NULL;
 		for (current = node->children; current != NULL; current =  current->next)
@@ -27,6 +28,19 @@ Account :: Account (xmlNode * node)
 	}
 }
 
+void Account :: AddCharacter (Go * go)
+{
+	if (go != NULL)
+	{
+		m_objects.push_back (go);
+	}
+}
+
+void Account :: RemoveCharacter (int slot)
+{
+	m_objects.erase(m_objects.begin() + (slot-1));
+}
+
 string Account :: Username () const
 {
 	return m_username;
@@ -35,4 +49,9 @@ string Account :: Username () const
 string Account :: Password () const
 {
 	return m_password;
+}
+
+u_int32_t Account :: Id () const
+{
+	return m_id;
 }

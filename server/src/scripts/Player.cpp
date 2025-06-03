@@ -63,12 +63,12 @@ void WriteItemRecursive(Go* item, Packet& packet)
 
     eInventoryLocation loc = il_main;
     if (parent && parentInv)
-        loc = parentInv->GetInventoryLocation(item);
+        loc = item->GetLoc();//parentInv->GetInventoryLocation(item);
 
-    std::cout << "Sending item: ID=" << item->Goid()
+    /*std::cout << "Sending item: ID=" << item->Goid()
                   << ", Slot=" << slot
                   << ", Loc=" << ToString(loc)
-                  << ", ContainerID=" << containerId << std::endl;
+                  << ", ContainerID=" << containerId << std::endl;*/
 
     packet.WriteUInt32(item->Goid());
     packet.WriteString(item->Common()->ScreenName());
@@ -119,6 +119,7 @@ void SendRCCreateItemRecursive(Go* item, Connection* conn)
 		packet.WriteUInt8(inv->ListItems().size()); // how many inside
 		for (Go* child : inv->ListItems())
 		{
+			cout << "SendRCCreateItemRecursive ID: " << child->Goid() << endl;
 			// Recursively write child items
 			WriteItemRecursive(child, packet);
 		}
@@ -128,7 +129,7 @@ void SendRCCreateItemRecursive(Go* item, Connection* conn)
 		packet.WriteUInt8(0); // no inventory
 	}
 
-	std::cout << "Sending RCCreateItem: ID=" << item->Goid() << std::endl;
+	//cout << "Sending RCCreateItem: ID=" << item->Goid() << std::endl;
 	conn->Send(packet.Data(), packet.Size());
 }
 
@@ -138,10 +139,90 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 	Go * from = message.SendFrom();
 	Go * to = message.SendTo();
 	
-	cout << "received event " << ToString (message.WorldEvent()) << " from " << from->Goid() << " to " << to->Goid() << endl;
+	if (message.WorldEvent() != we_entered_frustum && message.WorldEvent() != we_left_frustum)
+		cout << "received event " << ToString (message.WorldEvent()) << " from " << from->Goid() << " to " << to->Goid() << endl;
 
 	switch (event)
 	{
+		case we_go_status_updated:
+		{
+			if (from->HasCommon())
+			{
+				cout << "Sending go update for " << from->Common()->ScreenName() << endl;
+
+				Packet packet;
+				packet.WriteUInt8 (RCUPDATEGO);
+				packet.WriteUInt32 (from->Goid());
+
+				packet.WriteFloat (from->Aspect()->MaxLife());
+				packet.WriteFloat (from->Aspect()->CurrentLife());
+				packet.WriteFloat (from->Aspect()->MaxMana());
+				packet.WriteFloat (from->Aspect()->CurrentMana());
+				packet.WriteUInt8 (from->Aspect()->LifeState());
+
+				m_connection->Send (packet.Data(), packet.Size());
+			}
+		}
+		break;
+
+		case we_unknown_node:
+		{
+			if (from->HasCommon())
+			{
+				Packet packet;
+				packet.WriteUInt8 (RCREQNODEINFO);
+				packet.WriteUInt32 (from->GetLastPos().Node);
+				packet.WriteFloat (from->GetLastLocal().x);
+				packet.WriteFloat (from->GetLastLocal().y);
+				packet.WriteFloat (from->GetLastLocal().z);
+				packet.WriteUInt8 (from->GetLastRota());
+				packet.WriteUInt32 (from->Placement()->Position().Node);
+
+				cout << "Sending request Lastlocal: " << from->GetLastLocal().x << "/" << from->GetLastLocal().y << "/" << from->GetLastLocal().z << endl;
+
+				m_connection->Send (packet.Data(), packet.Size());
+			}
+		}
+		break;
+
+		case we_add_exp:
+		{
+			if (from->HasCommon())
+			{
+				Packet packet;
+				packet.WriteUInt8 (RCADDEXP);
+				packet.WriteUInt32 (from->Goid());
+
+				float amount = 0.0;
+				try {
+				    amount = std::stof(message.Data());
+				} catch (const std::exception& e) {
+				    // handle error
+				}
+
+				packet.WriteFloat (amount);
+
+				//cout << "Sending RCADDEXP amount: " << amount << endl;
+
+				m_connection->Send (packet.Data(), packet.Size());
+			}
+		}
+		break;
+
+		case we_leveled_up:
+		{
+			if (from->HasCommon())
+			{
+				Packet packet;
+				packet.WriteUInt8 (RCLEVELUP);
+				packet.WriteUInt32 (from->Goid());
+				packet.WriteString (message.Data());
+
+				m_connection->Send (packet.Data(), packet.Size());
+			}
+		}
+		break;
+
 		case we_entered_world:
 		{
 			if (from->HasCommon())
@@ -190,6 +271,33 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteFloat (from->Placement()->Position().Y);
 				packet.WriteFloat (from->Placement()->Position().Z);
 				
+				// life
+				packet.WriteFloat (from->Aspect()->MaxLife());
+				packet.WriteFloat (from->Aspect()->CurrentLife());
+				packet.WriteFloat (from->Aspect()->MaxMana());
+				packet.WriteFloat (from->Aspect()->CurrentMana());
+				packet.WriteUInt8 (from->Aspect()->LifeState());
+				// skills
+				packet.WriteFloat (from->Actor()->GetSkillLevel("uber"));
+				packet.WriteFloat (from->Actor()->GetSkillLevel("strength"));
+				packet.WriteFloat (from->Actor()->GetSkillLevel("intelligence"));
+				packet.WriteFloat (from->Actor()->GetSkillLevel("dexterity"));
+				packet.WriteFloat (from->Actor()->GetSkillLevel("melee"));
+				packet.WriteFloat (from->Actor()->GetSkillLevel("ranged"));
+				packet.WriteFloat (from->Actor()->GetSkillLevel("nature magic"));
+				packet.WriteFloat (from->Actor()->GetSkillLevel("combat magic"));
+
+				{
+					packet.WriteFloat ((float)from->Actor()->GetSkillExp("uber"));
+					packet.WriteFloat ((float)from->Actor()->GetSkillExp("strength"));
+					packet.WriteFloat ((float)from->Actor()->GetSkillExp("intelligence"));
+					packet.WriteFloat ((float)from->Actor()->GetSkillExp("dexterity"));
+					packet.WriteFloat ((float)from->Actor()->GetSkillExp("melee"));
+					packet.WriteFloat ((float)from->Actor()->GetSkillExp("ranged"));
+					packet.WriteFloat ((float)from->Actor()->GetSkillExp("nature magic"));
+					packet.WriteFloat ((float)from->Actor()->GetSkillExp("combat magic"));
+				}
+
 				for (int i = 0; i < 12; i++)
 				{
 					Go * equipment = from->Inventory()->GetEquipped ((eEquipSlot) i);
@@ -242,8 +350,15 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				Packet packet;
 				packet.WriteUInt8 (RCSETSCREENHERO);
 				packet.WriteUInt32 (to->Goid());
-				
+
+				// life
+				packet.WriteFloat (to->Aspect()->MaxLife());
+				packet.WriteFloat (to->Aspect()->CurrentLife());
+				packet.WriteFloat (to->Aspect()->MaxMana());
+				packet.WriteFloat (to->Aspect()->CurrentMana());
+				packet.WriteUInt8 (to->Aspect()->LifeState());
 				// stats
+				packet.WriteFloat (to->Actor()->GetSkillLevel("uber"));
 				packet.WriteFloat (to->Actor()->GetSkillLevel("strength"));
 				packet.WriteFloat (to->Actor()->GetSkillLevel("intelligence"));
 				packet.WriteFloat (to->Actor()->GetSkillLevel("dexterity"));
@@ -251,7 +366,16 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteFloat (to->Actor()->GetSkillLevel("ranged"));
 				packet.WriteFloat (to->Actor()->GetSkillLevel("nature magic"));
 				packet.WriteFloat (to->Actor()->GetSkillLevel("combat magic"));
-				
+
+				packet.WriteFloat ((float)to->Actor()->GetSkillExp("uber"));
+				packet.WriteFloat ((float)to->Actor()->GetSkillExp("strength"));
+				packet.WriteFloat ((float)to->Actor()->GetSkillExp("intelligence"));
+				packet.WriteFloat ((float)to->Actor()->GetSkillExp("dexterity"));
+				packet.WriteFloat ((float)to->Actor()->GetSkillExp("melee"));
+				packet.WriteFloat ((float)to->Actor()->GetSkillExp("ranged"));
+				packet.WriteFloat ((float)to->Actor()->GetSkillExp("nature magic"));
+				packet.WriteFloat ((float)to->Actor()->GetSkillExp("combat magic"));
+
 				// Get top-level inventory items
 				const GopSet& inventory = to->Inventory()->ListItems();
 
@@ -276,9 +400,11 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				Packet packet;
 				if (to->HasCommon())
 				{
-					string msg = "<" + from->Common()->ScreenName() + "> : " + message.Data();
-					packet.WriteUInt8 (RCDISPLAYMESSAGE);
-					packet.WriteString (msg);
+					//string msg = "<" + from->Common()->ScreenName() + "> : " + message.Data();
+					packet.WriteUInt8 (RCCHAT);
+					packet.WriteUInt32 (from->Goid());
+					packet.WriteString (from->Common()->ScreenName());
+					packet.WriteString (message.Data());
 				}
 				
 				m_connection->Send (packet.Data(), packet.Size());
@@ -304,16 +430,13 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 
 					for (Go* child : to->Inventory()->ListItems())
 			        {
-						Go* parent = child->Parent();
-						GoInventory* parentInv = parent ? parent->Inventory() : nullptr;
-
 						eEquipSlot slot = es_none;
 					    eInventoryLocation loc = il_main;
 
-					    loc = parentInv->GetInventoryLocation(child);
+					    loc = child->GetLoc();//parentInv->GetInventoryLocation(child);
 
 					    std::cout << "Sending item pickup: ID=" << child->Goid()
-					                  << ", Slot=" << slot
+					                  << ", Slot=" << ToString(slot)
 					                  << ", Loc=" << ToString(loc)
 					                  << ", ContainerID=" << to->Goid() << std::endl;
 
@@ -413,7 +536,8 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 			if (from->HasMind())
 			{
 				string job = message.Data();
-				
+
+				cout << "Job: " << job << endl;
 				if (job == "jat_move")
 				{
 					SiegePos destination = from->Mind()->ActionPosition();

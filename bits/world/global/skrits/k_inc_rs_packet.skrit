@@ -66,7 +66,7 @@ void RSGet$ (int id$)
 	Packet packet$ = NetworkManager.CreatePacket();
 	
 	packet$.WriteUInt8 (20);
-	report.screenf ("%i", id$);
+	report.screenf ("RSGet id %i", id$);
 	packet$.WriteUInt32 (id$);
 	
 	NetworkManager.Send (packet$);
@@ -142,7 +142,7 @@ void RSCast$ (int id$)
 
 void RSInvenMove$ (int id$, int containerId$, int destLoc$)
 {
-	report.screenf("[DEBUG INVENMOVE]  id: %d | containerId: %d | destLoc: %d\n", id$, containerId$, destLoc$ );
+	//report.screenf("[DEBUG INVENMOVE]  id: %d | containerId: %d | destLoc: %d\n", id$, containerId$, destLoc$ );
             	
 	Packet packet$ = NetworkManager.CreatePacket();
 	
@@ -155,19 +155,95 @@ void RSInvenMove$ (int id$, int containerId$, int destLoc$)
 	NetworkManager.DiscardPacket (packet$);
 }
 
-/*void RSSetLocation$ ( Go go$, int destLoc$, bool boool$)
+void RSReqNodeInfo$ (int id$, float x$, float y$, float z$, int rotation$)
 {
-	int id$ = MakeInt(go$.GetGoid());
-
+	report.screenf("[DEBUG NODEADD]  id: %d | Coords %f/%f/%f | Rotation: %d\n", id$, x$, y$, z$, rotation$ );
+            	
 	Packet packet$ = NetworkManager.CreatePacket();
-
-	packet$.WriteUInt8 (31);
+	
+	packet$.WriteUInt8 (32);
 	packet$.WriteUInt32 (id$);
-	packet$.WriteUInt8 (destLoc$);
+	packet$.WriteFloat (x$);
+	packet$.WriteFloat (y$);
+	packet$.WriteFloat (z$);
+	packet$.WriteUInt8 (rotation$);
 
 	NetworkManager.Send (packet$);
 	NetworkManager.DiscardPacket (packet$);
-}*/
+}
+
+void RSSelectSlot$ (int slotId$)
+{
+	Go temp$ = Server.ScreenHero;
+	int portalId$ = temp$.GetComponentInt ("portal", "id");
+
+	string tmp$;
+	StringTool.AssignF (tmp$, "godb:%d", portalId$);
+	Goid actor$ = Server.ScreenHero.Goid;//MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
+
+	if (slotId$ == 3 || slotId$ == 4)
+	{
+		//report.screenf ("slot is 3 or 4");
+		if (actor$.Go.Inventory.IsSlotEquipped(es_weapon_hand))
+		{
+			//report.screenf ("es_weapon_hand found");
+			if (actor$.Go.Inventory.GetEquipped(es_weapon_hand).Attack.AttackClass != ac_staff)
+			{
+				//report.screenf ("AttackClass not staff");
+				actor$.Go.Inventory.RSUnequip (es_weapon_hand, ao_human);
+				RSUnequip$ (MakeInt(es_weapon_hand));
+			}
+		}
+
+		if (actor$.Go.Inventory.IsSlotEquipped(es_shield_hand))
+		{
+			//report.screenf ("es_shield_hand found");
+			actor$.Go.Inventory.RSUnequip (es_shield_hand, ao_human);
+			RSUnequip$ (MakeInt(es_shield_hand));
+		}
+	}
+
+	Packet packet$ = NetworkManager.CreatePacket();
+	
+	packet$.WriteUInt8 (36);
+	packet$.WriteUInt8 (slotId$);
+	
+	NetworkManager.Send (packet$);
+	NetworkManager.DiscardPacket (packet$);
+}
+
+void RSRegister$ (string username$, string password$)
+{
+	Packet packet$ = NetworkManager.CreatePacket();
+	
+	packet$.WriteUInt8 (37);
+	packet$.WriteString (username$);
+	packet$.WriteString (password$);
+	
+	NetworkManager.Send (packet$);
+	NetworkManager.DiscardPacket (packet$);
+}
+
+void RSReqCharList$ ()
+{
+	Packet packet$ = NetworkManager.CreatePacket();
+	
+	packet$.WriteUInt8 (38);
+	
+	NetworkManager.Send (packet$);
+	NetworkManager.DiscardPacket (packet$);
+}
+
+void RSEnterGame$ (int selectSlot$)
+{
+	Packet packet$ = NetworkManager.CreatePacket();
+	
+	packet$.WriteUInt8 (39);
+	packet$.WriteUInt8 (selectSlot$);
+	
+	NetworkManager.Send (packet$);
+	NetworkManager.DiscardPacket (packet$);
+}
 
 void RSJobTravelDistanceReached$ (SiegePos position$)
 {
@@ -178,6 +254,34 @@ void RSJobTravelDistanceReached$ (SiegePos position$)
 	packet$.WriteFloat (position$.Pos.X);
 	packet$.WriteFloat (position$.Pos.Y);
 	packet$.WriteFloat (position$.Pos.Z);
+	
+	NetworkManager.Send (packet$);
+	NetworkManager.DiscardPacket (packet$);
+}
+
+void RSDeleteChar$ (int selectSlot$)
+{
+	Packet packet$ = NetworkManager.CreatePacket();
+	
+	packet$.WriteUInt8 (41);
+	packet$.WriteUInt8 (selectSlot$);
+	
+	NetworkManager.Send (packet$);
+	NetworkManager.DiscardPacket (packet$);
+}
+
+void RSCreateChar$ (string charName$, int charType$, int charHead$, int charSkin$, int charHair$, int charShirt$, int charPants$)
+{
+	Packet packet$ = NetworkManager.CreatePacket();
+	
+	packet$.WriteUInt8 (42);
+	packet$.WriteString (charName$);
+	packet$.WriteUInt8 (charType$);
+	packet$.WriteUInt8 (charHead$);
+	packet$.WriteUInt8 (charSkin$);
+	packet$.WriteUInt8 (charHair$);
+	packet$.WriteUInt8 (charShirt$);
+	packet$.WriteUInt8 (charPants$);
 	
 	NetworkManager.Send (packet$);
 	NetworkManager.DiscardPacket (packet$);

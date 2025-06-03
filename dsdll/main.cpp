@@ -45,12 +45,25 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     }
     return TRUE;
 }
-
 // Example functions for initialization and cleanup
 void Initialize()
 {
-    // Add initialization code here (e.g., setting up resources, logging, etc.)
-    //std::cout << "Initialization complete.\n";
+   /* HMODULE hExe = GetModuleHandleA(NULL); // DungeonSiege.exe
+
+    // Resolve WorldMap singleton getter
+    const char* singletonName = "?FUBI_GetClassSingleton@WorldMap@@CAPAV1@XZ";
+    g_GetWorldMapSingleton = (FUBI_GetClassSingletonFunc)GetProcAddress(hExe, singletonName);
+   if (!g_GetWorldMapSingleton) {
+        Log("Failed to find WorldMap::FUBI_GetClassSingleton");
+    }
+
+    const char* regionFuncName = "?GetRegionNameForNode@WorldMap@@QBEABV?$gpbstring@DU?$char_traits@D@std@@V?$allocator@D@2@@@Vdatabase_guid@siege@@@Z";
+    g_GetRegionNameForNode = (GetRegionNameForNodeFunc)GetProcAddress(hExe, regionFuncName);
+   if (!g_GetRegionNameForNode) {
+        Log("Failed to find WorldMap::GetRegionNameForNode");
+    }
+    else
+        Log("Successfully resolved GetRegionNameForNode");*/
 }
 
 void Cleanup()

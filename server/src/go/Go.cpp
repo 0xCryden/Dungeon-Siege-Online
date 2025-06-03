@@ -19,11 +19,21 @@
 #include "../scripts/test_script.hpp"
 #include <sys/types.h>
 
+#include "../Engine.hpp"
+
+#include "Go.hpp"
+
+#include <vector>
+#include <tuple>
+#include <string>
+#include <algorithm>
+
 Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_inventory (NULL), m_mind (NULL), m_placement (NULL)
 {
 	if (node != NULL)
 	{
 		m_goid = xml::ReadAttribute<u_int32_t> (node, "id", 0);
+		//m_admin = xml::ReadAttribute<u_int8_t> (node, "admin", 0);
 		m_template_name = xml::ReadAttribute<string> (node, "template_name", "");
 		
 		xmlNode * current = NULL;
@@ -33,39 +43,53 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 			
 			if (xmlStrEqual (current->name, (const xmlChar *) "actor") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating actor...", m_goid);
 				if (m_actor == NULL) m_actor = new GoActor (this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "aspect") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating aspect...", m_goid);
 				if (m_aspect == NULL) m_aspect = new GoAspect (this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "attack") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating attack...", m_goid);
 				if (m_attack == NULL) m_attack = new GoAttack (this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "body") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating body...", m_goid);
 				if (m_body == NULL) m_body = new GoBody (this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "common") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating common...", m_goid);
 				if (m_common == NULL) m_common = new GoCommon (this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "defend") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating defend...", m_goid);
 				if (m_defend == NULL) m_defend = new GoDefend (this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "inventory") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating inventory...", m_goid);
 				if (m_inventory == NULL) m_inventory = new GoInventory (this, current);
 				//std::cout << "////////////////// Inven Found. ID: " << m_goid << std::endl;
 			}
+			else if (xmlStrEqual (current->name, (const xmlChar *) "magic") != 0)
+			{
+				//logger.WriteF("[Go %u] Creating magic...", m_goid);
+				if (m_magic == NULL) m_magic = new GoMagic (this, current);
+			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "mind") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating mind...", m_goid);
 				if (m_mind == NULL) m_mind = new GoMind (this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "placement") != 0)
 			{
+				//logger.WriteF("[Go %u] Creating placement...", m_goid);
 				if (m_placement == NULL) m_placement = new GoPlacement (this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "scripts") != 0)
@@ -104,8 +128,50 @@ Go :: Go (u_int32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspe
 	if (go->m_common != NULL) m_common = new GoCommon (this);
 	if (go->m_defend != NULL) m_defend = new GoDefend (this);
 	if (go->m_inventory != NULL) m_inventory = new GoInventory (this);
+	if (go->m_magic != NULL) m_magic = new GoMagic (this);
 	if (go->m_mind != NULL) m_mind = new GoMind (this);
 	if (go->m_placement != NULL) m_placement = new GoPlacement (this);
+}
+
+Go :: Go(const TemplateData& tmpl)
+	: m_template_name(tmpl.name),
+	  m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
+	  m_body(NULL), m_common(NULL), m_defend(NULL),
+	  m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
+{
+	m_goid = 0;
+
+	const TemplateComponent* comp;
+
+	/*if ((comp = tmpl.GetComponent("actor"))) {
+		m_actor = new GoActor(this, comp);
+	}
+	if ((comp = tmpl.GetComponent("aspect"))) {
+		m_aspect = new GoAspect(this, comp);
+	}
+	if ((comp = tmpl.GetComponent("attack"))) {
+		m_attack = new GoAttack(this, comp);
+	}
+	if ((comp = tmpl.GetComponent("body"))) {
+		m_body = new GoBody(this, comp);
+	}
+	if ((comp = tmpl.GetComponent("common"))) {
+		m_common = new GoCommon(this, comp);
+	}
+	if ((comp = tmpl.GetComponent("defend"))) {
+		m_defend = new GoDefend(this, comp);
+	}
+	if ((comp = tmpl.GetComponent("inventory"))) {
+		m_inventory = new GoInventory(this, comp);
+	}
+	if ((comp = tmpl.GetComponent("magic"))) {
+		m_magic = new GoMagic(this, comp);
+	}
+	if ((comp = tmpl.GetComponent("mind"))) {
+		m_mind = new GoMind(this, comp);
+	}*/
+
+	// Skip placement for now — as you said
 }
 
 Go :: ~Go ()
@@ -131,6 +197,185 @@ Go :: ~Go ()
 		delete iterator->second;
 	}
 }
+
+void Go :: HandleCommand (const string& command)
+{
+    // Split the command by space
+    std::istringstream iss(command);
+    std::string cmd;
+    iss >> cmd;
+
+    if (cmd == "/add")
+    {
+        std::string templateName;
+        iss >> templateName;
+
+        if (templateName.empty())
+        {
+            cout << "Usage: /add <template_name>" << endl;
+            return;
+        }
+
+        // Try to spawn or add using the template name
+       // if (!AddTemplate(templateName))
+        {
+            cout << "Error: Template not found or failed to spawn." << endl;
+        }
+    }
+    else
+    {
+    	cout << "Unknown command: " << cmd << endl;
+    }
+}
+
+eEquipSlot Go :: IntendedSlot()
+{
+	eEquipSlot slot = es_any;
+
+	if (HasAttack() && IsMeleeWeapon())
+	{
+		cout << "Mapping item location to es_weapon_hand" << endl;
+		slot = es_weapon_hand;
+	}
+	if (HasAttack() && IsRangedWeapon())
+	{
+		cout << "Mapping item location to es_shield_hand" << endl;
+		slot = es_shield_hand;
+	}
+
+	if (HasDefend() && Defend()->DefendClass() == dc_shield)
+	{
+		cout << "Mapping item location to es_shield_hand" << endl;
+		slot = es_shield_hand;
+	}
+
+	return slot;
+}
+
+eInventoryLocation Go :: IntendedLoc()
+{
+	eInventoryLocation loc = il_main;
+
+	if (HasAttack() && IsMeleeWeapon())
+	{
+		cout << "Mapping item location to es_weapon_hand" << endl;
+		loc = il_active_melee_weapon;
+	}
+	if (HasAttack() && IsRangedWeapon())
+	{
+		cout << "Mapping item location to es_shield_hand" << endl;
+		loc = il_active_ranged_weapon;
+	}
+
+	if (HasDefend() && Defend()->DefendClass() == dc_shield)
+	{
+		cout << "Mapping item location to es_shield_hand" << endl;
+		loc = il_shield;
+	}
+
+	return loc;
+}
+
+std::string Go::GetTitle() {
+    struct TitleGroup {
+        std::vector<std::string> skills;
+        std::vector<std::string> maleTitles;
+        std::vector<std::string> femaleTitles; // optional
+    };
+
+    std::vector<TitleGroup> titleGroups = {
+        {{"melee", "ranged", "nature magic", "combat magic"},
+         {"Freelance", "Journeyman", "Adventurer", "Master", "Grand Master", "Grand High SiegeMaster"},
+         {"Freelance", "Journeyman", "Adventurer", "Master", "Grand Master", "Grand High Siegemistress"}},
+
+        {{"melee", "ranged", "combat magic"},
+         {"Mercenary", "Gladiator", "Centurion", "Myrmidon", "Warlord", "Warlord Noble"},
+         {"Mercenary", "Gladiator", "Centurion", "Myrmidon", "Warlady", "Warlady Noble"}},
+
+        {{"melee", "ranged", "nature magic"},
+         {"Cavalier", "Marshal", "Paladin", "Templar", "Arch Templar", "Supreme Templar"}},
+
+        {{"melee", "nature magic", "combat magic"},
+         {"Initiate", "Mystic", "Sage", "Deacon", "Grand Deacon", "Grand High Deacon"},
+         {"Initiate", "Mystic", "Sage", "Deaconess", "Grand Deaconess", "Grand High Deaconess"}},
+
+        {{"ranged", "nature magic", "combat magic"},
+         {"Adept", "Conjurer", "Thaumaturgist", "Evoker", "Senior Evoker", "Lord Evoker"},
+         {"Adept", "Conjurer", "Thaumaturgist", "Evoker", "Senior Evoker", "Lady Evoker"}},
+
+        {{"melee", "ranged"},
+         {"Man-At-Arms", "Skirmisher", "Raider", "Campaigner", "Crusader", "Grand Crusader"},
+         {"Woman-At-Arms", "Skirmisher", "Raider", "Campaigner", "Crusader", "Grand Crusader"}},
+
+        {{"melee", "nature magic"},
+         {"Friar", "Curate", "Druid", "Preserver", "Grand Preserver", "Supreme Preserver"}},
+
+        {{"melee", "combat magic"},
+         {"Combatant", "Duelist", "Dragoon", "Warlock", "Grand Warlock", "Grand High Warlock"},
+         {"Combatant", "Duelist", "Dragoon", "Warwitch", "Grand Warwitch", "Grand High Warwitch"}},
+
+        {{"ranged", "nature magic"},
+         {"Scout", "Forester", "Ranger", "Warder", "Arch Ward", "Supreme High Ward"},
+         {"Scout", "Forester", "Ranger", "Wardess", "Arch Wardess", "Supreme High Wardess"}},
+
+        {{"ranged", "combat magic"},
+         {"Jager", "Conjurer", "Channeler", "Matross", "Master Matross", "Grandmaster Matross"}},
+
+        {{"nature magic", "combat magic"},
+         {"Acolyte", "Shaman", "Scholar", "Magus", "Grand Magus", "Grand High Magus"}},
+
+        {{"melee"},
+         {"Squire", "Soldier", "Warrior", "Knight", "Champion", "Grand Champion"}},
+
+        {{"ranged"},
+         {"Bowyer", "Archer", "Marksman", "Sharpshooter", "Master Sharpshooter", "Grandmaster Sharpshooter"}},
+
+        {{"nature magic"},
+         {"Apprentice", "Theurgist", "Magician", "Grand Mage", "Arch Mage", "Supreme Arch Mage"}},
+
+        {{"combat magic"},
+         {"Savant", "Hedge Wizard", "Wizard", "Sorcerer", "Grand Sorcerer", "Grand High Sorcerer"},
+         {"Savant", "Hedge Wizard", "Wizard", "Sorceress", "Grand Sorceress", "Grand High Sorceress"}}
+    };
+
+    auto getBracket = [](int level) {
+        if (level >= 100) return 5;
+        if (level >= 50)  return 4;
+        if (level >= 20)  return 3;
+        if (level >= 11)  return 2;
+        if (level >= 5)   return 1;
+        if (level >= 1)   return 0;
+        return -1;
+    };
+
+    int gender = 0; // TODO add gender getter GetGender(); // 0 = male, 1 = female
+
+    for (const auto& group : titleGroups) {
+        bool qualifies = true;
+        int minBracket = 6;
+
+        for (const std::string& skill : group.skills) {
+            int level = Actor()->GetSkillLevel(skill.c_str());
+            int bracket = getBracket(level);
+            if (bracket == -1) {
+                qualifies = false;
+                break;
+            }
+            minBracket = std::min(minBracket, bracket);
+        }
+
+        if (qualifies) {
+            if (gender == 1 && group.femaleTitles.size() == 6)
+                return group.femaleTitles[minBracket];
+            else
+                return group.maleTitles[minBracket];
+        }
+    }
+
+    return "Noob";
+}
+
+
 
 void Go :: AddChild (Go * child)
 {
@@ -245,7 +490,8 @@ bool Go :: IsActor () const
 
 bool Go :: IsArmor () const
 {
-	return m_actor == NULL && m_aspect != NULL && m_common != NULL && m_defend != NULL && m_mind == NULL && m_placement != NULL;
+	return IsItem() && m_defend != NULL;
+	//return m_actor == NULL && m_aspect != NULL && m_common != NULL && m_defend != NULL && m_mind == NULL && m_placement != NULL;
 }
 
 bool Go :: IsBreakable () const
@@ -292,7 +538,7 @@ bool Go :: IsMeleeWeapon () const
 {
 	if (m_attack != NULL)
 	{
-		//return m_attack->IsMelee();
+		return m_attack->IsMelee();
 	}
 	
 	return false;
@@ -302,7 +548,7 @@ bool Go :: IsRangedWeapon () const
 {
 	if (m_attack != NULL)
 	{
-		//return m_attack->IsRanged();
+		return m_attack->IsRanged();
 	}
 	
 	return false;
@@ -310,12 +556,12 @@ bool Go :: IsRangedWeapon () const
 
 bool Go :: IsSpell () const
 {
-	return false;
+	return HasMagic();
 }
 
 bool Go :: IsSpellBook () const
 {
-	return false;
+	return IsItem() && m_inventory != NULL;
 }
 
 bool Go :: IsTeamMember (const Go * go) const
@@ -325,7 +571,8 @@ bool Go :: IsTeamMember (const Go * go) const
 
 bool Go :: IsWeapon () const
 {
-	return m_actor == NULL && m_aspect != NULL && m_attack != NULL && m_common != NULL && m_mind == NULL && m_placement != NULL;
+	return m_attack != NULL && IsItem();
+	//return m_actor == NULL && m_aspect != NULL && m_attack != NULL && m_common != NULL && m_mind == NULL && m_placement != NULL;
 }
 
 void Go :: RemoveAllChildren ()
@@ -464,6 +711,16 @@ eLifeState Go :: LifeState () const
 	return ls_ignore;
 }
 
+GoMagic * Go :: Magic () const
+{
+	if (m_magic != NULL)
+	{
+		return m_magic;
+	}
+
+	throw logic_error ("null pointer referenced");
+}
+
 GoMind * Go :: Mind () const
 {
 	if (m_mind != NULL)
@@ -527,109 +784,31 @@ void Go :: RemoveComponent (const string & component)
 		m_scripts.erase (iterator);
 	}
 }
-/*
-int Go :: GetComponentInt (const string & component, const string & property)
-{
-	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
-	if (iterator != m_scripts.end())
-	{
-		GoScriptComponent * script = iterator->second;
-		return script->GetComponentInt (property);
-	}
-	
-	return 0;
-}
-
-float Go :: GetComponentFloat (const string & component, const string & property)
-{
-	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
-	if (iterator != m_scripts.end())
-	{
-		GoScriptComponent * script = iterator->second;
-		return script->GetComponentFloat (property);
-	}
-	
-	return 0.0f;
-}
-
-bool Go :: GetComponentBool (const string & component, const string & property)
-{
-	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
-	if (iterator != m_scripts.end())
-	{
-		GoScriptComponent * script = iterator->second;
-		return script->GetComponentBool (property);
-	}
-	
-	return false;
-}
-
-string Go :: GetComponentString (const string & component, const string & property)
-{
-	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
-	if (iterator != m_scripts.end())
-	{
-		GoScriptComponent * script = iterator->second;
-		return script->GetComponentString (property);
-	}
-	
-	return "";
-}
-
-void Go :: SetComponentInt (const string & component, const string & property, int value)
-{
-	map<string, GoScriptComponent*>::iterator iterator = m_scripts.find (component);
-	if (iterator != m_scripts.end())
-	{
-		GoScriptComponent * script = iterator->second;
-		script->SetComponentInt (property, value);
-	}
-}
-
-void Go :: SetComponentFloat (const string & component, const string & property, float value)
-{
-	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
-	if (iterator != m_scripts.end())
-	{
-		GoScriptComponent * script = iterator->second;
-		script->SetComponentFloat (property, value);
-	}
-}
-
-void Go :: SetComponentBool (const string & component, const string & property, bool value)
-{
-	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
-	if (iterator != m_scripts.end())
-	{
-		GoScriptComponent * script = iterator->second;
-		script->SetComponentBool (property, value);
-	}
-}
-
-void Go :: SetComponentString (const string & component, const string & property, const string & value)
-{
-	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
-	if (iterator != m_scripts.end())
-	{
-		GoScriptComponent * script = iterator->second;
-		script->SetComponentString (property, value);
-	}
-}
-*/
-
-
 
 void Go::SaveToXml(const std::string& folderName)
 {
     const std::string idStr = std::to_string(Goid());
     const std::string path = "data/dynamic/" + folderName + "/" + idStr + ".xml";
 
-    cout << "Saving Character " << idStr << std::endl;
-
     xmlDoc* doc = xml::LoadFile(path);
     if (!doc) {
-        std::cerr << "Failed to open " << path << std::endl;
-        return;
+        std::cerr << "Failed to open " << path << ". Creating new xml" << std::endl;
+
+		// Create the XML file for the region
+		ofstream file(path);
+		if (!file.is_open())
+		{
+			cerr << "Failed to create item XML file: " << path << endl;
+			return;
+		}
+		file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+		file << "<objects>\n";
+		file << "<go id=\"" << idStr << "\">\n";
+		file << "</go>\n";
+		//file << "<go id=\"" << (size_t)10000 + engine.GetItems().size() << "\">\n";
+		file << "</objects>\n";
+		file.close();
+        //return;
     }
 
     xmlNodePtr root = xmlDocGetRootElement(doc);
@@ -691,3 +870,135 @@ void Go::SaveToXml(const std::string& folderName)
 
     xmlFreeDoc(doc);
 }
+
+void Go :: CalculateStatus()
+{
+	//cout << "Entering Calc Status" << endl;
+	float hpAmount = 0;
+	float mpAmount = 0;
+	if (Actor()->CanLevelUp())
+	{
+		// Max HP/MP & Recovery Unit
+		float strLevel = (std::floor(Actor()->GetSkillLevel("strength")) + 1.0);
+		float dexLevel = (std::floor(Actor()->GetSkillLevel("dexterity")) + 1.0);
+		float intLevel = (std::floor(Actor()->GetSkillLevel("intelligence")) + 1.0);
+		float strHpAmount = strLevel * 29.4;
+		float dexHpAmount = dexLevel * 9.8;
+		float intHpAmount = intLevel * 9.8;
+		hpAmount = strHpAmount + dexHpAmount + intHpAmount;
+		//cout << "Calculating status for GO: " << Goid() << " total amount: " << hpAmount << endl;
+		Aspect()->SetMaxLife(hpAmount);
+		Aspect()->SetHpRecUnit(strLevel);
+
+		float strMpAmount = strLevel;
+		float dexMpAmount = dexLevel * 4.0;
+		float intMpAmount = intLevel * 25.0;
+		mpAmount = strMpAmount + dexMpAmount + intMpAmount;
+		Aspect()->SetMaxMana(mpAmount);
+		Aspect()->SetMpRecUnit(intLevel);
+
+		// min/max dmg
+		float minDmg = 2.0 + ((strLevel -1.0) * 1.4);
+		float maxDmg = 4.0 + ((strLevel -1.0) * 1.6);
+		//cout << "strLevel: " << strLevel << " damage min: " << minDmg << " damage max: " << maxDmg << endl;
+		Attack()->SetDamageMin(minDmg);
+		Attack()->SetDamageMax(maxDmg);
+	}
+	else
+	{
+		//cout << "Calculating status for GO: " << Goid() << " cant level up" << endl;
+		// if NPC set hardcoded maxlife val
+		// maxLife = maxLife + totalAmounts;
+		//float maxLife = godb.GetTemplate(Aspect()->GetModelName())->Aspect()->MaxLife();
+	}
+}
+
+/*
+int Go :: GetComponentInt (const string & component, const string & property)
+{
+	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
+	if (iterator != m_scripts.end())
+	{
+		GoScriptComponent * script = iterator->second;
+		return script->GetComponentInt (property);
+	}
+
+	return 0;
+}
+
+float Go :: GetComponentFloat (const string & component, const string & property)
+{
+	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
+	if (iterator != m_scripts.end())
+	{
+		GoScriptComponent * script = iterator->second;
+		return script->GetComponentFloat (property);
+	}
+
+	return 0.0f;
+}
+
+bool Go :: GetComponentBool (const string & component, const string & property)
+{
+	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
+	if (iterator != m_scripts.end())
+	{
+		GoScriptComponent * script = iterator->second;
+		return script->GetComponentBool (property);
+	}
+
+	return false;
+}
+
+string Go :: GetComponentString (const string & component, const string & property)
+{
+	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
+	if (iterator != m_scripts.end())
+	{
+		GoScriptComponent * script = iterator->second;
+		return script->GetComponentString (property);
+	}
+
+	return "";
+}
+
+void Go :: SetComponentInt (const string & component, const string & property, int value)
+{
+	map<string, GoScriptComponent*>::iterator iterator = m_scripts.find (component);
+	if (iterator != m_scripts.end())
+	{
+		GoScriptComponent * script = iterator->second;
+		script->SetComponentInt (property, value);
+	}
+}
+
+void Go :: SetComponentFloat (const string & component, const string & property, float value)
+{
+	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
+	if (iterator != m_scripts.end())
+	{
+		GoScriptComponent * script = iterator->second;
+		script->SetComponentFloat (property, value);
+	}
+}
+
+void Go :: SetComponentBool (const string & component, const string & property, bool value)
+{
+	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
+	if (iterator != m_scripts.end())
+	{
+		GoScriptComponent * script = iterator->second;
+		script->SetComponentBool (property, value);
+	}
+}
+
+void Go :: SetComponentString (const string & component, const string & property, const string & value)
+{
+	map<string, GoScriptComponent *>::iterator iterator = m_scripts.find (component);
+	if (iterator != m_scripts.end())
+	{
+		GoScriptComponent * script = iterator->second;
+		script->SetComponentString (property, value);
+	}
+}
+*/

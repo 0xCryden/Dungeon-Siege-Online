@@ -22,6 +22,19 @@ ip:0 = 127.0.0.1
 ```
 
 
+# Current State
+
+Can create new account & characters (settings are WIP)
+
+Can join UP, walk around, fight with other players, level up, use & equip weapons & armor & spellbooks
+
+All relevant data gets saved for server restarts
+
+Server reads given .gas files but conversion to Gos is WIP
+
+Server generates missing map information when needed during runtime
+
+
 # Playing
 
 Make sure all the .dll files and the [data](https://github.com/0xCryden/Dungeon-Siege-Online/tree/master/server/data) folder from the [bin](https://github.com/0xCryden/Dungeon-Siege-Online/tree/master/bin) folder are in the same directory as the [dsmmorpg.exe](https://github.com/0xCryden/Dungeon-Siege-Online/blob/master/bin/dsmmorpg.exe)
@@ -34,15 +47,18 @@ Launch the game
 
 Again make sure accept any new Firewall prompts
 
-Log in as any of the existing [accounts](https://github.com/0xCryden/Dungeon-Siege-Online/blob/master/server/data/dynamic/accounts.xml) (eg. Username "aanderse" and password "a") (Username is case sensitive)
-
 
 # Current Challenges
 
-Dropped Spellbooks leave a false copy of their contents on the ground
+Missing: spells, mobs, quests, shops, items/pcontent
 
-Network character "portal" doesnt follow you around so your client cant use the network messages if you leave the spawn point too far
+If you unequip your unselected weapon and relog without overwriting the old empty slot you will have the weapon reequipped upon login
 
-Players cannot fight
+PvP toggle
 
-Serversided NPCs are missing
+
+# Other TODOs
+
+Make server convert the read .gas files to Gos
+
+Implement serversided network rate limit

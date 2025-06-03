@@ -16,12 +16,19 @@
  */
  
  #include "k_inc_dsmmorpg_combat"
+ #include "k_inc_rs_packet"
 
 Goid CreateAddItem$ (Goid actor$, int id$, bool db$, eEquipSlot slot$, string model$, eInventoryLocation loc$)
 {
 	GoCloneReq req$ = MakeGoCloneReq (model$);
 	Goid item$ = GoDb.SCloneGo (req$); 
 	report.screenF("CreateAddItem ID: %d", id$);
+
+	if (item$.Go.IsInsideInventory())
+	{
+		report.screenF("IsInInv: true ID: %d", id$);
+	}
+
 	if (item$.IsValid())
 	{
 		if (db$)
@@ -29,8 +36,6 @@ Goid CreateAddItem$ (Goid actor$, int id$, bool db$, eEquipSlot slot$, string mo
 			string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
 			GameAuditor.GetDb.SetInt (tmp$, MakeInt (item$));
 		}
-		
-		//report.genericF("Item Location: %d", loc$);
 		//report.screenF("Item Location: %d ID: %d", loc$, id$);
 
 		actor$.Go.Inventory.RSAdd (item$.Go, loc$, ao_human, true);
@@ -39,12 +44,26 @@ Goid CreateAddItem$ (Goid actor$, int id$, bool db$, eEquipSlot slot$, string mo
 		{
 			report.screenf("[DEBUG CREATEITEM]  parentId: %d\n", owner.Go.Parent.GetComponentInt("object", "id"));
 		}
-		//actor$.Go.Inventory.RSSetLocation (item$.Go, loc$, true);
+
+		actor$.Go.Inventory.RSSetLocation (item$.Go, loc$, false);
 		
-		if (slot$ != es_none)
+		if ((slot$ != es_none) || 
+			(loc$ == il_active_melee_weapon) || 
+			(loc$ == il_active_ranged_weapon)|| 
+			(loc$ == il_shield))
 		{
+			if (loc$ == il_active_melee_weapon)
+			{
+				slot$ = es_weapon_hand;
+			}
+			else if ((loc$ == il_active_ranged_weapon) || (loc$ == il_shield))
+			{
+				slot$ = es_shield_hand;
+			}
+
 			actor$.Go.Inventory.RSAutoEquip (slot$, item$, ao_human, false);
 		}
+
 		if (item$.Go.HasComponent ("object"))
 		{
 			item$.Go.SetComponentInt ("object", "id", id$);
@@ -57,6 +76,168 @@ Goid CreateAddItem$ (Goid actor$, int id$, bool db$, eEquipSlot slot$, string mo
 void RCInvenMove$ (Packet packet$)
 {
 	int test32$ = 0;
+}
+
+Goid spawn_base$ (int node$)
+{
+	GoCloneReq req$ = MakeGoCloneReq ("cow_black_white");
+	req$.SnapToTerrain = true;
+	req$.StartingPos = SiegePos.Make (0.000000, 0.000000, 0.00000, node$);
+	
+	return GoDb.SCloneGo (req$);
+}
+
+Goid spawn_offset$ (int node$)
+{
+	GoCloneReq req$ = MakeGoCloneReq ("cow_brown");
+	req$.SnapToTerrain = true;
+	req$.StartingPos = SiegePos.Make (1.000000, 0.000000, 1.00000, node$);
+	
+	return GoDb.SCloneGo (req$);
+}
+
+void RCReqNodeInfo$ (Packet packet$)
+{
+	bool log$ = false;
+
+	int lastNodeId$ = packet$.ReadUInt32(); // previous nodes ID
+	float XlastNodeAbsPos$, YlastNodeAbsPos$, ZlastNodeAbsPos$; // previous nodes absolute position in the world^
+	XlastNodeAbsPos$ = packet$.ReadFloat();
+	YlastNodeAbsPos$ = packet$.ReadFloat();
+	ZlastNodeAbsPos$ = packet$.ReadFloat();
+	if (log$ == true)
+	{report.screenf ("lastNodeAbsPos Recv %f/%f/%f", XlastNodeAbsPos$, YlastNodeAbsPos$, ZlastNodeAbsPos$);}
+	int lastNodeRotation$ = packet$.ReadUInt8(); // last nodes rotation/orientation
+	int newNodeId$ = packet$.ReadUInt32(); // previous nodes ID
+	if (log$ == true)
+	{report.screenf ("newNodeId %d", newNodeId$);}
+
+	Goid lastNodeCenter$ = spawn_base$(lastNodeId$); // stores position inside previous node (relative, nodes center)
+	Goid newNodeCenter$ = spawn_base$(newNodeId$); // stores position inside unknown/new node (relative, nodes center)
+	Goid newNodeOffset$ = spawn_offset$(newNodeId$); // stores position inside unknown/new node (relative, nodes center)
+	
+	// old and new node center absolute/world difference
+	Vector diffToNewBase$ = GetZeroVector(); 
+	float XdiffToNewBase$, YdiffToNewBase$, ZdiffToNewBase$;
+	GetSiegeDifference (diffToNewBase$, lastNodeCenter$.Go.Placement.Position, newNodeCenter$.Go.Placement.Position);
+	XdiffToNewBase$ = diffToNewBase$.X;
+	YdiffToNewBase$ = diffToNewBase$.Y;
+	ZdiffToNewBase$ = diffToNewBase$.Z;
+	if (log$ == true)
+	{report.screenf (" + diffToNewBase %f/%f/%f", XdiffToNewBase$, YdiffToNewBase$, ZdiffToNewBase$);}
+
+	//rotate difference vector to adjust for old rotation
+	float XdiffToNewBaseTransformed$, YdiffToNewBaseTransformed$, ZdiffToNewBaseTransformed$;
+	if (lastNodeRotation$ == 1)
+	{
+		XdiffToNewBaseTransformed$ = XdiffToNewBase$;
+		YdiffToNewBaseTransformed$ = YdiffToNewBase$;
+		ZdiffToNewBaseTransformed$ = ZdiffToNewBase$;
+	}
+	else if (lastNodeRotation$ == 2)
+	{
+		XdiffToNewBaseTransformed$ = -ZdiffToNewBase$;
+		YdiffToNewBaseTransformed$ = YdiffToNewBase$;
+		ZdiffToNewBaseTransformed$ = XdiffToNewBase$;
+	}
+	else if (lastNodeRotation$ == 3)
+	{
+		XdiffToNewBaseTransformed$ = -XdiffToNewBase$;
+		YdiffToNewBaseTransformed$ = YdiffToNewBase$;
+		ZdiffToNewBaseTransformed$ = -ZdiffToNewBase$;
+	}
+	else if (lastNodeRotation$ == 4)
+	{
+		XdiffToNewBaseTransformed$ = ZdiffToNewBase$;
+		YdiffToNewBaseTransformed$ = YdiffToNewBase$;
+		ZdiffToNewBaseTransformed$ = -XdiffToNewBase$;
+	}
+
+	//	new node absolute/world position
+	float XnewNodeAbsPos$, YnewNodeAbsPos$, ZnewNodeAbsPos$;
+	XnewNodeAbsPos$ = XlastNodeAbsPos$ + XdiffToNewBaseTransformed$;
+    YnewNodeAbsPos$ = YlastNodeAbsPos$ + YdiffToNewBaseTransformed$;
+    ZnewNodeAbsPos$ = ZlastNodeAbsPos$ + ZdiffToNewBaseTransformed$;
+	if (log$ == true)
+	{report.screenf (" = newNodeAbsPos %f/%f/%f", XnewNodeAbsPos$, YnewNodeAbsPos$, ZnewNodeAbsPos$);}
+
+	// old center and new offset difference
+	Vector diffToNewOffset$ = GetZeroVector();
+	float XdiffToNewOffset$, YdiffToNewOffset$, ZdiffToNewOffset$;
+	GetSiegeDifference (diffToNewOffset$, lastNodeCenter$.Go.Placement.Position, newNodeOffset$.Go.Placement.Position);
+	XdiffToNewOffset$ = diffToNewOffset$.X;
+	YdiffToNewOffset$ = diffToNewOffset$.Y;
+	ZdiffToNewOffset$ = diffToNewOffset$.Z;
+	if (log$ == true)
+	{report.screenf ("diffToNewOffset %f/%f/%f", XdiffToNewOffset$, YdiffToNewOffset$, ZdiffToNewOffset$);}
+
+	float XdiffToNewOffsetTransformed$, YdiffToNewOffsetTransformed$, ZdiffToNewOffsetTransformed$;
+	if (lastNodeRotation$ == 1)
+	{
+		XdiffToNewOffsetTransformed$ = XdiffToNewOffset$;
+		YdiffToNewOffsetTransformed$ = YdiffToNewOffset$;
+		ZdiffToNewOffsetTransformed$ = ZdiffToNewOffset$;
+	}
+	else if (lastNodeRotation$ == 2)
+	{
+		XdiffToNewOffsetTransformed$ = -ZdiffToNewOffset$;
+		YdiffToNewOffsetTransformed$ = YdiffToNewOffset$;
+		ZdiffToNewOffsetTransformed$ = XdiffToNewOffset$;
+	}
+	else if (lastNodeRotation$ == 3)
+	{
+		XdiffToNewOffsetTransformed$ = -XdiffToNewOffset$;
+		YdiffToNewOffsetTransformed$ = YdiffToNewOffset$;
+		ZdiffToNewOffsetTransformed$ = -ZdiffToNewOffset$;
+	}
+	else if (lastNodeRotation$ == 4)
+	{
+		XdiffToNewOffsetTransformed$ = ZdiffToNewOffset$;
+		YdiffToNewOffsetTransformed$ = YdiffToNewOffset$;
+		ZdiffToNewOffsetTransformed$ = -XdiffToNewOffset$;
+	}
+
+	// new offset absolute/world position
+	float XnewOffsetAbsPos$, YnewOffsetAbsPos$, ZnewOffsetAbsPos$;
+    XnewOffsetAbsPos$ = XlastNodeAbsPos$ + XdiffToNewOffsetTransformed$;
+    YnewOffsetAbsPos$ = YlastNodeAbsPos$ + YdiffToNewOffsetTransformed$;
+    ZnewOffsetAbsPos$ = ZlastNodeAbsPos$ + ZdiffToNewOffsetTransformed$;
+	if (log$ == true)
+	{report.screenf ("newOffsetAbsPos %f/%f/%f", XnewOffsetAbsPos$, YnewOffsetAbsPos$, ZnewOffsetAbsPos$);}
+
+	// absolute direction the new offset cow stands in comparison to new base cow
+	float XfacingVec$, YfacingVec$, ZfacingVec$;
+    //XfacingVec$ = XnewNodeAbsPos$ - XnewOffsetAbsPos$;
+    //YfacingVec$ = YnewNodeAbsPos$ - YnewOffsetAbsPos$;
+    //ZfacingVec$ = ZnewNodeAbsPos$ - ZnewOffsetAbsPos$;
+    XfacingVec$ = XnewOffsetAbsPos$ - XnewNodeAbsPos$;
+    YfacingVec$ = YnewOffsetAbsPos$ - YnewNodeAbsPos$;
+    ZfacingVec$ = ZnewOffsetAbsPos$ - ZnewNodeAbsPos$;
+	if (log$ == true)
+	{report.screenf ("facingVec %f/%f/%f", XfacingVec$, YfacingVec$, ZfacingVec$);}
+
+	//calculate rotation based on which axis of offset is bigger or smaller than which axis of base
+	int newNodeRotation$ = 0;
+	if ((XfacingVec$ <= -1) && (ZfacingVec$ >= 1)) { newNodeRotation$ = 2; }
+	if ((XfacingVec$ >= 1) && (ZfacingVec$ >= 1)) { newNodeRotation$ = 1; }
+	if ((XfacingVec$ <= -1) && (ZfacingVec$ <= -1)) { newNodeRotation$ = 3; }
+	if ((XfacingVec$ >= 1) && (ZfacingVec$ <= -1)) { newNodeRotation$ = 4; }
+	if (log$ == true)
+	{report.screenf ("newNodeRotation: %d", newNodeRotation$);}
+
+	// coordinates
+	float newNodeX$ = Math.Round(XlastNodeAbsPos$ + XdiffToNewBaseTransformed$);
+	float newNodeY$ = Math.Round(YlastNodeAbsPos$ + YdiffToNewBaseTransformed$);
+	float newNodeZ$ = Math.Round(ZlastNodeAbsPos$ + ZdiffToNewBaseTransformed$);
+
+	//lastNodeCenter$.Go.Aspect.AspectHandle.SetHideMeshFlag( true );
+	//newNodeCenter$.Go.Aspect.AspectHandle.SetHideMeshFlag( true );
+	//newNodeOffset$.Go.Aspect.AspectHandle.SetHideMeshFlag( true );
+	// Send to server for it to add the new node
+	RSReqNodeInfo$(newNodeId$, newNodeX$, newNodeY$, newNodeZ$, newNodeRotation$);
+	PostWorldMessage(we_req_delete, lastNodeCenter$, lastNodeCenter$, 0.0);
+	PostWorldMessage(we_req_delete, newNodeCenter$, newNodeCenter$, 0.0);
+	PostWorldMessage(we_req_delete, newNodeOffset$, newNodeOffset$, 0.0);
 }
 
 void RCCreateActor$ (Packet packet$)
@@ -73,6 +254,30 @@ void RCCreateActor$ (Packet packet$)
 	float y$ = packet$.ReadFloat();
 	float z$ = packet$.ReadFloat();
 	
+	float maxHp$ = packet$.ReadFloat();
+	float hp$ = packet$.ReadFloat();
+	float maxMana$ = packet$.ReadFloat();
+	float mana$ = packet$.ReadFloat();
+	int ls$ = packet$.ReadUInt8();
+
+	float uberLvl$ = packet$.ReadFloat();
+	float strLvl$ = packet$.ReadFloat();
+	float intLvl$ = packet$.ReadFloat();
+	float dexLvl$ = packet$.ReadFloat();
+	float meleeLvl$ = packet$.ReadFloat();
+	float rangedLvl$ = packet$.ReadFloat();
+	float natureLvl$ = packet$.ReadFloat();
+	float combatLvl$ = packet$.ReadFloat();
+
+	float uberExp$ = packet$.ReadFloat();
+	float strExp$ = packet$.ReadFloat();
+	float intExp$ = packet$.ReadFloat();
+	float dexExp$ = packet$.ReadFloat();
+	float meleeExp$ = packet$.ReadFloat();
+	float rangedExp$ = packet$.ReadFloat();
+	float natureExp$ = packet$.ReadFloat();
+	float combatExp$ = packet$.ReadFloat();
+	
 	// report.screenf ("creating %d with name %s and model %s with textures %s and %s", id$, name$, model$, flesh$, cloth$);
 	//report.screenf ("create go at %f, %f, %f", x$, y$, z$);
 	
@@ -80,16 +285,87 @@ void RCCreateActor$ (Packet packet$)
 	req$.SnapToTerrain = true;
 	req$.FadeIn = true;
 	req$.StartingPos = SiegePos.Make (x$, y$, z$, node$);
-	
-	Goid actor$ = GoDb.SCloneGo (req$);
-	
+
+	Goid actor$;
+	Siegedatabase_guid nodeGuid$ = Siegedatabase_guid.Make( node$ );
+	if ( nodeGuid$.IsNodeInAnyFrustum()) {
+  		actor$ = GoDb.SCloneGo(req$);
+	}
+
 	if (actor$.IsValid())
 	{
 		string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
 		GameAuditor.GetDb.SetInt (tmp$, MakeInt (actor$));
 		
-		actor$.Go.Actor.SSetAlignment (MakeActorAlignment (alignment$));
+
+		actor$.Go.Actor.SetBaseSkillLevel ("uber", uberLvl$);
+		actor$.Go.Actor.SetBaseSkillLevel ("strength", strLvl$);
+		actor$.Go.Actor.SetBaseSkillLevel ("intelligence", intLvl$);
+		actor$.Go.Actor.SetBaseSkillLevel ("dexterity", dexLvl$);
+		actor$.Go.Actor.SetBaseSkillLevel ("melee", meleeLvl$);
+		actor$.Go.Actor.SetBaseSkillLevel ("ranged", rangedLvl$);
+		actor$.Go.Actor.SetBaseSkillLevel ("nature magic", natureLvl$);
+		actor$.Go.Actor.SetBaseSkillLevel ("combat magic", combatLvl$);
+
+		actor$.Go.Actor.SetSkillExperience ("uber", uberExp$);
+		/*actor$.Go.Actor.SetSkillExperience ("strength", strExp$);
+		actor$.Go.Actor.SetSkillExperience ("intelligence", intExp$);
+		actor$.Go.Actor.SetSkillExperience ("dexterity", dexExp$);
+		actor$.Go.Actor.SetSkillExperience ("melee", meleeExp$);
+		actor$.Go.Actor.SetSkillExperience ("ranged", rangedExp$);
+		actor$.Go.Actor.SetSkillExperience ("nature magic", natureExp$);
+		actor$.Go.Actor.SetSkillExperience ("combat magic", combatExp$);*/
+
+		actor$.Go.Aspect.RCSetMaxLife(maxHp$);
+		actor$.Go.Aspect.RCSetCurrentLife(hp$);
+
+		actor$.Go.Aspect.RCSetMaxMana(maxMana$);
+		actor$.Go.Aspect.RCSetCurrentMana(mana$);
 		
+		actor$.Go.Aspect.RCSetLifeState(MakeLifeState(ls$));
+
+		if (MakeLifeState(ls$) == ls_alive_conscious)
+		{
+			// revive the character
+			actor$.Go.Mind.SetMayAttack (true);
+			actor$.Go.Mind.SetMayBeAttacked (true);
+				
+			PostWorldMessage (WE_GAINED_CONSCIOUSNESS, actor$, actor$, 0);
+		}
+		else if (MakeLifeState(ls$) == ls_alive_unconscious)
+		{
+			actor$.Go.Mind.SetMayAttack (false);
+			actor$.Go.Mind.SetMayBeAttacked (false);
+				
+			PostWorldMessage (WE_LOST_CONSCIOUSNESS, actor$, actor$, 0);
+			actor$.Go.PlayVoiceSound ("die", 5, 80, false);
+		}
+		else if (MakeLifeState(ls$) == ls_dead_normal)
+		{
+			actor$.Go.Mind.SetMayAttack (false);
+			actor$.Go.Mind.SetMayBeAttacked (false);
+				
+			PostWorldMessage (WE_LOST_CONSCIOUSNESS, actor$, actor$, 0);
+			actor$.Go.PlayVoiceSound ("die", 5, 80, false);
+		}
+		else if (MakeLifeState(ls$) == ls_dead_charred)
+		{
+		}
+		else if (MakeLifeState(ls$) == ls_decay_fresh)
+		{
+		}
+		else if (MakeLifeState(ls$) == ls_decay_bones)
+		{
+		}
+		else if (MakeLifeState(ls$) == ls_decay_dust)
+		{
+		}
+		else if (MakeLifeState(ls$) == ls_ghost)
+		{
+		}
+
+		actor$.Go.Actor.SSetAlignment (MakeActorAlignment (alignment$));
+
 		if (actor$.Go.HasComponent ("object"))
 		{
 			actor$.Go.SetComponentInt ("object", "id", id$);
@@ -145,6 +421,7 @@ void RCCreateActor$ (Packet packet$)
 	}
 }
 
+//spawns items in environment
 void RCCreateItem$ (Packet packet$)
 {
 	int id$ = packet$.ReadUInt32();
@@ -154,17 +431,18 @@ void RCCreateItem$ (Packet packet$)
 	float x$ = packet$.ReadFloat();
 	float y$ = packet$.ReadFloat();
 	float z$ = packet$.ReadFloat();
-	
+	int hasInv$ = packet$.ReadUInt8();
+
 	GoCloneReq req$ = MakeGoCloneReq (model$);
 	req$.SnapToTerrain = true;
 	req$.FadeIn = true;
 	req$.StartingPos = SiegePos.Make (x$, y$, z$, node$);
 	
 	Goid item$ = GoDb.SCloneGo (req$);
-	report.screenF("CreateAddItem ID: %d | %f, %f, %f ", id$, x$, y$, z$);
+	report.screenF("RCCreateItem ID: %d | %f, %f, %f ", id$, x$, y$, z$);
 	if (item$.IsValid())
 	{
-		//report.screenF("CreateAddItem ID: %d | %f, %f, %f ", id$, x$, y$, z$);
+		report.screenF("isValid");
 		string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
 		GameAuditor.GetDb.SetInt (tmp$, MakeInt (item$));
 		
@@ -172,35 +450,46 @@ void RCCreateItem$ (Packet packet$)
 		{
 			item$.Go.SetComponentInt ("object", "id", id$);
 		}
-		
 		if (name$ != "")
 		{
 			item$.Go.Common.SSetScreenName (name$);
 		}
 	
-		int hasInv3$ = packet$.ReadUInt8();
-		if (hasInv3$ == 1)
+		if (hasInv$ == 1)
 		{
-			int count3$ = packet$.ReadUInt8();
-			while (count3$ > 0)
+			report.screenF("hasInv");
+			int count$ = packet$.ReadUInt8();
+			while (count$ > 0)
 			{
-				int id3$ = packet$.ReadUInt32();
-				string name3$ = packet$.ReadString();
-				int slot3$ = packet$.ReadUInt8();
-				int loc3$ = packet$.ReadUInt8();
-				int containerId3$ = packet$.ReadUInt32();
-				string model3$ = packet$.ReadString();
-				int hasInv3$ = packet$.ReadUInt8();
+				int childId$ = packet$.ReadUInt32();
+				report.screenF("childId: %d", childId$);
+				string childName$ = packet$.ReadString();
+				int slot$ = packet$.ReadUInt8();
+				int loc$ = packet$.ReadUInt8();
+				int containerId$ = packet$.ReadUInt32();
+				string childModel$ = packet$.ReadString();
+				int childHasInv$ = packet$.ReadUInt8();
 				
-				Goid item3$ = CreateAddItem$ (item$, id3$, false, MakeEquipSlot (slot3$), model3$, MakeInvenLocation (loc3$));
+				report.screenf ("childId: %d", childId$);
+
+				/*string tomp$; StringTool.AssignF (tomp$, "godb:%d", childId$);
+				Goid childItem$ = MakeGoid (GameAuditor.GetDb.GetInt (tomp$));
+
+				PostWorldMessage (we_req_delete, childItem$, childItem$, 0.0);*/
+
+				Goid childItem$ = CreateAddItem$ (item$, childId$, false, MakeEquipSlot (slot$), childModel$, MakeInvenLocation (loc$));
 				
-				if (item3$.IsValid())
+				if (childItem$.IsValid())
 				{
-					item3$.Go.Common.SSetScreenName (name3$);
-					item$.Go.Inventory.RSTransfer(item3$.Go, item$.Go, MakeInvenLocation(loc3$), AO_HUMAN, false);
+					report.screenF("isValid 2");
+					string childTmp$; StringTool.AssignF (childTmp$, "godb:%d", childId$);
+					GameAuditor.GetDb.SetInt (childTmp$, MakeInt (childItem$));
+
+					childItem$.Go.Common.SSetScreenName (childName$);
+					item$.Go.Inventory.RSTransfer(childItem$.Go, item$.Go, MakeInvenLocation(loc$), AO_HUMAN, false);
 				}
 	
-				count3$ -= 1;
+				count$ -= 1;
 			}
 		}
 	}
@@ -221,10 +510,25 @@ void RCDestroyGo$ (Packet packet$)
 	GameAuditor.GetDb.SetInt (tmp$, 0);
 }
 
+trigger OnTimer$ ( 1 )
+{
+	UIShell.SendUIMessage( msg_onuncheck, "awp_radio_button_character_1_slot_2", "character_awp" );
+	UIShell.SendUIMessage( msg_onuncheck, "awp_radio_button_character_1_slot_3", "character_awp" );
+	UIShell.SendUIMessage( msg_onuncheck, "awp_radio_button_character_1_slot_4", "character_awp" );
+	UIShell.SendUIMessage( msg_oncheck, "awp_radio_button_character_1_slot_1", "character_awp" );
+}
+
 void RCSetScreenHero$ (Packet packet$)
 {
 	int id$ = packet$.ReadUInt32();
 	
+	float maxHp$ = packet$.ReadFloat();
+	float hp$ = packet$.ReadFloat();
+	float maxMana$ = packet$.ReadFloat();
+	float mana$ = packet$.ReadFloat();
+	int ls$ = packet$.ReadUInt8();
+
+	float uber$ = packet$.ReadFloat();
 	float strength$ = packet$.ReadFloat();
 	float intelligence$ = packet$.ReadFloat();
 	float dexterity$ = packet$.ReadFloat();
@@ -232,10 +536,19 @@ void RCSetScreenHero$ (Packet packet$)
 	float ranged$ = packet$.ReadFloat();
 	float nmagic$ = packet$.ReadFloat();
 	float cmagic$ = packet$.ReadFloat();
-	
+
+	float uberExp$ = packet$.ReadFloat();
+	float strengthExp$ = packet$.ReadFloat();
+	float intelligenceExp$ = packet$.ReadFloat();
+	float dexterityExp$ = packet$.ReadFloat();
+	float meleeExp$ = packet$.ReadFloat();
+	float rangedExp$ = packet$.ReadFloat();
+	float natureExp$ = packet$.ReadFloat();
+	float combatExp$ = packet$.ReadFloat();
+
 	string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
 	Goid actor$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
-	
+
 	if (actor$.IsValid())
 	{
 		Go hero$ = Server.ScreenHero;
@@ -248,6 +561,13 @@ void RCSetScreenHero$ (Packet packet$)
 		hero$.Actor.SSetAlignment (actor$.Go.Actor.Alignment);
 		// hero$.Actor.SSetAlignment (aa_evil);
 		
+		hero$.Aspect.RCSetMaxLife(maxHp$);
+		hero$.Aspect.RCSetCurrentLife(hp$);
+
+		hero$.Aspect.RCSetMaxMana(maxMana$);
+		hero$.Aspect.RCSetCurrentMana(mana$);
+
+		hero$.Actor.SetBaseSkillLevel ("uber", uber$);
 		hero$.Actor.SetBaseSkillLevel ("strength", strength$);
 		hero$.Actor.SetBaseSkillLevel ("intelligence", intelligence$);
 		hero$.Actor.SetBaseSkillLevel ("dexterity", dexterity$);
@@ -255,7 +575,59 @@ void RCSetScreenHero$ (Packet packet$)
 		hero$.Actor.SetBaseSkillLevel ("ranged", ranged$);
 		hero$.Actor.SetBaseSkillLevel ("nature magic", nmagic$);
 		hero$.Actor.SetBaseSkillLevel ("combat magic", cmagic$);
-		
+
+		//report.screenf("melee %f ranged %f nature %f combat %f", meleeExp$, rangedExp$, natureExp$, combatExp$);
+		hero$.Actor.SetSkillExperience ("uber", uberExp$);
+		/*hero$.Actor.SetSkillExperience ("strength", strengthExp$);
+		hero$.Actor.SetSkillExperience ("intelligence", intelligenceExp$);
+		hero$.Actor.SetSkillExperience ("dexterity", dexterityExp$);*/
+		hero$.Actor.SetSkillExperience ("melee", meleeExp$);
+		hero$.Actor.SetSkillExperience ("ranged", rangedExp$);
+		hero$.Actor.SetSkillExperience ("nature magic", natureExp$);
+		hero$.Actor.SetSkillExperience ("combat magic", combatExp$);
+
+		hero$.Aspect.RCSetLifeState(MakeLifeState(ls$));
+
+		if (MakeLifeState(ls$) == ls_alive_conscious)
+		{
+			// revive the character
+			hero$.Mind.SetMayAttack (true);
+			hero$.Mind.SetMayBeAttacked (true);
+				
+			PostWorldMessage (WE_GAINED_CONSCIOUSNESS, hero$.Goid, hero$.Goid, 100);
+		}
+		else if (MakeLifeState(ls$) == ls_alive_unconscious)
+		{
+			hero$.Mind.SetMayAttack (false);
+			hero$.Mind.SetMayBeAttacked (false);
+				
+			PostWorldMessage (WE_LOST_CONSCIOUSNESS, hero$.Goid, hero$.Goid, 100);
+			hero$.PlayVoiceSound ("die", 5, 80, false);
+		}
+		else if (MakeLifeState(ls$) == ls_dead_normal)
+		{
+			hero$.Mind.SetMayAttack (false);
+			hero$.Mind.SetMayBeAttacked (false);
+				
+			PostWorldMessage (WE_LOST_CONSCIOUSNESS, hero$.Goid, hero$.Goid, 100);
+			hero$.PlayVoiceSound ("die", 5, 80, false);
+		}
+		else if (MakeLifeState(ls$) == ls_dead_charred)
+		{
+		}
+		else if (MakeLifeState(ls$) == ls_decay_fresh)
+		{
+		}
+		else if (MakeLifeState(ls$) == ls_decay_bones)
+		{
+		}
+		else if (MakeLifeState(ls$) == ls_decay_dust)
+		{
+		}
+		else if (MakeLifeState(ls$) == ls_ghost)
+		{
+		}
+
 		int count$ = packet$.ReadUInt8();
 		while (count$ > 0)
 		{
@@ -266,21 +638,6 @@ void RCSetScreenHero$ (Packet packet$)
 			int containerId$ = packet$.ReadUInt32();
 			string model$ = packet$.ReadString();
 			int hasInv$ = packet$.ReadUInt8();
-			
-			//report.genericF("Item hasInv: %d", hasInv$);
-			//report.screenF("Item hasInv: %d", hasInv$);
-			
-			/*Goid container$;
-			if (containerID$ == 0)
-			{
-				container$ = hero$.Goid;
-			}
-			else
-			{
-				string tmpC$; StringTool.AssignF (tmpC$, "godb:%d", containerID$);
-				container$ = MakeGoid (GameAuditor.GetDb.GetInt (tmpC$));
-			}*/
-
 
 			Goid item$ = CreateAddItem$ (hero$.Goid, id$, false, MakeEquipSlot (slot$), model$, MakeInvenLocation (loc$));
 			
@@ -322,14 +679,11 @@ void RCSetScreenHero$ (Packet packet$)
 					hero$.Inventory.RSTransfer (item2$.Go, item$.Go , MakeInvenLocation(loc2$), AO_HUMAN, false);
 				}
 			}
-			
 			count$ -= 1;
 		}
-
-		// Find equipped spellbook
-		// RSTransfer or RSSetLocation for all items 
-
 	}
+	this.CreateTimer( 1, 0.1 );
+	//UIShell.SendUIMessage( msg_oncheck, "awp_radio_button_character_1_slot_1", "character_awp" );
 }
 
 void RCMove$ (Packet packet$)
@@ -383,9 +737,18 @@ void RCApproach$ (Packet packet$)
 	}
 }
 
+void RCDisplayMessage$ (Packet p_Packet$)
+{
+	//int id$ = p_Packet$.ReadUInt32();	
+	string message$ = p_Packet$.ReadString();
+	
+	report.screenf ("%s", message$);
+}
+
 void RCChat$ (Packet p_Packet$)
 {
 	int id$ = p_Packet$.ReadUInt32();	
+	string name$ = p_Packet$.ReadString();
 	string message$ = p_Packet$.ReadString();
 	
 	string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
@@ -393,8 +756,6 @@ void RCChat$ (Packet p_Packet$)
 	
 	if (actor$.IsValid())
 	{
-		string name$ = actor$.Go.GetComponentString ("object", "name");
-		
 		GoCloneReq req$ = MakeGoCloneReq ("bubble_speech");
 		req$.StartingPos = actor$.Go.Placement.Position;
 		
@@ -404,7 +765,7 @@ void RCChat$ (Packet p_Packet$)
 		MCPManager.MakeRequest (bubble$, PL_FOLLOW, actor$);
 		PostWorldMessage (we_req_delete, bubble$, bubble$, 10.0);
 		
-		report.screenf ("<%s> %s", name$, message$);
+		report.screenf ("%s: %s", name$, message$);
 	}
 }
 
@@ -468,7 +829,7 @@ void RCEquip$ (Packet packet$)
 	int item$ = packet$.ReadUInt32();
 	string model$ = packet$.ReadString();
 	
-	//report.screenf ("rcequip %d with %s in slot %d for %d", id$, model$, slot$, item$);
+	report.screenf ("rcequip %d with %s in slot %d for %d", id$, model$, slot$, item$);
 	
 	string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
 	Goid actor$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
@@ -484,7 +845,7 @@ void RCUnequip$ (Packet packet$)
 	int id$ = packet$.ReadUInt32();
 	int slot$ = packet$.ReadUInt8();
 	
-	//report.screenf ("unequip slot %d for %d", slot$, id$);
+	report.screenf ("unequip slot %d for %d", slot$, id$);
 	
 	string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
 	Goid actor$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
@@ -502,7 +863,7 @@ void RCUnequip$ (Packet packet$)
 				
 				StringTool.AssignF (tmp$, "godb:%d", id$);
 				GameAuditor.GetDb.SetInt (tmp$, 0);
-				
+
 				PostWorldMessage (we_req_delete, item$.Goid, item$.Goid, 0.0);
 			}
 		}
@@ -524,7 +885,7 @@ void RCAttackMelee$ (Packet packet$)
 	StringTool.AssignF (tmp$, "godb:%d", to$);
 	Goid target$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
 	
-	//report.screenf ("%d will be attack %d with type %d", id$, to$, type$);
+	report.screenf ("%d will be attack %d with type %d", id$, to$, type$);
 	
 	if (actor$.IsValid() && target$.IsValid())
 	{
@@ -595,4 +956,292 @@ void RCRevive$ (Packet packet$)
 	{
 		ReviveCharacter$ (actor$);
 	}
+}
+
+void RCUpdateGo$ (Packet packet$)
+{
+	int id$ = packet$.ReadUInt32();
+
+	float maxHp$ = packet$.ReadFloat();
+	float hp$ = packet$.ReadFloat();
+	float maxMana$ = packet$.ReadFloat();
+	float mana$ = packet$.ReadFloat();
+	
+	int ls$ = packet$.ReadUInt8();
+	//report.screenf ("life state recv: %d", ls$);
+
+	Go temp$ = Server.ScreenHero;
+
+	string tmp$;
+	StringTool.AssignF (tmp$, "godb:%d", id$);
+	Goid actor$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
+
+	int portalId$ = temp$.GetComponentInt ("portal", "id");
+
+	//report.screenf ("actor: %d", actor$);
+	//report.screenf ("portalId: %d", portalId$);
+
+	bool isPortal$ = false;
+	if (actor$ == portalId$)
+	{
+		isPortal$ = true;
+		actor$ = temp$.Goid;
+		report.screenf ("actor is portal, updating oneself");
+	}
+
+	if (!actor$.IsValid())
+		{ return; }
+	
+	//report.screenf ("life state curr: %d", actor$.Go.Aspect.LifeState);
+
+	//if (actor$.Go.Aspect.CurrentLife != hp$)
+	{
+		actor$.Go.Aspect.RCSetMaxLife(maxHp$);
+		actor$.Go.Aspect.RCSetCurrentLife(hp$);
+
+		actor$.Go.Aspect.RCSetMaxMana(maxMana$);
+		actor$.Go.Aspect.RCSetCurrentMana(mana$);
+
+		if (actor$.Go.Aspect.CurrentLife != hp$)
+		{
+			float diff$ = hp$ - actor$.Go.Aspect.CurrentLife;
+			Rules.ChangeLife(actor$, diff$);
+		}
+		if (actor$.Go.Aspect.CurrentMana != mana$)
+		{
+			float diff$ = mana$ - actor$.Go.Aspect.CurrentMana;
+			Rules.ChangeMana(actor$, diff$);
+		}
+
+		//PostWorldMessage (WE_DAMAGED, actor$, actor$, 0);
+	}
+
+	// if was alive and new ls unconscious
+	if (isPortal$ == false)
+	{
+		if (actor$.Go.Aspect.LifeState != MakeLifeState(ls$))
+		{
+			report.screenf ("updatego changing lifestate from %d to %d", actor$.Go.Aspect.LifeState, ls$);
+			report.screenf ("isPortal false");
+			actor$.Go.Aspect.RCSetLifeState(MakeLifeState(ls$));
+			if (MakeLifeState(ls$) == ls_alive_conscious)
+			{
+				report.screenf ("MakeLifeState %d, %d", actor$.Go.Aspect.LifeState, ls$);
+				// revive the character
+				actor$.Go.Mind.SetMayAttack (true);
+				actor$.Go.Mind.SetMayBeAttacked (true);
+					
+				PostWorldMessage (WE_GAINED_CONSCIOUSNESS, actor$, actor$, 0);
+			}
+			else if (MakeLifeState(ls$) == ls_alive_unconscious)
+			{
+				actor$.Go.Mind.SetMayAttack (false);
+				actor$.Go.Mind.SetMayBeAttacked (false);
+					
+				PostWorldMessage (WE_LOST_CONSCIOUSNESS, actor$, actor$, 0);
+				actor$.Go.PlayVoiceSound ("die", 5, 80, false);
+			}
+			else if (MakeLifeState(ls$) == ls_dead_normal)
+			{
+				actor$.Go.Mind.SetMayAttack (false);
+				actor$.Go.Mind.SetMayBeAttacked (false);
+					
+				PostWorldMessage (WE_LOST_CONSCIOUSNESS, actor$, actor$, 0);
+				actor$.Go.PlayVoiceSound ("die", 5, 80, false);
+			}
+			else if (MakeLifeState(ls$) == ls_dead_charred)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_fresh)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_bones)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_dust)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_ghost)
+			{
+			}
+		}
+	}
+	else
+	{
+		//string tmp$;
+		//StringTool.AssignF (tmp$, "godb:%d", id$);
+		//Goid actor$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
+		if (actor$.Go.Aspect.LifeState != MakeLifeState(ls$))
+		{
+			report.screenf ("updatego changing lifestate from %d to %d", actor$.Go.Aspect.LifeState, ls$);
+			actor$.Go.Aspect.RCSetLifeState(MakeLifeState(ls$));
+
+			if (MakeLifeState(ls$) == ls_alive_conscious)
+			{
+				// revive the character
+				actor$.Go.Mind.SetMayAttack (true);
+				actor$.Go.Mind.SetMayBeAttacked (true);
+					
+				PostWorldMessage (WE_GAINED_CONSCIOUSNESS, actor$, actor$, 0);
+			}
+			else if (MakeLifeState(ls$) == ls_alive_unconscious)
+			{
+				actor$.Go.Mind.SetMayAttack (false);
+				actor$.Go.Mind.SetMayBeAttacked (false);
+					
+				PostWorldMessage (WE_LOST_CONSCIOUSNESS, actor$, actor$, 0);
+				actor$.Go.PlayVoiceSound ("die", 5, 80, false);
+			}
+			else if (MakeLifeState(ls$) == ls_dead_normal)
+			{
+				actor$.Go.Mind.SetMayAttack (false);
+				actor$.Go.Mind.SetMayBeAttacked (false);
+					
+				PostWorldMessage (WE_LOST_CONSCIOUSNESS, actor$, actor$, 0);
+				actor$.Go.PlayVoiceSound ("die", 5, 80, false);
+			}
+			else if (MakeLifeState(ls$) == ls_dead_charred)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_fresh)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_bones)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_dust)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_ghost)
+			{
+			}
+		}
+		string tmp$;
+		StringTool.AssignF (tmp$, "godb:%d", id$);
+		Goid actor$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
+		if (actor$.Go.Aspect.LifeState != MakeLifeState(ls$))
+		{
+			report.screenf ("updatego changing lifestate from %d to %d", actor$.Go.Aspect.LifeState, ls$);
+			actor$.Go.Aspect.RCSetLifeState(MakeLifeState(ls$));
+
+			if (MakeLifeState(ls$) == ls_alive_conscious)
+			{
+				// revive the character
+				actor$.Go.Mind.SetMayAttack (true);
+				actor$.Go.Mind.SetMayBeAttacked (true);
+					
+				PostWorldMessage (WE_GAINED_CONSCIOUSNESS, actor$, actor$, 0);
+			}
+			else if (MakeLifeState(ls$) == ls_alive_unconscious)
+			{
+				actor$.Go.Mind.SetMayAttack (false);
+				actor$.Go.Mind.SetMayBeAttacked (false);
+					
+				PostWorldMessage (WE_LOST_CONSCIOUSNESS, actor$, actor$, 0);
+				actor$.Go.PlayVoiceSound ("die", 5, 80, false);
+			}
+			else if (MakeLifeState(ls$) == ls_dead_normal)
+			{
+				actor$.Go.Mind.SetMayAttack (false);
+				actor$.Go.Mind.SetMayBeAttacked (false);
+					
+				PostWorldMessage (WE_LOST_CONSCIOUSNESS, actor$, actor$, 0);
+				actor$.Go.PlayVoiceSound ("die", 5, 80, false);
+			}
+			else if (MakeLifeState(ls$) == ls_dead_charred)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_fresh)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_bones)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_decay_dust)
+			{
+			}
+			else if (MakeLifeState(ls$) == ls_ghost)
+			{
+			}
+		}
+	}
+}
+
+void RCAddExp$ (Packet packet$)
+{
+	int id$ = packet$.ReadUInt32();
+	float experience$ = packet$.ReadFloat();
+	
+	Go temp$ = Server.ScreenHero;
+	
+	string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
+	Goid actor$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
+	
+	int portalId$ = temp$.GetComponentInt ("portal", "id");
+	report.screenf ("id: %d", id$);
+	report.screenf ("portalId: %d", portalId$);
+	if (actor$ != portalId$)
+	{
+		temp$ = actor$.Go;
+	}
+
+	Go Weapon$ = NULL;
+	if( temp$.Inventory.IsMeleeWeaponSelected || temp$.Inventory.IsRangedWeaponSelected )
+	{
+		Weapon$ = temp$.Inventory.GetSelectedWeapon;
+	} else if ( temp$.Inventory.IsSpellSelected ) {
+		Weapon$ = temp$.Inventory.GetSelectedSpell;
+	}
+	
+	/*float maxGain$ = 7.0;
+	if( temp$.Inventory.IsMeleeWeaponSelected )
+	{
+		maxGain$ = temp$.Actor.GetMaxExpPerHit("melee");
+	}
+	else if ( temp$.Inventory.IsRangedWeaponSelected )
+	{
+		maxGain$ = temp$.Actor.GetMaxExpPerHit("ranged");
+	}
+	else if ( temp$.Inventory.IsSpellSelected )
+	{
+		maxGain$ = temp$.Actor.GetMaxExpPerHit(temp$.Inventory.GetSelectedSpell.Magic.SkillClass);
+	}
+
+	if (experience$ > maxGain$)
+	{
+		experience$ = maxGain$;
+	}*/
+
+	report.screenf ("experience: %f", experience$);
+	if (Weapon$ != NULL ) 
+	{
+		Rules.AwardExperience( temp$.goid, Weapon$.goid, experience$ );
+	} 
+	else
+	{
+		Rules.AwardExperience( temp$.goid, temp$.goid, experience$ );
+	}
+}
+
+void RCLevelUp$ (Packet packet$)
+{
+	int id$ = packet$.ReadUInt32();
+	string skill$ = packet$.ReadString();
+
+	string tmp$; StringTool.AssignF (tmp$, "godb:%d", id$);
+	Goid actor$ = MakeGoid (GameAuditor.GetDb.GetInt (tmp$));
+	
+	/*Go temp$ = Server.ScreenHero;
+	int portalId$ = temp$.GetComponentInt ("portal", "id");
+
+	if (actor$ == portalId$)
+	{
+		//actor$ = temp$.Goid;
+		report.screenf ("actor is portal, leveling oneself");
+	}*/
+
+	//string name$;
+	//actor$.Go.Common.GetScreenName(name$);
+	//tmp$; StringTool.AssignF (tmp$, "%s leveled up his %s skill", name$, skill$);
+	Rules.RCPlayLevelUpSoundAndText (actor$, skill$);
 }

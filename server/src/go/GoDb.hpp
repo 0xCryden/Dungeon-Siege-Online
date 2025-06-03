@@ -21,37 +21,43 @@
 	#include "Go.hpp"
 	
 	#include <map>
+
 	using std::map;
-	
+
 	class GoDb
 	{
 		public:
-			
+
 			GoDb ();
-			
+
 			~GoDb ();
-			
-			void LoadGoDbFolder (const std::string& folderName);
+
+			void LoadGasToGo();
+
+			void LoadGoDbFolder (const string & folderName);
 			void LoadGoDbSingleChar (u_int32_t id);
 
 			void LoadContentDb (const string & filename);
-			
+			//void LoadContentDbFolder (const string & folderName);
+			//void LoadContentDbSingle (const string & filename);
+
 			Go * FindGoById (u_int32_t id);
-			
+
 			Go * CloneGo (const Go * go);
 			Go * CloneGo (const string & template_name);
-			
+			//Go * GetTemplate (const string & templateName);
 			void MarkGoForDeletion (u_int32_t id);
 			void MarkGoAndChildrenForDeletion (u_int32_t id);
-			
+
 		private:
-			
+
 			u_int32_t NextId ();
-			
+
 			map<u_int32_t, Go *> m_godb;
 			map<string, Go *> m_contentdb;
 	};
-	
+
 	extern GoDb godb;
+
 
 #endif /* GODB_HPP_ */

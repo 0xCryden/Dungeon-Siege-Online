@@ -1,0 +1,10 @@
+[t:region,n:region]
+{
+	created = sarah boulian,calix;
+	description = "none";
+  x guid = 0xD5A3ACD9;
+	lastmodified = Erik Johnson,ERIKJ;
+	notes = "none";
+	scid_range = 50;
+	se_version = Version - 1.0.0.306;
+}

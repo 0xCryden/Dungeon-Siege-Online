@@ -19,6 +19,7 @@
 #define GODEFEND_HPP_
 
 	#include "GoComponent.hpp"
+	#include "../enum/eDefendClass.hpp"
 	
 	class GoDefend : public GoComponent
 	{
@@ -28,10 +29,15 @@
 			GoDefend (Go * go, xmlNode * node);
 			
 			float Defense () const;
+
+			eDefendClass DefendClass () { return m_defend_class; };
+			float GetTotalDefense();
+			float GetTotalFireResistance();
 			
 		private:
 			
 			float m_defense;
+			eDefendClass m_defend_class;
 	};
 
 #endif /* GODEFEND_HPP_ */

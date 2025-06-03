@@ -40,14 +40,12 @@
 			int64_t m_ExecutionTime;
 	};
 	
-	class EventComparison : public std::binary_function<Event *, Event *, bool>
-	{
-		public:
-			
-			bool operator () (const first_argument_type & left, const second_argument_type & right)
-			{
-				return left->ExecutionTime() > right->ExecutionTime();
-			}
+	class EventComparison {
+	public:
+	    bool operator()(const Event* left, const Event* right) const {
+	        return left->ExecutionTime() > right->ExecutionTime();
+	    }
 	};
+
 
 #endif /*EVENT_HPP_*/

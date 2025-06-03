@@ -30,6 +30,10 @@ event OnJobInit$ (Job job$)
 		int id$ = item$.Go.GetComponentInt ("object", "id");
 		if (id$ != 0)
 		{
+			if (item$.Go.HasInventory())
+			{
+				GoDb.RSMarkGoAndChildrenForDeletion (item$.Go, true, true, false);
+			}
 			RSDrop$ (id$);
 		}
 		

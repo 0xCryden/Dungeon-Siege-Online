@@ -3,6 +3,7 @@
 	interface = true;
 	
 	skrit = [[
+		#include "k_inc_list_utils"
 		
 		owner = UIWindow;
 		
@@ -26,18 +27,17 @@
 		
 		void do_it$()
 		{
-			//report.messagebox ("call");
+			//PlayerId myId$ = Server.ScreenHero.PlayerId;
+			//Game.STeleportPlayer(myId$, "castle_town", true);
 			
-			int count$ = MapMaker.ReadNodesDotGasFrom ("H:\\Documents and Settings\\aaron\\My Documents\\My Projects\\dsmmorpg\\bits\\world\\maps\\dsmmorpg\\regions\\1\\terrain_nodes\\nodes.gas");
+			Server.ScreenHero.Actor.DebugPrintSkills();
+
+			/*int count$ = MapMaker.ReadNodesDotGasFrom ("C:\\Users\\Cryden\\Desktop\\dsmmorpg-code-r428-trunk\\bits\\world\\maps\\multiplayer_world\\regions\\town_center\\terrain_nodes\\nodes.gas");
 			
-			// report.messageboxf ("count$ = %i", count$);
-			
-			SiegePos origin$ = Server.ScreenHero.Placement.Position;
-			
-			Log log$ = CreateLog ("H:\\log.txt");
+			SiegePos origin$ = Server.ScreenHero.Placement.Position;//SiegePos.Make (0.000000, 0.000000, 0.00000, 1323345966);
 			
 			// print to a file "<region>"
-			log$.ReportF ("<region>");
+			Log("<region>");
 			
 			report.screenf ("%d nodes were found", count$);
 			while (count$ > 0)
@@ -45,6 +45,11 @@
 				count$ -= 1;
 				
 				int guid$ = MapMaker.GetNodeGuidAt (count$);
+
+				// === NEW: Teleport hero to node position first
+				//SiegePos nodePos$ = SiegePos.Make(0.0, 0.0, 0.0, guid$);
+				//Server.ScreenHero.Placement.RCSetPosition(nodePos$);
+
 				Goid object$ = spawn_base$ (guid$);
 				Goid offset$ = spawn_offset$ (guid$);
 				
@@ -56,14 +61,14 @@
 				float angle$;
 				
 				// determine where the cow is relative to the screen hero
-				// angle$ = AzimuthAngleToTarget (Server.ScreenHero.Goid, object$);
-				angle$ = 180 / Math.Pi();
+				angle$ = GoMath.AzimuthAngleToTarget (Server.ScreenHero.Goid, object$);
+				//angle$ = 180 / Math.Pi();
 				int x1$ = (angle$ > 0 && angle$ < 180) ? 1 : -1;
 				int y1$ = (angle$ > 90 && angle$ < 270) ? -1 : 1;
 				
 				// determine where the screen hero is relative to the cow
-				// angle$ = AzimuthAngleToTarget (object$, Server.ScreenHero.Goid);
-				angle$ = 180 / Math.Pi();
+				angle$ = GoMath.AzimuthAngleToTarget (object$, Server.ScreenHero.Goid);
+				//angle$ = 180 / Math.Pi();
 				int x2$ = (angle$ > 0 && angle$ < 180) ? 1 : -1;
 				int y2$ = (angle$ > 90 && angle$ < 270) ? -1 : 1;
 				
@@ -80,12 +85,22 @@
 				
 				// actually y and z might be mixed up or something weird like that... i hate siegepos's -_- (siege p..o..s.... piece of ...)
 				// now print to a file "<node id=\" + guid$ + "\" x=\"" + v$.X + "\" y=\"" + v$.Y + "\" z=\"" + v$.Z + "\" rotation=\" + orientation$ "\" />"
-				log$.ReportF ("\t<node id=\"0x%x\" x=\"%f\" y=\"%f\" z=\"%f\" rotation=\"%i\" />", guid$, v$.X, v$.Z, v$.Y, orientation$);
+				//log$.ReportF ("\t<node id=\"0x%x\" x=\"%f\" y=\"%f\" z=\"%f\" rotation=\"%i\" />", guid$, v$.X, v$.Z, v$.Y, orientation$);
+				//LogInline("\t<node id=\"0x%x\" x=\"%f\" y=\"%f\" z=\"%f\" rotation=\"%i\" />", guid$, v$.X, v$.Z, v$.Y, orientation$);
+				if (!(v$.X == 0.0 && v$.Y == 0.0 && v$.Z == 0.0) || guid$ == 1323345966)
+				{
+				float rx$ = Math.Round(v$.X);
+				float ry$ = Math.Round(v$.Y);
+				float rz$ = Math.Round(v$.Z);
+
+				Log("\t<node id=\"%u\" x=\"%f\" y=\"%f\" z=\"%f\" rotation=\"%i\" />", guid$, rx$, rz$, ry$, orientation$);
+				}
 			}
 			
-			log$.ReportF ("</region>");
+			//log$.ReportF ("</region>");
+			Log("</region>");
 			
-			DestroyLog (log$);
+			//DestroyLog (log$);*/
 		}
 	]];
 

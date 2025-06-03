@@ -33,7 +33,7 @@
 			UIWindow window$ = UIShell.FindUIWindow ("game_name_edit_box", "host_game");
 			
 			UIEditBox edit_box$ = QueryDerivedEditBox (window$);
-			edit_box$.SetText ("dsmmorpg");
+			edit_box$.SetText ("Dungeon Siege Online");
 			
 			Messenger.Notify ("multiplayer_host_game", window$);
 		}

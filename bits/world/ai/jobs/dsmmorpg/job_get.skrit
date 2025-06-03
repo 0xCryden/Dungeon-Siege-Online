@@ -24,6 +24,7 @@ startup state startup$
 event OnJobInit$ (Job job$)
 {
 	Go object$ = job$.GoalObject.Go;
+	//report.screenf ("object goid: %d", MakeInt(object$.Goid));
 	if (object$.HasComponent ("object"))
 	{
 		int id$ = object$.GetComponentInt ("object", "id");

@@ -82,6 +82,7 @@
 		
 		unequip$()
 		{
+			Report.ScreenF ("[DSMMORPG INVENTORY] - Unequip$ Call");
 			if (debug$)
 			{
 				Report.ScreenF ("[DSMMORPG INVENTORY] - Unequip$ Call");

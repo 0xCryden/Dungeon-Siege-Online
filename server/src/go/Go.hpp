@@ -29,9 +29,13 @@
 	#include "GoCommon.hpp"
 	#include "GoDefend.hpp"
 	#include "GoInventory.hpp"
+	#include "GoMagic.hpp"
 	#include "GoMind.hpp"
 	#include "GoPlacement.hpp"
 	#include "GoScriptComponent.hpp"
+	#include "../vector_3.hpp"
+
+	#include "../Gas.hpp"
 	
 	/*
 	 * GoActor
@@ -58,12 +62,18 @@
 			void LoadFromXml(xmlNode* node);
 			Go (sqlResult * query); // only used for loading a 'save game'
 			Go (u_int32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
-			Go (u_int32_t id); // create empty go for later use
+			//Go (u_int32_t id); // create empty go for later use
+
+			Go(const TemplateData& tmpl);
 			~Go ();
-			
+
 			GoActor * Actor () const;
 
+			eEquipSlot IntendedSlot ();
+			eInventoryLocation IntendedLoc ();
+			void HandleCommand (const string& command);
 			void SaveToXml(const std::string& folderName);
+			string GetTitle();
 			void AddChild (Go * child);
 			GoAspect * Aspect () const;
 			GoAttack * Attack () const;
@@ -109,7 +119,7 @@
 			bool IsTeamMember (const Go * go) const; // code me
 			bool IsWeapon () const;
 			eLifeState LifeState () const;
-			// GoMagic * Magic () const;
+			GoMagic * Magic () const;
 			GoMind * Mind () const;
 			Go * Parent () const;
 			GoPlacement * Placement () const;
@@ -125,11 +135,34 @@
 			void AddComponent (GoScriptComponent * component);
 			void RemoveComponent (const string & component);
 			
-			void SetLoc(eInventoryLocation loc) { m_inventoryLocation = loc; }
-			eInventoryLocation GetLoc() { return m_inventoryLocation; }
+			void SetLoc(eInventoryLocation loc) {
+				//cout << "Set loc id " << Goid() << " loc: " << (eInventoryLocation)loc << endl;
+				m_inventoryLocation = loc;
+				/*Parent()->Inventory()->SetBagLoc(this, loc);*/ }
+
+			eInventoryLocation GetLoc() {
+				//cout << "Get loc id " << Goid() << " loc " << (eInventoryLocation)m_inventoryLocation << endl;
+				return m_inventoryLocation; }
 
 			void SetOwner(int ownerId) { m_inventoryOwnerId = ownerId; }
 			int GetOwner() { return m_inventoryOwnerId; }
+
+			void SetLastLocal(vector_3 lastLoc) { lastLocal = lastLoc; }
+			vector_3 GetLastLocal() { return lastLocal; }
+
+			void SetLastPos(SiegePos lastPosi) { lastPos = lastPosi; }
+			SiegePos GetLastPos() { return lastPos; }
+
+			void SetWaitForNodeInfo(bool is) { waitForNodeInfo = is; }
+			bool WaitForNodeInfo() { return waitForNodeInfo; }
+
+			void SetLastRota(u_int8_t lastRot) { lastRota = lastRot; }
+			u_int8_t GetLastRota() { return lastRota; }
+
+			void CalculateStatus();
+
+			int Admin() { return m_admin; }
+			void SetAdmin(int level) { m_admin = (u_int8_t)level; }
 
 		private:
 			
@@ -148,11 +181,17 @@
 			GoCommon * m_common;
 			GoDefend * m_defend;
 			GoInventory * m_inventory;
+			GoMagic * m_magic;
 			GoMind * m_mind;
 			GoPlacement * m_placement;
 			
 			eInventoryLocation m_inventoryLocation = il_invalid;
 			int m_inventoryOwnerId = 0;
+			SiegePos lastPos;
+			vector_3 lastLocal;
+			u_int8_t lastRota = 0;
+			bool waitForNodeInfo = false;
+			u_int8_t m_admin = 0;
 
 			map<string, GoScriptComponent*> m_scripts;
 	};

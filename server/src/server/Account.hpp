@@ -13,13 +13,24 @@
 			
 			Account (xmlNode * node);
 			
+			void AddCharacter(Go * go);
+			void RemoveCharacter(int slot);
+
 			string Username () const;
 			string Password () const;
-			
-			// <temp>
-			Go * GetGo ()
+			u_int32_t Id () const;
+			vector<Go *> GetCharacters ()
 			{
-				return m_objects.at (0);
+				return m_objects;
+			}
+			Go * GetGoFromSlot (int slot)
+			{
+				return m_objects.at (slot-1);
+			}
+			// <temp>
+			Go * GetGo (int num)
+			{
+				return m_objects.at (num);
 			}
 			// </temp>
 			
@@ -27,6 +38,7 @@
 			
 			string m_username;
 			string m_password;
+			u_int32_t m_id;
 			
 			vector<Go *> m_objects;
 	};

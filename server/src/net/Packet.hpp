@@ -33,7 +33,8 @@
 			Packet (const char * buffer); // incoming packet
 			
 			~Packet ();
-			
+
+			void WriteUInt64 (u_int64_t data);
 			void WriteUInt32 (u_int32_t data);
 			void WriteInt32 (int32_t data);
 			void WriteUInt16 (u_int16_t data);

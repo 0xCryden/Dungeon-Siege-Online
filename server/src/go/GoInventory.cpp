@@ -71,18 +71,19 @@ GoInventory :: GoInventory (Go * go, xmlNode * node) : GoComponent (go)
 		// add g to our inventory :)
 		if (!item)
 		{
-			cout << "Failed loading item. ID: " << id << " | OwnerGoId: " << m_go->Goid() << endl;
+			// means its either a template or not in DB
+			//cout << "Failed loading item. ID: " << id << " | OwnerGoId: " << m_go->Goid() << endl;
 			continue;
 		}
-
-		// Set inventory location
-		eInventoryLocation invenLoc = StringToNumLoc(invenLocStr); // You already have this
-		if (invenLoc != il_main)
-			m_bag[invenLoc] = item;
 
 		// Add to inventory
 		if (Add(item))
 		{
+			// Set inventory location
+			eInventoryLocation invenLoc = StringToNumLoc(invenLocStr); // You already have this
+
+			item->SetLoc(invenLoc);
+
 			// If equip_slot is present, equip it
 			if (!equipSlotStr.empty())
 			{
@@ -92,49 +93,14 @@ GoInventory :: GoInventory (Go * go, xmlNode * node) : GoComponent (go)
 					Equip(slot, item); // Will only succeed if not already equipped
 				}
 			}
-			/*
-			if (item->HasInventory() && item->Inventory() == nullptr) {
-				item->m_inventory = new GoInventory(item);
-			}
-			  std::cout << "[CHAR LOAD] Item HasInventory: " << item->HasInventory() << std::endl;
-			// Handle nested inventory inside this item
-			if (item->HasInventory() || id == 107)
-			{
-				for (xmlNode* invNode = current->children; invNode != NULL; invNode = invNode->next)
-				{
-					if (invNode->type != XML_ELEMENT_NODE) continue;
-					if (!xmlStrEqual(invNode->name, BAD_CAST "inventory")) continue;
-
-					for (xmlNode* current2 = invNode->children; current2 != NULL; current2 = current2->next)
-					{
-						if (current2->type != XML_ELEMENT_NODE) continue;
-						if (!xmlStrEqual(current2->name, BAD_CAST "item")) continue;
-
-						u_int32_t id2 = xml::ReadAttribute<u_int32_t>(current2, "id", 0);
-						std::string invenLocStr2 = xml::ReadAttribute<std::string>(current2, "inven_loc", "");
-
-						//GoInventory* subInventory = item->Inventory();
-						//if (!subInventory)
-						//	continue;
-
-						Go* item2 = godb.FindGoById(id2);
-						if (!item2)
-							continue;
-
-						eInventoryLocation invenLoc2 = StringToNumLoc(invenLocStr2);
-						if (invenLoc2 != il_main)
-							subInventory->m_bag[invenLoc2] = item2;
-
-						subInventory->Add(item2);
-					}
-				}
-			}*/
 		}
 	}
 }
 
 void GoInventory :: Save (xmlNode* inventoryNode) const
 {
+	//cout << "Entering save inventory" << endl;
+
 	if (!inventoryNode)
 			return;
 
@@ -160,6 +126,7 @@ void GoInventory :: Save (xmlNode* inventoryNode) const
 		xmlNode* itemNode = xmlNewChild(inventoryNode, NULL, BAD_CAST "item", NULL);
 
 		uint32_t id = item->Goid();
+
 		if (id != 0)
 		{
 			xml::SetAttribute(itemNode, "id", id);
@@ -175,26 +142,16 @@ void GoInventory :: Save (xmlNode* inventoryNode) const
 
 		// Step 3: Add equip_slot if equipped
 		eEquipSlot slot = GetEquippedSlot(item);
-		//if (slot != es_none)
-		{
-			std::string slotStr = ToString(slot); // Assumes you have a ToString(eEquipSlot) function
+		std::string slotStr = ToString(slot);
+		if (!slotStr.empty())
 			xml::SetAttribute(itemNode, "equip_slot", slotStr);
-		}
-
-		eInventoryLocation loc = GetInventoryLocation(item);
-		cout << "Saving Item.. ID: " << item->Goid() << " | loc: " << loc << endl;
-		if (loc != il_main && loc != il_invalid)
-		{
-			std::string slotStr2 = ToString(loc);
-			xml::SetAttribute(itemNode, "inven_loc", slotStr2);
-		}
 		else
-		{
-			xml::SetAttribute(itemNode, "inven_loc", "il_main");
-		}
+			xml::SetAttribute(itemNode, "equip_slot", "es_none");
+
+		eInventoryLocation loc = item->GetLoc();
+		std::string slotStr2 = ToString(loc);
+		xml::SetAttribute(itemNode, "inven_loc", slotStr2);
 	}
-
-
 }
 
 bool GoInventory :: Add (Go * item)
@@ -230,8 +187,36 @@ bool GoInventory :: Contains (const Go * item) const
 	return false;
 }
 
+void GoInventory :: Transfer (Go * item, Go * container, eInventoryLocation loc)
+{
+	//cout << "GoInventory :: Transfer" << endl;
+	if (item == NULL)
+		return;
+	if (container == NULL)
+		return;
+	if (!container->HasInventory())
+		return;
+
+	// Remove from previous container if needed
+	if (item->Parent() != 0)
+	{
+		if (item->Parent()->HasInventory())
+			item->Parent()->Inventory()->Remove(item);
+	}
+	// Update in owner's inventory
+	container->Inventory()->Add(item);
+
+	// Set new state
+	item->SetLoc(loc);
+
+	//std::cout << "[SET ITEM LOC] Item " << item->Goid() << " now at " << (eInventoryLocation)loc << " inside " << container->Goid() << std::endl;
+	return;
+}
+
 bool GoInventory :: Equip (eEquipSlot slot, Go * item)
 {
+	cout << "Inventory Equip item: " << item->Aspect()->Model() << endl;
+
 	if (IsSlotEquipped (slot) != false)
 	{
 		return false;
@@ -252,8 +237,26 @@ bool GoInventory :: Equip (eEquipSlot slot, Go * item)
 		/*
 		 * check if we can actually equip this item
 		 */
-		
+
 		m_equipment[slot] = item;
+
+		//set location
+		item->SetLoc(item->IntendedLoc());
+		if (slot == es_weapon_hand)
+		{
+			SetSelectedSlot(1);
+		}
+		else if (slot == es_shield_hand)
+		{
+			if (item->IsRangedWeapon())
+			{
+				SetSelectedSlot(2);
+			}
+			else
+			{
+				SetSelectedSlot(1);
+			}
+		}
 		
 		return true;
 	}
@@ -265,6 +268,21 @@ Go * GoInventory :: GetEquipped (eEquipSlot slot) const
 {
 	map<eEquipSlot, Go *>::const_iterator iterator = m_equipment.find (slot);
 	return iterator != m_equipment.end() ? iterator->second : NULL;
+}
+
+Go * GoInventory :: ItemFromLocation (eInventoryLocation loc) const
+{
+	for (GopSet::const_iterator it = m_inventory.begin(); it != m_inventory.end(); ++it)
+	{
+		Go* item = *it;
+		if (!item)
+			continue;
+
+		if (item->GetLoc() == loc)
+			return item;
+	}
+	cout << "Item in loc " << (eInventoryLocation)loc << " not found" << endl;
+	return NULL;
 }
 
 eEquipSlot GoInventory :: GetEquippedSlot (const Go * item) const
@@ -286,113 +304,54 @@ eEquipSlot GoInventory :: GetEquippedSlot (const Go * item) const
 	return es_none;
 }
 
-void GoInventory :: SetInventoryLocation (Go * item, eInventoryLocation loc, int ownerId)
+void GoInventory :: SetSelectedSlot ( int num )
 {
-	if (!item)
-        return;
-
-    Go* owner = godb.FindGoById(ownerId);
-    if (!owner) {
-    	cout << "no owner to set loc" << endl;
-        return;
-	}
-
-    // Remove from previous container if needed
-    if (item->GetOwner() != 0)
-    {
-        Go* prevOwner = godb.FindGoById(item->GetOwner());
-        if (prevOwner && prevOwner->HasInventory())
-        {
-            prevOwner->Inventory()->Remove(item);
-        }
-    }
-
-    // Set new state
-    item->SetLoc(loc);
-    item->SetOwner(ownerId);
-    //item->m_inventoryLocation = loc;
-    //item->m_inventoryOwnerId = ownerId;
-
-    // Update in owner's inventory
-    owner->Inventory()->Add(item);
-
-    // Optional: Update m_bag only if needed
-    if (loc != il_main && loc != il_invalid)
-    {
-        owner->Inventory()->m_bag[loc] = item;
-    }
-
-    std::cout << "[SET ITEM LOC] Item " << item->Goid() << " now at " << loc << " owned by " << ownerId << std::endl;
-
-	/*if (item == NULL)
-		return;
-
-	// 1. Get equipped spellbook
-	Go * spellBook = godb.FindGoById(ownerId);
-	// 2. Add item to spellbook
-	if (spellBook == NULL)
-			return;
-
-	switch (loc) {
-	case il_active_primary_spell:
-	case il_active_secondary_spell:
-	case il_spell_1:
-	case il_spell_2:
-	case il_spell_3:
-	case il_spell_4:
-	case il_spell_5:
-	case il_spell_6:
-	case il_spell_7:
-	case il_spell_8:
-	case il_spell_9:
-	case il_spell_10:
-	case il_spell_11:
-	case il_spell_12:
-		{
-			spellBook->Inventory()->m_bag[loc] = item;
-			m_bag[loc] = item;
-			std::cout << "[INVENTORYLOCATION] id " << item->Goid() << " loc: " << loc << std::endl;
-			spellBook->Inventory()->Add(item);
-			item->Parent()->Parent()->Inventory()->Remove(item);
-		}
-		break;
-	case il_invalid:
-	case il_main:
-		{
-			map<eInventoryLocation, Go *>::iterator iterator = m_bag.find ((eInventoryLocation)GetInventoryLocation(item));
-			if (iterator != m_bag.end())
-			{
-				std::cout << "[INVENTORYLOCATION] id " << item->Goid() << " loc: " << loc << std::endl;
-				m_bag.erase (iterator);
-			}
-			std::cout << "[INVENTORYLOCATION] 2 id " << item->Goid() << " loc: " << loc << std::endl;
-			//spellBook->Inventory()->Remove(item);
-			item->Parent()->Inventory()->Remove(item);
-			spellBook->Inventory()->Add(item);
-		}
-		break;
-	default:
-		break;
-	}*/
-}
-
-eInventoryLocation GoInventory :: GetInventoryLocation (const Go * item) const
-{
-	if  (item != NULL)
+	//cout << "Step 1 num: " << num << endl;
+	if (num == 3 || num == 4 ) // if switching from weapon to spell unequip
 	{
-		map<eInventoryLocation, Go *>::const_iterator iterator = m_bag.begin();
-		while (iterator != m_bag.end())
+		if (GetEquipped(es_spellbook) &&
+			GetEquipped(es_spellbook)->Inventory()->ItemFromLocation((eInventoryLocation)(num+1)) &&
+			GetEquipped(es_spellbook)->Inventory()->ItemFromLocation((eInventoryLocation)(num+1))->Magic()->RequiredLevel() > GetGo()->Actor()->GetSkillLevel(GetEquipped(es_spellbook)->Inventory()->ItemFromLocation((eInventoryLocation)(num+1))->Magic()->SkillClass()))
 		{
-			if (iterator->second->Goid() == item->Goid())
-			{
-				return iterator->first;
-			}
-
-			iterator++;
+			m_selectedSlot = num;
+			return;
 		}
-	}
+		//cout << "Step 2 num: " << num << endl;
+		if (m_selectedSlot == 1)
+		{
+			//cout << "Step 3 num: " << num << endl;
+			if (!(GetEquipped(es_weapon_hand) &&
+				(GetEquipped(es_weapon_hand)->Attack()->AttackClass() == ac_staff))) // if !item in il_active_melee_weapon attack class == ac_staff
+			{
+				//cout << "Step 4 num: " << num << endl;
+				Unequip(es_weapon_hand);
+				Unequip(es_shield_hand);
+			}
+		}
+		else if (m_selectedSlot == 2)
+		{
+			Unequip(es_shield_hand);
+		}
 
-	return il_main;
+	}
+	/*else
+	{
+		Equip ((eEquipSlot)(num-1), ItemFromLocation((eInventoryLocation)(num-1)));
+	}*/
+
+	/*if (num == 1 && ItemFromLocation(il_active_melee_weapon) != NULL)
+	{
+		Equip (es_weapon_hand, ItemFromLocation(il_active_melee_weapon));
+		if (ItemFromLocation(il_shield) != NULL)
+			Equip (es_shield_hand, ItemFromLocation(il_shield));
+	}
+	if (num == 2 && ItemFromLocation(il_active_ranged_weapon) != NULL)
+	{
+		Equip (es_shield_hand, ItemFromLocation(il_active_ranged_weapon));
+	}*/
+
+	m_selectedSlot = num;
+
 }
 
 bool GoInventory :: IsAnyWeaponEquipped () const
@@ -408,7 +367,7 @@ bool GoInventory :: IsAnyWeaponEquipped () const
 		}
 	}
 	
-	item = GetEquipped (es_shield_hand);
+	item = GetEquipped (es_weapon_hand);
 	if (item != NULL)
 	{
 		if (item->IsWeapon())
@@ -443,16 +402,7 @@ bool GoInventory :: IsMeleeWeaponEquipped () const
 {
 	Go * item;
 	
-	item = GetEquipped (es_shield_hand);
-	if (item != NULL)
-	{
-		if (item->IsMeleeWeapon())
-		{
-			return true;
-		}
-	}
-	
-	item = GetEquipped (es_shield_hand);
+	item = GetEquipped (es_weapon_hand);
 	if (item != NULL)
 	{
 		if (item->IsMeleeWeapon())
@@ -467,15 +417,6 @@ bool GoInventory :: IsMeleeWeaponEquipped () const
 bool GoInventory :: IsRangedWeaponEquipped () const
 {
 	Go * item;
-	
-	item = GetEquipped (es_shield_hand);
-	if (item != NULL)
-	{
-		if (item->IsRangedWeapon())
-		{
-			return true;
-		}
-	}
 	
 	item = GetEquipped (es_shield_hand);
 	if (item != NULL)
@@ -502,13 +443,11 @@ const GopSet & GoInventory :: ListItems () const
 
 bool GoInventory :: Remove (Go * item)
 {
-	cout << "remove 1" << endl;
 	if (item != NULL)
 	{
-		cout << "remove 2" << endl;
 		if (Contains (item) != false)
 		{
-			cout << "remove 3 ID: " << item->Goid() << endl;
+			//cout << "remove 3 ID: " << item->Goid() << endl;
 			/*
 			 * check if we can actually remove this item 
 			 */
@@ -527,13 +466,13 @@ bool GoInventory :: Remove (Go * item)
 
 bool GoInventory :: Unequip (eEquipSlot slot)
 {
+	//cout << "GoInventory:: Unequip slot " << ToString(slot) << endl;
 	map<eEquipSlot, Go *>::iterator iterator = m_equipment.find (slot);
 	if (iterator != m_equipment.end())
 	{
 		/*
 		 * check if we can actually unequip this item
 		 */
-		
 		m_equipment.erase (iterator);
 		
 		return true;

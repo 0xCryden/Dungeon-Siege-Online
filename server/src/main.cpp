@@ -64,7 +64,31 @@ int main(int argc, char** argv)
         try {
             string dataDir = "data";
 
-            world.LoadMap(dataDir + "\\static\\map\\main.xml");
+            world.LoadAllMaps();
+
+            gas.LoadTemplates();
+            gas.LoadMapTemplates();
+
+            godb.LoadGasToGo();
+
+            if (TemplateData* tpl = manager.GetTemplate("chicken_white_super")) {
+
+            	std::cout << "[INFO] Template: " << tpl->name << "\n";
+            	    if (!tpl->specializes.empty())
+            	        std::cout << "  Specializes: " << tpl->specializes << "\n";
+
+            	    for (const auto& [compName, comp] : tpl->components) {
+            	        gas.LogComponent(compName, comp, "  ");
+            	    }
+                // Access fields
+                /*auto* comp = tpl->GetComponent("aspect");
+                if (comp) {
+                    auto experience_value = comp->GetField("experience_value");
+                    if (experience_value) {
+                        std::cout << "experience_value: " << *experience_value << "\n";
+                    }
+                }*/
+            }
 
             godb.LoadGoDbFolder("items");
             godb.LoadGoDbFolder("actors");
