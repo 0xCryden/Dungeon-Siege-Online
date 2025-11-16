@@ -1,0 +1,1 @@
+Unhandled std::exception: recursive_directory_iterator::recursive_directory_iterator: The system cannot find the path specified.: "data/static/templates"

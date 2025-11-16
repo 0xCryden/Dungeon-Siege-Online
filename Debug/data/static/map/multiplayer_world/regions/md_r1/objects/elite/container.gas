@@ -1,0 +1,26 @@
+[t:3W_chest_csl_05_md_r1,n:0x08c0005f]
+{
+	[placement]
+	{
+	  q orientation = 0,1,0,4.41074e-006;
+	  p position = 3.16923,-2,-0.061838,0xc8dcc868;
+	}
+}
+[t:3W_chest_csl_04_md_r1,n:0x08c00060]
+{
+	[placement]
+	{
+		drop_point_scids = 0x08c00063;
+	  q orientation = 0,0.963631,0,0.267238;
+	  p position = 3.6212,-2,0.739248,0x1994af57;
+	}
+}
+[t:3W_chest_csl_04_un_md_r1,n:0x08c0005e]
+{
+	[placement]
+	{
+		drop_point_scids = 0x08c00064;
+	  q orientation = 0,0.961261,0,-0.275638;
+	  p position = -3.66134,-2,0.80626,0xede0ab04;
+	}
+}

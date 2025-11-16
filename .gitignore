@@ -1,0 +1,73 @@
+# ---------------------------------------------------------
+# Visual Studio - KEEP project files in repo
+# (do NOT ignore .sln, .vcxproj, .filters, etc.)
+# ---------------------------------------------------------
+
+# Build results
+Server/Debug/
+bin/
+obj/
+out/
+build/
+build-*/
+[Bb]uild/
+x64/
+x86/
+ARM/
+ARM64/
+
+# MSVC intermediate files
+*.obj
+*.iobj
+*.ipdb
+*.pdb
+*.idb
+*.ilk
+*.tlog
+*.lastbuildstate
+*.cachefile
+
+# Auto-generated
+*.exp
+*.pch
+
+# VS working folder
+.vs/
+
+# CMake artifacts (if using CMake)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+Testing/
+CTestTestfile.cmake
+
+# NuGet / vcpkg
+packages/
+vcpkg_installed/
+.vcpkg-root
+
+# User-specific VS settings
+*.user
+*.userosscache
+*.suo
+*.opensdf
+*.sdf
+*.cache
+*.db
+*.opendb
+*.VC.db
+*.VC.opendb
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+
+# OS junk
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store

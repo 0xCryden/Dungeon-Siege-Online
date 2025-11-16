@@ -1,0 +1,10 @@
+[t:region,n:region]
+{
+	created = greg romaszka,gregr;
+	description = "none";
+  x guid = 0xA50DF9C4;
+	lastmodified = jsnook,JSNOOK;
+	notes = "none";
+  i scid_range = 128;
+	se_version = Version - 1.0.0.306;
+}

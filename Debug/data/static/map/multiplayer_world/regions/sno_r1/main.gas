@@ -1,0 +1,10 @@
+[t:region,n:region]
+{
+	created = sarah boulian,calix;
+	description = "none";
+  x guid = 0xBEF28C5D;
+	lastmodified = jsnook,JSNOOK;
+	notes = "was ac_r4";
+	scid_range = 6;
+	se_version = Version - 1.0.0.306;
+}

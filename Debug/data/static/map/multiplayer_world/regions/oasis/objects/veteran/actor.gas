@@ -1,0 +1,341 @@
+[t:2W_master_smith_sultrin,n:0x076000b6]
+{
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_sultrin;
+			* = conversation_sultrin_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,0.45399,0,-0.891007;
+	  p position = 21.0577,-1.45,17.7659,0x362fca78;
+	}
+}
+[t:2W_gikk,n:0x0760017d]
+{
+	[placement]
+	{
+	  p position = 17.7692,-1.42579,2.76426,0x362fca78;
+	}
+}
+[t:2W_mule,n:0x07600180]
+{
+	[common]
+	{
+		screen_name = "Adna";
+	}
+	[placement]
+	{
+	  p position = 14.7145,-1.45,14.0862,0x362fca78;
+	}
+}
+[t:2W_mule,n:0x076001ac]
+{
+	[common]
+	{
+		screen_name = "Falla";
+	}
+	[placement]
+	{
+	  q orientation = 0,0.382683,0,0.92388;
+	  p position = 13.158,-1.45,14.7751,0x362fca78;
+	}
+}
+[t:2W_mp_gypsy_female_01,n:0x076001bc]
+{
+	[common]
+	{
+		screen_name = "Tess Kerram";
+	}
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_trissa;
+			* = conversation_trissa_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,-6.85453e-007,0,1;
+	  p position = 6.92024,-1.4,7.57157,0x362fca78;
+	}
+}
+[t:2W_mp_gypsy_female_02,n:0x076001bd]
+{
+	[common]
+	{
+		screen_name = "Reena Scudling";
+	}
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_reena;
+			* = conversation_reena_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,0.382683,0,-0.92388;
+	  p position = 19.7377,-1.45,6.42303,0x362fca78;
+	}
+}
+[t:2W_sorceress_vielle,n:0x076000ba]
+{
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_vielle;
+			* = conversation_vielle_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,0.21644,0,0.976296;
+	  p position = 10.6208,-1.1,12.3596,0x87926434;
+	}
+}
+[t:2W_mp_gypsy_male_01,n:0x076001c1]
+{
+	[common]
+	{
+		screen_name = "Wylie Talbot";
+	}
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_wylie;
+			* = conversation_wylie_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,0.382683,0,0.92388;
+	  p position = 22.6486,-1.1,11.6347,0x87926434;
+	}
+}
+[t:2W_mp_gypsy_male_02,n:0x076001c3]
+{
+	[common]
+	{
+		screen_name = "Alwyn Gheldrick";
+	}
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_alwyn;
+			* = conversation_alwyn_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,1,0,6.55651e-007;
+	  p position = 23.4644,-1.1,13.0887,0x87926434;
+	}
+}
+[t:2W_utraean_priestess_kylira,n:0x076004cd]
+{
+	[common]
+	{
+		dev_instance_text = "QUEST NPC";
+	}
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_kylira;
+			* = conversation_kylira_all7;
+			* = conversation_kylira_all_complete;
+			* = conversation_kylira_complete;
+			* = conversation_kylira_goto;
+			* = conversation_kylira_quest;
+			* = conversation_kylira_red;
+			* = conversation_kylira_ring;
+			* = conversation_kylira_stone;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\actors\good\job_talk_kylira.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,-0.382684,0,-0.923879;
+	  p position = 10.7244,-1.1,18.0385,0x87926434;
+	}
+}
+[t:2W_mp_npc_dwarf_02,n:0x0760068d]
+{
+	[common]
+	{
+		screen_name = "Damog Skytrider";
+	}
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_damog;
+			* = conversation_damog_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,0.866025,0,0.5;
+	  p position = 16.1617,-0.680037,24.4435,0x87926434;
+	}
+}
+[t:2W_mp_townfolk_male_06,n:0x076006de]
+{
+	[common]
+	{
+		screen_name = "Brae Eldric";
+	}
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_birutir;
+			* = conversation_birutir_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,0.182236,0,0.983255;
+	  p position = 16.673,-0.793771,23.1409,0x87926434;
+	}
+}
+[t:2W_mp_townfolk_female_09,n:0x076006fa]
+{
+	[common]
+	{
+		screen_name = "Calixtica d'Orly";
+	}
+	[conversation]
+	{
+		[conversations]
+		{
+			* = conversation_calixtica;
+			* = conversation_calixtica_red;
+			* = zconversation_directions;
+		}
+	}
+	[mind]
+	{
+		jat_talk = world\ai\jobs\common\job_talk_mp.skrit;
+	}
+	[placement]
+	{
+	  q orientation = 0,0.951056,0,-0.309018;
+	  p position = 18.0082,-0.428928,24.5558,0x87926434;
+	}
+}
+[t:2W_gikk,n:0x0760017c]
+{
+	[placement]
+	{
+	  p position = 9.92432,3.45189,-9.73923,0x3ab9b5cd;
+	}
+}
+[t:2W_gikk,n:0x0760017e]
+{
+	[placement]
+	{
+	  q orientation = 0,0.980785,0,-0.19509;
+	  p position = -34.5365,6.25629,6.82181,0xcb1fa62b;
+	}
+}
+[t:2W_gikk,n:0x07600992]
+{
+	[placement]
+	{
+	  q orientation = 0,-0.980785,0,-0.195091;
+	  p position = -35.9315,6.00994,6.12177,0xcb1fa62b;
+	}
+}
+[t:2W_gikk,n:0x07600993]
+{
+	[placement]
+	{
+	  q orientation = 0,0.923879,0,0.382683;
+	  p position = -40.2894,6.28618,-1.22914,0xcb1fa62b;
+	}
+}
+[t:2W_giant_lizard,n:0x07600998]
+{
+	[placement]
+	{
+	  p position = -43.149,6.70042,-14.9557,0x673d13f3;
+	}
+}
+[t:2W_giant_lizard,n:0x0760099a]
+{
+	[placement]
+	{
+	  q orientation = 0,-0.19509,0,0.980785;
+	  p position = -44.7516,6.34621,-15.6673,0x673d13f3;
+	}
+}
+[t:2W_impaler,n:0x07600996]
+{
+	[placement]
+	{
+	  q orientation = 0,0.19509,0,0.980785;
+	  p position = -25.4364,5.02177,-37.6629,0x7dbea029;
+	}
+}
+[t:2W_impaler,n:0x07600997]
+{
+	[placement]
+	{
+	  q orientation = 0,-0.382683,0,0.923879;
+	  p position = -23.4058,3.60594,-33.9502,0x7dbea029;
+	}
+}

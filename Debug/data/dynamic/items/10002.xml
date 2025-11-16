@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10002">
+		<aspect>
+			 <model value="book_glb_magic_04"/>
+		</aspect>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="sword of a thousand GPG pwnage"/>
+		</common>
+		<inventory/>
+		<placement region=""><position node="1185125778" x="-4.71662" y="-3.1" z="-6.31389"/></placement>
+	</go>
+</objects>

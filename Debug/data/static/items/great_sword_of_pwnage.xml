@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+	<template template_name="sword_of_a_thousand_gpg_pwnage">
+		<actor strength="6" dexterity="4" intelligence="2" charisma="15" wisdom="5" constitution="4" />
+		<aspect>
+			 <model value="great_sword_of_pwnage"/>
+		</aspect>
+		<common name="swerd" description="yet another j00kie dude" />
+		<inventory>
+			<item template_name="sword_of_a_thousand_gpg_pwnage" equip_slot="es_weapon_hand" />
+		</inventory>
+		<scripts>
+			<test_script>
+				<variable name="j00kie" type="int" value="500" />
+			</test_script>
+		</scripts>
+	</template>
+</templates>

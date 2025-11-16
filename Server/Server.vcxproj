@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{0451daaa-ceb9-4a87-a1f5-6663bd9dd948}</ProjectGuid>
+    <RootNamespace>Server</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="utils\AIQuery.cpp" />
+    <ClCompile Include="helper\CurrentTime.cpp" />
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="events\SendWorldMessageEvent.cpp" />
+    <ClCompile Include="gas\Gas.cpp" />
+    <ClCompile Include="go\Go.cpp" />
+    <ClCompile Include="go\GoActor.cpp" />
+    <ClCompile Include="go\GoAspect.cpp" />
+    <ClCompile Include="go\GoAttack.cpp" />
+    <ClCompile Include="go\GoBody.cpp" />
+    <ClCompile Include="go\GoCommon.cpp" />
+    <ClCompile Include="go\GoComponent.cpp" />
+    <ClCompile Include="go\GoDb.cpp" />
+    <ClCompile Include="go\GoDefend.cpp" />
+    <ClCompile Include="go\GoInventory.cpp" />
+    <ClCompile Include="go\GoMagic.cpp" />
+    <ClCompile Include="go\GoMind.cpp" />
+    <ClCompile Include="go\GoPlacement.cpp" />
+    <ClCompile Include="go\GoScriptComponent.cpp" />
+    <ClCompile Include="Helper\Helper.cpp" />
+    <ClCompile Include="helper\Log.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="map\Node.cpp" />
+    <ClCompile Include="map\Region.cpp" />
+    <ClCompile Include="map\WorldMap.cpp" />
+    <ClCompile Include="msg\WorldMessage.cpp" />
+    <ClCompile Include="net\Connection.cpp" />
+    <ClCompile Include="net\ListeningSocket.cpp" />
+    <ClCompile Include="net\Network.cpp" />
+    <ClCompile Include="net\Packet.cpp" />
+    <ClCompile Include="platform\windows\WinSockApi.cpp" />
+    <ClCompile Include="scripts\Player.cpp" />
+    <ClCompile Include="server\Account.cpp" />
+    <ClCompile Include="server\Server.cpp" />
+    <ClCompile Include="xml\Xml.cpp" />
+    <ClCompile Include="xml\XmlCleanupGuard.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="utils\AIQuery.h" />
+    <ClInclude Include="enum\eActorAlignment.hpp" />
+    <ClInclude Include="enum\eAttackClass.hpp" />
+    <ClInclude Include="enum\eDefendClass.hpp" />
+    <ClInclude Include="enum\eEquipSlot.hpp" />
+    <ClInclude Include="enum\eInventoryLocation.hpp" />
+    <ClInclude Include="enum\eJobAbstractType.hpp" />
+    <ClInclude Include="enum\eLifeState.hpp" />
+    <ClInclude Include="enum\eMagicClass.hpp" />
+    <ClInclude Include="enum\eTargetTypeFlags.hpp" />
+    <ClInclude Include="enum\eWorldEvent.hpp" />
+    <ClInclude Include="events\Event.hpp" />
+    <ClInclude Include="events\SendWorldMessageEvent.hpp" />
+    <ClInclude Include="go\Go.hpp" />
+    <ClInclude Include="go\GoActor.hpp" />
+    <ClInclude Include="go\GoAspect.hpp" />
+    <ClInclude Include="go\GoAttack.hpp" />
+    <ClInclude Include="go\GoBody.hpp" />
+    <ClInclude Include="go\GoCommon.hpp" />
+    <ClInclude Include="go\GoComponent.hpp" />
+    <ClInclude Include="go\GoDb.hpp" />
+    <ClInclude Include="go\GoDefend.hpp" />
+    <ClInclude Include="go\GoInventory.hpp" />
+    <ClInclude Include="go\GoMagic.hpp" />
+    <ClInclude Include="go\GoMind.h" />
+    <ClInclude Include="go\GoPlacement.hpp" />
+    <ClInclude Include="go\GopSet.hpp" />
+    <ClInclude Include="go\GoScriptComponent.hpp" />
+    <ClInclude Include="go\Skill.hpp" />
+    <ClInclude Include="Helper\Helper.h" />
+    <ClInclude Include="map\Node.h" />
+    <ClInclude Include="map\Region.h" />
+    <ClInclude Include="map\WorldMap.h" />
+    <ClInclude Include="msg\WorldMessage.h" />
+    <ClInclude Include="net\Connection.hpp" />
+    <ClInclude Include="net\ListeningSocket.hpp" />
+    <ClInclude Include="net\Network.hpp" />
+    <ClInclude Include="net\Packet.h" />
+    <ClInclude Include="net\packets.hpp" />
+    <ClInclude Include="net\WorldState.hpp" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="helper\CurrentTime.hpp" />
+    <ClInclude Include="Engine.hpp" />
+    <ClInclude Include="gas\Gas.hpp" />
+    <ClInclude Include="InGame.hpp" />
+    <ClInclude Include="helper\Log.h" />
+    <ClInclude Include="MainMenu.hpp" />
+    <ClInclude Include="platform\Platform.h" />
+    <ClInclude Include="platform\windows\WinSockApi.h" />
+    <ClInclude Include="scripts\Player.hpp" />
+    <ClInclude Include="scripts\test_script.hpp" />
+    <ClInclude Include="server\Account.hpp" />
+    <ClInclude Include="server\Server.hpp" />
+    <ClInclude Include="helper\SiegePos.h" />
+    <ClInclude Include="helper\vector_3.h" />
+    <ClInclude Include="xml\Xml.h" />
+    <ClInclude Include="xml\XmlCleanupGuard.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
