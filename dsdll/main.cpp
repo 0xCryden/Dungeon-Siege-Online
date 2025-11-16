@@ -1,11 +1,11 @@
 // Include Libraries
 
-#include "source/Network.h"
+#include "Network.h"
 
-#include "source/Go.h"
+#include "Go.h"
 
-#include "source/UI.h"
+#include "UI.h"
 
-#include "source/Map.h"
+#include "Map.h"
 
-#include "source/Global.h"
+#include "Global.h"

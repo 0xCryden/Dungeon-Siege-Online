@@ -22,7 +22,7 @@
 			/*
 			 *
 			 */
-			Packet :: Packet (unsigned char * buffer) : m_size (0), m_position (2), m_data (NULL)
+			Packet (unsigned char * buffer) : m_size (0), m_position (2), m_data (NULL)
 			{
 				u_int16_t size;
 				memcpy ((unsigned char *)(&size), buffer, sizeof (u_int16_t));

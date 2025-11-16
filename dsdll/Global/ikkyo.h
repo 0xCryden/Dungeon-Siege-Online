@@ -472,7 +472,7 @@ class UITextBox
 
 		if(linePointer->text)
 		{
-			sprintf(buffer, "%S", linePointer->text);
+			sprintf_s(buffer, "%S", linePointer->text);
 		}
 		else
 		{
@@ -710,7 +710,7 @@ class UIChatBox
 
 		if(textLine && textLine->text)
 		{
-			sprintf(buffer, "%S", textLine->text);
+			sprintf_s(buffer, "%S", textLine->text);
 		}
 		else
 		{
@@ -720,7 +720,7 @@ class UIChatBox
 		return buffer;
 	}
 
-	FEX void SetNewestLine( const char *text )
+	/*FEX void SetNewestLine(const char* text)
 	{
 		DWORD *addr = (DWORD *) this;
 		ConsoleLine *linePointer = 	(ConsoleLine*)(addr[0x6f]);
@@ -735,6 +735,27 @@ class UIChatBox
 		if(textLine && textLine->text)
 		{
 			_snwprintf( textLine->text, wcslen(textLine->text), L"%S", text );
+		}
+	}*/
+	FEX void SetNewestLine(const char* text)
+	{
+		DWORD* addr = reinterpret_cast<DWORD*>(this);
+		ConsoleLine* linePointer = reinterpret_cast<ConsoleLine*>(addr[0x6f]);
+
+		if (addr[0x6e] == addr[0x6f])
+			return;
+
+		linePointer--;
+
+		TextLine* textLine = linePointer->textLine;
+
+		if (textLine && textLine->text)
+		{
+			// Determine the size of the buffer in wchar_t units
+			size_t bufSize = wcslen(textLine->text)/* TODO: replace with actual buffer size, not string length */;
+
+			// Safe write using swprintf_s (bounds-checked)
+			swprintf_s(textLine->text, bufSize, L"%S", text);
 		}
 	}
 
@@ -752,7 +773,7 @@ class UIChatBox
 
 		if(textLine && textLine->text)
 		{
-			sprintf(buffer, "%S", textLine->text);
+			sprintf_s(buffer, "%S", textLine->text);
 		}
 		else
 		{

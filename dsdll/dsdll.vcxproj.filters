@@ -15,67 +15,67 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="framework.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Global.h">
+    <ClInclude Include="Global.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Go.h">
+    <ClInclude Include="Go.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\GPG.h">
+    <ClInclude Include="GPG.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Map.h">
+    <ClInclude Include="Map.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Network.h">
+    <ClInclude Include="Network.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Types.h">
+    <ClInclude Include="Types.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\UI.h">
+    <ClInclude Include="UI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Global\Globals.h">
+    <ClInclude Include="Global\Globals.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Go\GoActor.h">
+    <ClInclude Include="Global\ikkyo.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Go\GoAspect.h">
+    <ClInclude Include="Go\GoActor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\GPG\dsdll.h">
+    <ClInclude Include="Go\GoAspect.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\GPG\gpstring_std.h">
+    <ClInclude Include="GPG\dsdll.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Map\MapMaker.h">
+    <ClInclude Include="GPG\gpstring_std.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Network\Net.h">
+    <ClInclude Include="Map\MapMaker.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Network\NetworkManager.h">
+    <ClInclude Include="Network\Net.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Network\Packet.h">
+    <ClInclude Include="Network\NetworkManager.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Network\Socket.h">
+    <ClInclude Include="Network\Packet.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Network\wsa.h">
+    <ClInclude Include="Network\Socket.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\UI\GRect.h">
+    <ClInclude Include="Network\wsa.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="source\Global\ikkyo.h">
+    <ClInclude Include="UI\GRect.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,7 +83,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="source\Network\wsa.cpp">
+    <ClCompile Include="Network\wsa.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

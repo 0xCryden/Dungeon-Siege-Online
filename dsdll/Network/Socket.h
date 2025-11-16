@@ -14,7 +14,23 @@
 #include <fstream>
 #include <ctime>
 #include <sstream>  // Add this if you use stringstream
+#include <chrono>
+
 void LogToFile(const char* message)
+{
+	std::ofstream log("dsdll_log.txt", std::ios::app);
+	if (!log.is_open())
+		return;
+
+	std::time_t now = std::time(nullptr);
+	std::tm tm_struct;
+	localtime_s(&tm_struct, &now); // safer replacement
+	log << std::put_time(&tm_struct, "%Y-%m-%d %H:%M:%S") << " " << message << std::endl;
+
+	log.close();
+}
+
+/*void LogToFile(const char* message)
 {
 	std::ofstream log("dsdll_log.txt", std::ios::app); // Append mode
 	if (log.is_open())
@@ -23,7 +39,7 @@ void LogToFile(const char* message)
 		log << std::ctime(&now) << " " << message << std::endl;
 		log.close();
 	}
-}
+}*/
 
 	// Socket Class
 

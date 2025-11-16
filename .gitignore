@@ -5,6 +5,7 @@
 
 # Build results
 Server/Debug/
+dsdll/Debug/
 bin/
 obj/
 out/

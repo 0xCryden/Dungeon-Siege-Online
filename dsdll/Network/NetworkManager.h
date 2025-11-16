@@ -1,4 +1,3 @@
-
 #ifndef _NETMANAGER_H_
 #define _NETMANAGER_H_
 

@@ -102,7 +102,7 @@ class GoActor
 	FEX const char* GetSkillExpAsString(const char* skill)
 	{
 		static char buffer[64];
-		sprintf(buffer, "%.0f", GetSkillExperience(skill));
+		sprintf_s(buffer, "%.0f", GetSkillExperience(skill));
 		return buffer;
 	}
 
@@ -186,7 +186,7 @@ private:
 		SkillEntry* end = (SkillEntry*)(addr[0x07]);
 		for (SkillEntry* s = (SkillEntry*)(addr[0x06]); s < end; ++s)
 		{
-			if (stricmp(skill, s->name) == 0)
+			if (_stricmp(skill, s->name) == 0)
 				return s;
 		}
 		return nullptr;

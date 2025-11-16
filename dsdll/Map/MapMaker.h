@@ -46,7 +46,7 @@
 						memcpy (guid, buffer+12, 10);
 						guid[10] = '\0';
 
-						int p_return = sscanf (guid, "%x", &node);
+						int p_return = sscanf_s(guid, "%x", &node);
 
 						if (p_return == 1)
 						{

@@ -6,7 +6,8 @@
 	#include <string>
 	#include <time.h>
 	#include "../GPG.h"
-	
+
+#pragma comment(lib, "Ws2_32.lib")
 
 #define BUFFER_SIZE 1024
 
@@ -84,18 +85,26 @@ typedef const PlayerId_* PlayerId;
 		LS_GHOST,
 	};
 
-	// Returns the current system hour (0-23)
 	FEX int GetCurrentHour() {
-		time_t now = time(0);
-		tm* localTime = localtime(&now);
-		return localTime->tm_hour;
+		std::time_t now = std::time(nullptr);
+		std::tm localTime{};
+#ifdef _WIN32
+		localtime_s(&localTime, &now);
+#else
+		localtime_r(&now, &localTime);
+#endif
+		return localTime.tm_hour;
 	}
 
-	// Returns the current system minute (0-59)
 	FEX int GetCurrentMinute() {
-		time_t now = time(0);
-		tm* localTime = localtime(&now);
-		return localTime->tm_min;
+		std::time_t now = std::time(nullptr);
+		std::tm localTime{};
+#ifdef _WIN32
+		localtime_s(&localTime, &now);
+#else
+		localtime_r(&now, &localTime);
+#endif
+		return localTime.tm_min;
 	}
 
 	FEX float Atan2(float y, float x) {

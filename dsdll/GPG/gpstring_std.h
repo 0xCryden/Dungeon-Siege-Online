@@ -1,6 +1,155 @@
 // string standard header
+#ifndef GPSTRING_STD_H_
+#define GPSTRING_STD_H_
 
-#if     _MSC_VER > 1000
+#include <string>
+#include <sstream>
+#include <cstdio>
+#include <cstdarg>
+#include <utility>
+#include <type_traits>
+
+template <typename CHAR>
+class gpstring
+{
+public:
+	using value_type = CHAR;
+	using size_type = std::size_t;
+
+	gpstring() = default;
+
+	gpstring(const CHAR* str)
+		: m_str(str)
+	{
+	}
+
+	gpstring(const std::basic_string<CHAR>& str)
+		: m_str(str)
+	{
+	}
+
+	gpstring(const gpstring& other) = default;
+	gpstring(gpstring&& other) noexcept = default;
+	gpstring& operator=(const gpstring& other) = default;
+	gpstring& operator=(gpstring&& other) noexcept = default;
+
+	// Assign from C-string
+	gpstring& operator=(const CHAR* str)
+	{
+		m_str = str;
+		return *this;
+	}
+
+	// Append
+	void append(size_type n, CHAR c)
+	{
+		m_str.append(n, c);
+	}
+
+	// Resize
+	void resize(size_type n)
+	{
+		m_str.resize(n);
+	}
+
+	// Clear
+	void clear()
+	{
+		m_str.clear();
+	}
+
+	// Conversion to std::basic_string
+	const std::basic_string<CHAR>& str() const
+	{
+		return m_str;
+	}
+
+	// Conversion operator to std::basic_string
+	operator std::basic_string<CHAR>() const
+	{
+		return m_str;
+	}
+
+	// Access underlying data (C++20-safe)
+	CHAR* data()
+	{
+		return m_str.data();
+	}
+
+	const CHAR* c_str() const
+	{
+		return m_str.c_str();
+	}
+
+	size_type size() const
+	{
+		return m_str.size();
+	}
+
+	size_type max_size() const
+	{
+		return m_str.max_size();
+	}
+
+	// === Modern C++20 variadic format ===
+	template <typename... Args>
+	static gpstring format(const CHAR* fmt, Args&&... args)
+	{
+		gpstring result;
+
+		int size = std::snprintf(nullptr, 0, fmt, args...);
+		if (size <= 0)
+			return result;
+
+		result.resize(size);
+		std::snprintf(result.data(), size + 1, fmt, std::forward<Args>(args)...);
+
+		return result;
+	}
+
+private:
+	std::basic_string<CHAR> m_str;
+};
+
+// === Operators ===
+template <typename CHAR>
+inline bool operator==(const gpstring<CHAR>& lhs, const gpstring<CHAR>& rhs)
+{
+	return lhs.str() == rhs.str();
+}
+
+template <typename CHAR>
+inline bool operator!=(const gpstring<CHAR>& lhs, const gpstring<CHAR>& rhs)
+{
+	return !(lhs == rhs);
+}
+
+// === Stream insertion ===
+#include <ostream>
+template <typename CHAR, typename Traits>
+inline std::basic_ostream<CHAR, Traits>&
+operator<<(std::basic_ostream<CHAR, Traits>& os, const gpstring<CHAR>& str)
+{
+	os << str.str();
+	return os;
+}
+
+// === Stream extraction ===
+#include <istream>
+template <typename CHAR, typename Traits>
+inline std::basic_istream<CHAR, Traits>&
+operator>>(std::basic_istream<CHAR, Traits>& is, gpstring<CHAR>& str)
+{
+	str.clear();
+	std::basic_string<CHAR> tmp;
+	is >> tmp;
+	str = tmp.c_str();
+	return is;
+}
+
+#endif // GPSTRING_STD_H_
+
+/*#if     _MSC_VER > 1000
 #pragma once
 #endif
 
@@ -11,7 +160,7 @@
 
 #ifdef  _MSC_VER
 #pragma pack(push,4)
-#endif  /* _MSC_VER */
+#endif 
  #include <xutility>
 
 _STD_BEGIN
@@ -923,6 +1072,7 @@ template<class _E, class _Tr, class _A> inline
         _St |= ios_base::failbit;
     _I.setstate(_St);
     return (_I); }
+
 template<class _E, class _Tr, class _A> inline
     basic_istream<_E, _Tr>& __cdecl getline(basic_istream<_E, _Tr>& _I,
         gp_basic_string<_E, _Tr, _A>& _X)
@@ -971,12 +1121,7 @@ typedef gp_basic_string<wchar_t, char_traits<wchar_t>,
 _STD_END
 #ifdef  _MSC_VER
 #pragma pack(pop)
-#endif  /* _MSC_VER */
+#endif
 
-#endif /* _GPSTRING_STD_ */
-
-/*
- * Copyright (c) 1995 by P.J. Plauger.  ALL RIGHTS RESERVED. 
- * Consult your license regarding permissions and restrictions.
- */
+#endif*/
 
