@@ -596,7 +596,8 @@ void Gas::LoadMapTemplates() {
     string basePath = "data/static/map/multiplayer_world/regions";
     size_t totalLoaded = 0;
 
-    for (const auto& entry : fs::recursive_directory_iterator(basePath)) {
+    for (const auto& entry : fs::recursive_directory_iterator(basePath)) 
+    {
         if (!entry.is_regular_file())
             continue;
 
@@ -606,8 +607,11 @@ void Gas::LoadMapTemplates() {
         if (path.filename() == "actor.gas") {
             auto parent = path.parent_path();                 // regular
             auto grandparent = parent.parent_path();          // objects
+            auto regionFolder = grandparent.parent_path();    // .../<REGION>
+            string regionName = regionFolder.filename().string();
 
             if (parent.filename() == "regular" && grandparent.filename() == "objects") {
+                
                 vector<PlacementData> placements;
                 string fullPath = path.string();
 
@@ -619,6 +623,7 @@ void Gas::LoadMapTemplates() {
                                   << p.position.X << ", " << p.position.Y << ", " << p.position.Z
                                   << "), facing (" << p.orientation.x << ", " << p.orientation.y << ", " << p.orientation.z << ")\n";*/
 
+                        p.regionName = regionName;
                         placementManager.AddPlacement(move(p));
                         ++totalLoaded;
                     }

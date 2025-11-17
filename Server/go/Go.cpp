@@ -130,7 +130,7 @@ Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspec
 	if (go->m_placement != NULL) m_placement = new GoPlacement (this);
 }
 
-Go :: Go(const TemplateData& tmpl, const GoPlacement& placement)
+Go :: Go(const TemplateData& tmpl, const PlacementData& placement)
 	: m_template_name(tmpl.name),
 	  m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	  m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),

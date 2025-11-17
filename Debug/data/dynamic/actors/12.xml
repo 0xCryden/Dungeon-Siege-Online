@@ -58,7 +58,7 @@
 			<custom_head value="default"/>
 		<item id="10001" equip_slot="es_weapon_hand" inven_loc="il_active_melee_weapon"/></inventory>
 		<placement region="town_center">
-			<position node="3326172646" x="3.68681" y="-1" z="-1.26086"/>
+			<position node="3704458050" x="0.445187" y="0.7105" z="1.49769"/>
 		</placement>
 	</go>
 </objects>

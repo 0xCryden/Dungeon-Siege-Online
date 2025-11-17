@@ -68,6 +68,18 @@ GoPlacement::GoPlacement(Go* go, const GoPlacement& placement) : GoComponent(go)
 	m_position.Z = placement.m_position.Z;
 }
 
+GoPlacement::GoPlacement(Go* go, const PlacementData& data) : GoComponent(go)
+{
+	m_region = data.regionName;
+	m_position.Node = data.position.Node;
+	m_position.X = data.position.X;
+	m_position.Y = data.position.Y;
+	m_position.Z = data.position.Z;
+
+	// TODO implement m_rotation into GoPlacement class
+	//m_orientation = data.orientation;
+}
+
 void GoPlacement :: Save(xmlNode* placementNode) const
 {
 	xml::SetAttribute(placementNode, "region", m_region);

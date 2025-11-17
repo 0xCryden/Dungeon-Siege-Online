@@ -147,6 +147,7 @@ struct PlacementData {
 
 	SiegePos position;
 	vector_3 orientation; // Store only the vector part of the quaternion
+	std::string regionName;
 };
 
 class PlacementManager {

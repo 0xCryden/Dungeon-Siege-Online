@@ -63,7 +63,7 @@ class Go
 		Go (uint32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
 		//Go (uint32_t id); // create empty go for later use
 
-		Go(const TemplateData& tmpl, const GoPlacement& placement);
+		Go(const TemplateData& tmpl, const PlacementData& placement);
 		~Go ();
 
 		GoActor * Actor () const;

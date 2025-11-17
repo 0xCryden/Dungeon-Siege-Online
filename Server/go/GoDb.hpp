@@ -38,7 +38,7 @@ class GoDb
 		void LoadGoDbSingleChar (uint32_t id);
 
 		void LoadContentDb (const string & filename);
-		//void GasToContentDb();
+		void GasToGoDb();
 		//void LoadContentDbFolder (const string & folderName);
 		//void LoadContentDbSingle (const string & filename);
 

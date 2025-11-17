@@ -44,9 +44,47 @@ GoDb :: ~GoDb ()
 	}}
 }
 
-/*void GoDb::GasToContentDb()
+void GoDb::GasToGoDb()
 {
-    size_t totalLoaded = 0;
+    int totalLoaded = 0;
+    for (auto& [instanceName, placement] : placementManager.GetAll()) {
+
+        const TemplateData* tmpl = manager.GetTemplate(placement.templateName);
+        if (!tmpl) {
+            Log::Write(Log::Level::ERR,
+                "Unknown template: " + placement.templateName, true);
+            continue;
+        }
+
+        // check if the node exists
+        const auto& nodes = g_world.GetRegion(placement.regionName)->GetNodes();
+        if (nodes.find(placement.position.Node) == nodes.end()) 
+        {
+            //std::cout << "Skipping spawn .. region has no nodes" << std::endl;
+            continue;
+        }
+        //GoPlacement gp(nullptr, placement); // owner will be set later inside Go
+        //Go* go = new Go(*tmpl, placement);
+
+        try
+        {
+            Go* t = new Go(*tmpl, placement);
+            m_godb[NextId()] = t;
+
+            string region = t->Placement()->GetRegion();
+            if (!region.empty())
+            {
+                SendWorldMessage(we_entered_world, t, t, region);
+                cout << "[GODB] Spawned Go " << NextId() << " using template: " << placement.templateName << " in region: " << region << " at: " << placement.position.X << " | " << placement.position.Y << " | " << placement.position.Z << " in node: " << placement.position.Node <<  endl;
+                totalLoaded++;
+            }
+        }
+        catch (exception& e)
+        {
+            Log::WriteF(Log::Level::ERR, "go %u was not loaded because: %s", NextId(), e.what());
+        }
+    }
+    /*size_t totalLoaded = 0;
 
     for (const auto& [name, tmpl] : manager.GetAll()) {
         std::cout << "Template: " << name << "\n";
@@ -61,9 +99,9 @@ GoDb :: ~GoDb ()
 
         ++totalLoaded;
         //cout << "Instantiated Go from template: " << templateName << endl;
-    }
+    }*/
     cout << "[INFO] Finished converting Gas to Gos. Total: " << totalLoaded << endl;
-}*/
+}
 
 // mob spawns
 /*void GoDb::LoadGasToGo()

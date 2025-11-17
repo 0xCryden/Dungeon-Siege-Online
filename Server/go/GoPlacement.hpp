@@ -15,7 +15,8 @@ class GoPlacement : public GoComponent
 		GoPlacement (Go * go, xmlNode * node);
 		// Copy constructor
 		GoPlacement(Go* go, const GoPlacement& other);
-			
+		GoPlacement(Go* go, const PlacementData& data);
+
 		void Save (xmlNode* placementNode) const;
 
 		bool IsDirty () const;
