@@ -18,7 +18,8 @@
 			<is_two_handed value="1"/>
 			<reload_delay value="0.0"/>
 		</attack>
-		<inventory><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/><custom_head value=""/></inventory>
-		<placement region=""><position node="1323345966" x="-2.56196" y="0" z="-0.626678"/></placement>
+		<inventory></inventory>
+		
+		<placement region="town_center"><position node="1323345966" x="0" y="0" z="0"/></placement>
 	</go>
 </objects>

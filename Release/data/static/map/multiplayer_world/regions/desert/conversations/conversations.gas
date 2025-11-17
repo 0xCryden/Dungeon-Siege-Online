@@ -1,0 +1,28 @@
+[zconversation_directions]
+{
+	[text*]
+	{
+		screen_text = "Found your way to the Desert Mesas on the edge of the Endless Dunes, have you? That takes a fair bit of courage. There is a chance you could find your way to Grescal southwest through the Dunes, but I'd wager even the bravest of explorers would quickly find nothing but mirages as far as the eye can see. You'd do far better evading the drakes here in their Nest. Quillrabe is within reach that way, and Hiroth is even closer if you stay west at the fork.";
+	}
+}
+
+[conversation_guard]
+{
+	[text*] 
+	{	
+	
+		screen_text = "From time to time, I make the journey out here to tickle a few drake bellies and replace the signs. There's also the old Legion Displacer Platform just to the south before the bridge that goes straight back to Hiroth. You never know if you'll make the trip all in one piece, but it's likely far less chancier than sneaking past the drakes.";
+		button_1_text = "Directions";
+       	button_1_value = d_0x0710055C;
+	}
+
+}
+[conversation_guard_red]
+{
+	[text*]
+	{
+		screen_text = "Could the drakes be having a fire-breathing contest? This is unnatural weather, even for conditions at the edge of the Endless Dunes.";
+			button_1_text = "Directions";
+       		button_1_value = d_0x0710055C;
+	}
+}

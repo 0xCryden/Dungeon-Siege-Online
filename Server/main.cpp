@@ -6,6 +6,7 @@
 #include "platform/windows/WinSockApi.h"
 #include "xml/XmlCleanupGuard.h"
 #include <random>
+#include "gas/Gas.hpp"
 
 int main(int argc, char** argv)
 {
@@ -39,24 +40,24 @@ int main(int argc, char** argv)
         // TODO dont load into m_contentdb but m_godb (ínstances instead of templates)
         //godb.LoadGasToGo();
 
-        //if (templatedata* tpl = manager.gettemplate("base_pot_cav_01"))
-        //{
-        //    cout << "[info] template: " << tpl->name << "\n";
-        //    if (!tpl->specializes.empty())
-        //        cout << "  specializes: " << tpl->specializes << "\n";
-        //
-        //    for (const auto& [compname, comp] : tpl->components) {
-        //        gas.logcomponent(compname, comp, "  ");
-        //    }
-        //    // access fields
-        //    /*auto* comp = tpl->getcomponent("aspect");
-        //    if (comp) {
-        //        auto experience_value = comp->getfield("experience_value");
-        //        if (experience_value) {
-        //            std::cout << "experience_value: " << *experience_value << "\n";
-        //        }
-        //    }*/
-        //}
+        if (TemplateData* tpl = manager.GetTemplate("minigun_dragon"))
+        {
+            cout << "[info] template: " << tpl->name << "\n";
+            if (!tpl->specializes.empty())
+                cout << "  specializes: " << tpl->specializes << "\n";
+        
+            for (const auto& [compname, comp] : tpl->components) {
+                gas.LogComponent(compname, comp, "  ");
+            }
+            // access fields
+            /*auto* comp = tpl->getcomponent("aspect");
+            if (comp) {
+                auto experience_value = comp->getfield("experience_value");
+                if (experience_value) {
+                    std::cout << "experience_value: " << *experience_value << "\n";
+                }
+            }*/
+        }
 
         // Load specific GO folders & content
         godb.LoadGoDbFolder("items");

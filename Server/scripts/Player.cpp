@@ -140,7 +140,8 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 	Go * to = message.SendTo();
 	
 	if (event != we_entered_frustum && event != we_left_frustum &&
-			(!(event == we_mind_processing_new_job && message.Data() == "jat_move")))
+		(!(event == we_mind_processing_new_job && message.Data() == "jat_move") &&
+		(event != we_unknown_node)))
 		cout << "received event " << ToString (message.WorldEvent()) << " from " << from->Goid() << " to " << to->Goid() << endl;
 
 	switch (event)
@@ -179,7 +180,7 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteUInt8 (from->GetLastRota());
 				packet.WriteUInt32 (from->Placement()->Position().Node);
 
-				cout << "Sending request Lastlocal: " << from->GetLastLocal().x << "/" << from->GetLastLocal().y << "/" << from->GetLastLocal().z << endl;
+				//cout << "Sending request Lastlocal: " << from->GetLastLocal().x << "/" << from->GetLastLocal().y << "/" << from->GetLastLocal().z << endl;
 
 				m_connection->Send (packet.Data(), packet.Size());
 			}

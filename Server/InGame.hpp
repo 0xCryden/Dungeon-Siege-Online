@@ -177,7 +177,7 @@ class InGame : public WorldState
 						
 					string region = incoming.ReadString();
 					string worldname = incoming.ReadString();
-					cout << "RSMOVE: Player " << m_go->Common()->ScreenName() <<  " | Node " << node << " | x: " << x << " y: " << y << " z: " << z << endl;
+					//cout << "RSMOVE: Player " << m_go->Common()->ScreenName() <<  " | Node " << node << " | x: " << x << " y: " << y << " z: " << z << endl;
 
 					m_go->Mind()->Move (SiegePos (node, x, y, z));
 				}
@@ -355,25 +355,30 @@ class InGame : public WorldState
 
 				case RSREQNODEINFO:
 				{
-
 					uint32_t id = incoming.ReadUInt32();
-					float x  = incoming.ReadFloat();
-					float y = incoming.ReadFloat();
-					float z = incoming.ReadFloat();
+					float nodeX  = incoming.ReadFloat();
+					float nodeY = incoming.ReadFloat();
+					float nodeZ = incoming.ReadFloat();
 					uint8_t rotation = incoming.ReadUInt8();
 
 					//new position for fixing up old unknown pos
 					uint32_t pid = incoming.ReadUInt32();
-					float px  = incoming.ReadFloat();
-					float py = incoming.ReadFloat();
-					float pz = incoming.ReadFloat();
+					float playerX  = incoming.ReadFloat();
+					float playerY = incoming.ReadFloat();
+					float playerZ = incoming.ReadFloat();
 
-					Region * region = g_world.GetRegion (m_go->Placement()->GetRegion());
-					//Region * region = world.GetRegion (regionname);
-					region->AddNode(id, x, y, z, rotation);
+					//vector_3 playerPos = vector_3(playerX, playerY, playerZ);
+					//vector_3 nodePos = vector_3(nodeX, nodeY, nodeZ);
+					Region* region = g_world.GetRegion(m_go->Placement()->GetRegion());
+
+					// TODO add check if node coordinates are bad skip
+					//double distance = region->GetDistance(playerPos, nodePos);
+					//cout << "Distance difference: " << distance << endl;
+
+					region->AddNode(id, nodeX, nodeY, nodeZ, rotation);
 					m_go->SetWaitForNodeInfo(false);
 
-					m_go->Placement()->SetPosition(SiegePos(pid, px, py, pz));
+					m_go->Placement()->SetPosition(SiegePos(pid, playerX, playerY, playerZ));
 				}
 				break;
 

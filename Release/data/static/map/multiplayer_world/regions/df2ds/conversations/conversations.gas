@@ -1,0 +1,34 @@
+[conversation_endar]
+{
+	[text*]
+	{
+		order = 0;
+		choice = shop;
+
+		screen_text = "It's not often travellers come through bandit territory. Would be a shame to leave them nothing to take off your corpse. Heh heh.";
+	}
+	[text*]
+	{
+	        order = 1;
+		choice = shop;
+
+		screen_text = "I was once a bit of a bandit myself. Now I trade with all and pick up the trinkets lying about after they kill each other. Touchy folk, bandits are.";
+	}
+
+	[text*]
+	{
+
+		choice = shop;
+
+		screen_text = "Here on the lower slopes of Mt. Utrae it's Belwar and his band who choose if you live or die. You might escape them at the tree line near the summit, but the coven of swamp witches on the southern slopes will never let you pass alive. Still, with gold in your pockets, perhaps you could bribe them?";
+	}
+
+}
+[conversation_endar_red]
+{
+	[text*]
+	{
+		screen_text = "Blech, my stomach's all queasy. Who would have thought that pure mountain air could become so vile?";
+	}
+}
+

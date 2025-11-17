@@ -119,7 +119,6 @@ void GoPlacement :: SetPosition (const SiegePos & position)
 	m_dirty = true;
 	m_position = position;
 
-
 	Region * region = g_world.GetRegion (GetRegion());
 	Node * node = region->GetNode(position.Node);
 
@@ -147,13 +146,26 @@ void GoPlacement :: SetPosition (const SiegePos & position)
 		lastSiegePos = position;
 		//save new Rotation
 		lastRotation = node->Rotation();
+
+		double absoluteDistanceMoved = region->GetDistance(local, WorldPosition());
+
+		/*cout << "Distance traveled: " << absoluteDistanceMoved << endl;
+		Go* mapCenterGo = godb.FindGoById(5);
+		if (mapCenterGo != NULL)
+		{
+			cout << "Distance to 0/0/0: " << region->GetSiegeDistance(mapCenterGo->Placement()->Position(), GetGo()->Placement()->Position()) << endl;
+		}*/
+
+		if (region->GetDistance(local, WorldPosition()) > 10.0)
+		{
+			cout << "###### !!! Warning player position jumped distance > 10, wrong node locations received?" << endl;
+		}
+
 		SetWorldPosition(local);
 	}
 	else
 	{
-		cout << "MakeLocalPosition: missing node ID " << position.Node << endl;
 		Go* playerChar = GetGo();
-		cout << "Player: " << playerChar->Common()->ScreenName() << endl;
 		if ((g_engine.IsPlayer(playerChar) == true) && (playerChar->WaitForNodeInfo() == false))
 		{
 			playerChar->SetLastPos(lastSiegePos);

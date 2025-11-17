@@ -237,7 +237,7 @@ int Connection::Receive()
 						packetType != typeJtdr)
 			        {
 						string packetName = GetPacketName(packetType, true);
-						Log::Write(Log::Level::INFO, "[RECV] [" + packetName + "] (id=" + to_string((int)packetType) + "), size: " + to_string(size), true);
+						//Log::Write(Log::Level::INFO, "[RECV] [" + packetName + "] (id=" + to_string((int)packetType) + "), size: " + to_string(size), true);
 			        }
 			    }
 				//cout << "Packet received - size= " <<  size << endl;

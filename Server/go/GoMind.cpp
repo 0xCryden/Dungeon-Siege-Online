@@ -123,6 +123,8 @@ void GoMind :: Equip (eEquipSlot slot, Go * item)
 				slot = item->IntendedSlot();
 			    cout << "Equip: auto-mapped item " << item->Goid() << "(location to slot " << slot << endl;
 			}
+
+
 			/*if (item->GetLoc() == il_shield)
 			{
 				if (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon) != NULL)

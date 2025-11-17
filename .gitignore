@@ -4,8 +4,13 @@
 # ---------------------------------------------------------
 
 # Build results
+Debug/data/dynamic/
 Server/Debug/
+Server/Release/
 dsdll/Debug/
+dsdll/Release/
+dsdll/DebugLOA/
+dsdll/ReleaseLOA/
 bin/
 obj/
 out/

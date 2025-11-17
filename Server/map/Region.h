@@ -16,7 +16,8 @@ class Region
 		GopSet & Objects ();
 		map<uint32_t, Node *> GetNodes() { return m_nodes; };
 		const string & Name() { return m_name; };
-		double GetSiegeDistance (const SiegePos & position, const SiegePos & destination);
+		double GetSiegeDistance(const SiegePos& position, const SiegePos& destination);
+		double GetDistance(const vector_3& position, const vector_3& destination);
 			
 	private:
 		vector_3 MakeLocalPosition (const SiegePos & position, bool mapMaker);

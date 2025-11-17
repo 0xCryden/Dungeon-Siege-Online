@@ -123,14 +123,14 @@ void Network::Receive()
                     conn->Receive();
                 }
                 catch (int& e) {
-                    Log::WriteF(Log::Level::ERR, "[ERROR] Receive failed on socket %llu, error: %d", static_cast<unsigned long long>(sock), e);
+                    //Log::WriteF(Log::Level::ERR, "[ERROR] Receive failed on socket %llu, error: %d", static_cast<unsigned long long>(sock), e);
 
                     m_sockets.erase(sock);
                     FD_CLR(sock, &m_descriptors);
                     conn->Close();
                     m_connections.erase(conn);
 
-                    Log::WriteF(Log::Level::INFO, "[CLOSE] Connection closed: socket %llu", static_cast<unsigned long long>(sock));
+                    Log::WriteF(Log::Level::INFO, "[CLOSE] Connection closed: socket %llu, error: %d", static_cast<unsigned long long>(sock), e);
                 }
 
                 if (--activity <= 0)

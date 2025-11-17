@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="8">
+		<actor>
+			<alignment value="aa_good"/>
+			<can_level_up value="1"/>
+			<skills>
+				<skill name="uber" level="1" experience="70"/>
+				<skill name="strength" level="0" experience="0"/>
+				<skill name="intelligence" level="0" experience="0"/>
+				<skill name="dexterity" level="0" experience="0"/>
+				<skill name="melee" level="0" experience="0"/>
+				<skill name="ranged" level="0" experience="0"/>
+				<skill name="nature magic" level="0" experience="0"/>
+				<skill name="combat magic" level="0" experience="0"/>
+			</skills>
+		</actor>
+		<aspect>
+			<bounding_sphere_radius value="1"/>
+			<current_life value="49"/>
+			<current_mana value="30"/>
+			<flesh value="b_c_gan_hg_skin_01,default"/>
+			<cloth value="b_c_pos_a1_pant_004,b_c_pos_a1_100"/>
+			<is_invincible value="0"/>
+			<is_visible value="1"/>
+			<life_recovery_period value="4.0"/>
+			<life_recovery_unit value="1.0"/>
+			<mana_recovery_period value="3.0"/>
+			<mana_recovery_unit value="1.0"/>
+			<life_state value="ls_alive_conscious"/>
+			<last_died value="0"/>
+			<max_life value="49"/>
+			<max_mana value="30"/>
+			<model value="dso_halfgiant"/>
+			<render_scale value="1"/>
+		</aspect>
+		<attack>
+			<damage_max value="4"/>
+			<damage_min value="2"/>
+			<attack_range value="0"/>
+			<critical_hit_chance value="0"/>
+			<is_two_handed value="0"/>
+		</attack>
+		<body>
+			<avg_move_velocity value="4.5"/>
+			<max_move_velocity value="4.5"/>
+			<min_move_velocity value="4.5"/>
+		</body>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="qtest"/>
+		</common>
+		<defend/>
+		<mind/>
+		<inventory>
+			<custom_head value="default"/>
+		</inventory>
+		<placement region="town_center">
+			<position node="1546166765" x="-0.0221866" y="0" z="1.07171"/>
+		</placement>
+	</go>
+</objects>

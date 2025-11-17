@@ -320,22 +320,23 @@ void Go :: HandleCommand (const string& command)
 
 eEquipSlot Go :: IntendedSlot()
 {
+	// TODO check eEquipSlot value inherited from template instead
 	eEquipSlot slot = es_any;
 
 	if (HasAttack() && IsMeleeWeapon())
 	{
-		cout << "Mapping item location to es_weapon_hand" << endl;
+		cout << "Mapping item slot to es_weapon_hand" << endl;
 		slot = es_weapon_hand;
 	}
 	if (HasAttack() && IsRangedWeapon())
 	{
-		cout << "Mapping item location to es_shield_hand" << endl;
+		cout << "Mapping item slot to es_shield_hand" << endl;
 		slot = es_shield_hand;
 	}
 
 	if (HasDefend() && Defend()->DefendClass() == dc_shield)
 	{
-		cout << "Mapping item location to es_shield_hand" << endl;
+		cout << "Mapping item slot to es_shield_hand" << endl;
 		slot = es_shield_hand;
 	}
 
@@ -348,18 +349,18 @@ eInventoryLocation Go :: IntendedLoc()
 
 	if (HasAttack() && IsMeleeWeapon())
 	{
-		cout << "Mapping item location to es_weapon_hand" << endl;
+		cout << "Mapping item location to il_active_melee_weapon" << endl;
 		loc = il_active_melee_weapon;
 	}
 	if (HasAttack() && IsRangedWeapon())
 	{
-		cout << "Mapping item location to es_shield_hand" << endl;
+		cout << "Mapping item location to il_active_ranged_weapon" << endl;
 		loc = il_active_ranged_weapon;
 	}
 
 	if (HasDefend() && Defend()->DefendClass() == dc_shield)
 	{
-		cout << "Mapping item location to es_shield_hand" << endl;
+		cout << "Mapping item location to il_shield" << endl;
 		loc = il_shield;
 	}
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="11" admin="10">
+		<actor>
+			<alignment value="aa_good"/>
+			<can_level_up value="1"/>
+			<skills>
+				<skill name="uber" level="90" experience="1.3606e+10"/>
+				<skill name="strength" level="90" experience="1.3606e+10"/>
+				<skill name="intelligence" level="90" experience="1.3606e+10"/>
+				<skill name="dexterity" level="90" experience="1.3606e+10"/>
+				<skill name="melee" level="90" experience="1.3606e+10"/>
+				<skill name="ranged" level="90" experience="1.3606e+10"/>
+				<skill name="nature magic" level="90" experience="1.3606e+10"/>
+				<skill name="combat magic" level="90" experience="1.3606e+10"/>
+			</skills>
+		</actor>
+		<aspect>
+			<bounding_sphere_radius value="1"/>
+			<current_life value="4459"/>
+			<current_mana value="2730"/>
+			<flesh value="b_c_gan_utraean_skin_02,b_c_gah_fb_hair_007"/>
+			<cloth value="b_c_pos_a1_pant_004,b_c_pos_a1_shrt_008"/>
+			<is_invincible value="0"/>
+			<is_visible value="1"/>
+			<life_recovery_period value="4.0"/>
+			<life_recovery_unit value="1.0"/>
+			<mana_recovery_period value="3.0"/>
+			<mana_recovery_unit value="1.0"/>
+			<life_state value="ls_alive_conscious"/>
+			<last_died value="0"/>
+			<max_life value="4459"/>
+			<max_mana value="2730"/>
+			<model value="dso_utraean_boy"/>
+			<render_scale value="1"/>
+		</aspect>
+		<attack>
+			<damage_max value="148"/>
+			<damage_min value="128"/>
+			<attack_range value="0"/>
+			<critical_hit_chance value="0"/>
+			<is_two_handed value="0"/>
+			<reload_delay value="1.0"/>
+		</attack>
+		<body>
+			<avg_move_velocity value="4.5"/>
+			<max_move_velocity value="4.5"/>
+			<min_move_velocity value="4.5"/>
+		</body>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="headtest"/>
+		</common>
+		<defend/>
+		<mind/>
+		<inventory>
+			<custom_head value="m_c_gah_fb_hlmt_head-04"/>
+		<item id="10002" equip_slot="es_none" inven_loc="il_main"/><item id="10008" equip_slot="es_none" inven_loc="il_main"/><item id="10005" equip_slot="es_none" inven_loc="il_main"/><item id="10010" equip_slot="es_none" inven_loc="il_main"/><item id="10004" equip_slot="es_none" inven_loc="il_main"/><item id="10009" equip_slot="es_none" inven_loc="il_main"/><item id="10003" equip_slot="es_none" inven_loc="il_main"/><item id="10001" equip_slot="es_weapon_hand" inven_loc="il_active_melee_weapon"/></inventory>
+		<placement region="town_center">
+			<position node="1323345966" x="-1.7549" y="0" z="-1.70777"/>
+		</placement>
+	</go>
+</objects>

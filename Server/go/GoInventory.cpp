@@ -262,60 +262,47 @@ bool GoInventory :: Equip (eEquipSlot slot, Go * item)
 {
 	cout << "Inventory Equip item: " << item->Aspect()->Model() << endl;
 
-	if (IsSlotEquipped (slot) != false)
-	{
-		return false;
-	}
+	if (IsSlotEquipped (slot) != false) return false;
+	if (IsEquipped (item) != false) return false;
+	if (Contains (item) != true) return false;
 	
-	if (IsEquipped (item) != false)
-	{
-		return false;
-	}
-	
-	if (Contains (item) != true)
-	{
-		return false;
-	}
-	
-	if (item != NULL)
-	{
-		/*
-		 * check if we can actually equip this item
-		 */
+	if (item == NULL) return false;
 
-		m_equipment[slot] = item;
+	/*
+	 * check if we can actually equip this item
+	 */
 
-		//reset location if location was occupied
-		if (item->IntendedLoc() != il_main)
+	m_equipment[slot] = item;
+
+	//reset location if location was occupied
+	if (item->IntendedLoc() != il_main)
+	{
+		if (ItemFromLocation(item->IntendedLoc()))
 		{
-			if (ItemFromLocation(item->IntendedLoc()))
-			{
-				ItemFromLocation(item->IntendedLoc())->SetLoc(il_main);
-			}
+			ItemFromLocation(item->IntendedLoc())->SetLoc(il_main);
 		}
+	}
 
-		//set location
-		item->SetLoc(item->IntendedLoc());
-		if (slot == es_weapon_hand)
+	//set location
+	item->SetLoc(item->IntendedLoc());
+
+	if (slot == es_weapon_hand)
+	{
+		SetSelectedSlot(1);
+	}
+	else if (slot == es_shield_hand)
+	{
+		if (item->IsRangedWeapon())
+		{
+			SetSelectedSlot(2);
+		}
+		else
 		{
 			SetSelectedSlot(1);
 		}
-		else if (slot == es_shield_hand)
-		{
-			if (item->IsRangedWeapon())
-			{
-				SetSelectedSlot(2);
-			}
-			else
-			{
-				SetSelectedSlot(1);
-			}
-		}
-		
-		return true;
 	}
-	
-	return false;
+		
+	return true;
 }
 
 Go * GoInventory :: GetEquipped (eEquipSlot slot) const

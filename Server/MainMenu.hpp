@@ -124,7 +124,7 @@ class MainMenu : public WorldState
 
 				case RSREQCHARLIST:
 				{
-					cout << "RSREQCHARLIST" << endl;
+					//cout << "RSREQCHARLIST" << endl;
 					Account * account = rememberedAccount;
 					if (account == NULL)
 					{

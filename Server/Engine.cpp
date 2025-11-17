@@ -200,6 +200,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 		{
 			if (from->HasInventory() && to->IsItem())
 			{
+
 				string region = to->Placement()->GetRegion();
 				if (region.empty() != true)
 				{
@@ -489,9 +490,14 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 				if (hp <= -(toAspect->MaxLife() * 2.0f / 3.0f))
 					toAspect->SetLifeState(ls_dead_normal);
 			}
+
+			if (toAspect->CurrentLife() >= toAspect->MaxLife())
+			{
+				int64_t lifePeriodMs = (int64_t)(toAspect->LifeRecoveryPeriod() * 1000.0f);
+				PostWorldMessage(we_player_data_changed, to, to, "life", lifePeriodMs);
+			}
+
 			toAspect->SetCurrentLife(hp);
-			int64_t lifePeriodMs = (int64_t)(toAspect->LifeRecoveryPeriod() * 1000.0f);
-			PostWorldMessage(we_player_data_changed, to, to, "life", lifePeriodMs);
 			UpdateGo(to);
 
 			// Add exp
@@ -576,9 +582,12 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 				if (hp <= -(toAspect->MaxLife() * 2.0f / 3.0f))
 					toAspect->SetLifeState(ls_dead_normal);
 			}
+			if (toAspect->CurrentLife() >= toAspect->MaxLife())
+			{
+				int64_t lifePeriodMs = (int64_t)(toAspect->LifeRecoveryPeriod() * 1000.0f);
+				PostWorldMessage(we_player_data_changed, to, to, "life", lifePeriodMs);
+			}
 			toAspect->SetCurrentLife(hp);
-			int64_t lifePeriodMs = (int64_t)(toAspect->LifeRecoveryPeriod() * 1000.0f);
-			PostWorldMessage(we_player_data_changed, to, to, "life", lifePeriodMs);
 			UpdateGo(to);
 
 			// Add exp
@@ -705,17 +714,15 @@ void Engine :: UpdateGoLvlup(Go* go, const string & data)
 
 void Engine::AddGoToRegion(Go *go, const std::string &data)
 {
-	std::cout << "[AddGoToRegion] Called with Go: " << (go ? go->Goid() : -1) << ", Region: " << data << std::endl;
-
 	if (go == NULL)
 	{
-		std::cout << "[AddGoToRegion] Go is null, returning." << std::endl;
+		Log::Write(Log::Level::ERR, " [AddGoToRegion] Go is null, returning", true);
 		return;
 	}
 
 	if (data.empty())
 	{
-		std::cout << "[AddGoToRegion] Data is empty, returning." << std::endl;
+		Log::Write(Log::Level::ERR, " [AddGoToRegion] Data is empty, returning.", true);
 		return;
 	}
 
@@ -724,11 +731,11 @@ void Engine::AddGoToRegion(Go *go, const std::string &data)
 	{
 		region = g_world.GetRegion(data);
 		go->Placement()->SetRegion(data);
-		std::cout << "[AddGoToRegion] Go assigned to region: " << data << std::endl;
+		///std::cout << "[AddGoToRegion] Go assigned to region: " << data << std::endl;
 	}
 	catch (std::exception &e)
 	{
-		std::cout << "[AddGoToRegion] Exception getting region: " << e.what() << std::endl;
+		Log::WriteF(Log::Level::ERR, " [AddGoToRegion] Exception getting region: %s", + e.what());
 		return;
 	}
 
@@ -742,25 +749,25 @@ void Engine::AddGoToRegion(Go *go, const std::string &data)
 
 		if (AIQuery::IsInRange(go, object, 45.0))
 		{
-			std::cout << "[AddGoToRegion] " << go->Goid() << " is in range of " << object->Goid() << std::endl;
+			//std::cout << "[AddGoToRegion] " << go->Goid() << " is in range of " << object->Goid() << std::endl;
 			HandleWorldMessage(WorldMessage(we_entered_frustum, go, object, ""));
 		}
 	}
 
-	if (go->HasComponent("player"))
+	/*if (go->HasComponent("player"))
 	{
 		std::cout << "[AddGoToRegion] Go has 'player' component." << std::endl;
 		// Placeholder for future logic
-	}
+	}*/
 }
 
 void Engine::RemoveGoFromRegion(Go *go)
 {
-	std::cout << "[RemoveGoFromRegion] Called for Go: " << (go ? go->Goid() : -1) << std::endl;
+	//std::cout << "[RemoveGoFromRegion] Called for Go: " << (go ? go->Goid() : -1) << std::endl;
 
 	if (go == NULL)
 	{
-		std::cout << "[RemoveGoFromRegion] Go is null, returning." << std::endl;
+		Log::Write(Log::Level::ERR, "[RemoveGoFromRegion] Go is null, returning.", true);
 		return;
 	}
 
@@ -768,38 +775,39 @@ void Engine::RemoveGoFromRegion(Go *go)
 	try
 	{
 		region = g_world.GetRegion(go->Placement()->GetRegion());
-		std::cout << "[RemoveGoFromRegion] Region fetched: " << go->Placement()->GetRegion() << std::endl;
+		//std::cout << "[RemoveGoFromRegion] Region fetched: " << go->Placement()->GetRegion() << std::endl;
 
 		if (go->IsItem())
 		{
 			go->Placement()->SetRegion("");
-			std::cout << "[RemoveGoFromRegion] Go is item, region cleared." << std::endl;
+			Log::Write(Log::Level::INFO, "[RemoveGoFromRegion] Go is item, region cleared.", true);
 		}
 	}
 	catch (std::exception &e)
 	{
+		Log::WriteF(Log::Level::ERR, "[RemoveGoFromRegion] Go is item, region cleared. %s", +e.what());
 		std::cout << "[RemoveGoFromRegion] Exception: " << e.what() << std::endl;
 		return;
 	}
 
 	GopSet &available = region->Objects();
 	available.erase(go);
-	std::cout << "[RemoveGoFromRegion] Go removed from region." << std::endl;
+	//std::cout << "[RemoveGoFromRegion] Go removed from region." << std::endl;
 
 	const GopSet& frustum_ref = go->Frustum();
 	GopSet frustum = frustum_ref; // copy
 
 	for (GopSet::const_iterator it = frustum.begin(); it != frustum.end(); ++it)
 	{
-		std::cout << "[RemoveGoFromRegion] Notifying " << go->Goid() << " left frustum of " << (*it)->Goid() << std::endl;
+		Log::Write(Log::Level::INFO, "[RemoveGoFromRegion] Notifying " + to_string(go->Goid()) + " left frustum of " + to_string((*it)->Goid()), true);
 		HandleWorldMessage(WorldMessage(we_left_frustum, go, *it, ""));
 	}
 
-	if (go->HasComponent("player"))
+	/*if (go->HasComponent("player"))
 	{
 		std::cout << "[RemoveGoFromRegion] Go has 'player' component." << std::endl;
 		// Placeholder for future logic
-	}
+	}*/
 }
 
 void Engine::CalculateFrustums()

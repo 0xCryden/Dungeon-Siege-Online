@@ -57,7 +57,12 @@ Region :: Region (const string & filename, const string & name)
 
 void Region :: AddNode (uint32_t id, float x, float y, float z, uint8_t rota)
 {
+	// if node already existant
+	if (GetNode(id) != nullptr)
+		return;
+
 	// Load node into server dynamically
+
 	if (id != 0)
 	{
 		Node * node = new Node (id, x, y, z, rota);
@@ -136,28 +141,37 @@ vector_3 Region :: MakeLocalPosition (const SiegePos & position, bool mapMaker)
 	throw range_error ("node does not exist in this region");
 }
 
-double Region :: GetSiegeDistance (const SiegePos & position, const SiegePos & destination)
+double Region::GetSiegeDistance(const SiegePos& position, const SiegePos& destination)
 {
 	vector_3 p;
 	vector_3 d;
-	
+
 	try
 	{
-		p = MakeLocalPosition (position, true);
+		p = MakeLocalPosition(position, true);
 		//cout << "Absolute Position: " << p.x << "/" << p.y << "/" << p.z << endl;
-		d = MakeLocalPosition (destination, false);
+		d = MakeLocalPosition(destination, false);
 	}
-	catch (exception & e)
+	catch (exception& e)
 	{
-		Log::WriteF (Log::Level::ERR, "caught an exception while calling GetSiegeDistance : %s", e.what());
+		Log::WriteF(Log::Level::ERR, "caught an exception while calling GetSiegeDistance : %s", e.what());
 		return 0.0;
 	}
-	 
+
 	double x = p.x - d.x;
 	double y = p.y - d.y;
 	double z = p.z - d.z;
-	
-	return sqrt (x * x + y * y + z * z);
+
+	return sqrt(x * x + y * y + z * z);
+}
+
+double Region::GetDistance(const vector_3& p, const vector_3& d)
+{
+	double x = p.x - d.x;
+	double y = p.y - d.y;
+	double z = p.z - d.z;
+
+	return sqrt(x * x + y * y + z * z);
 }
 
 Node * Region :: GetNode (uint32_t id)
