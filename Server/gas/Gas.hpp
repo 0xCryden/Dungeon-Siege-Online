@@ -21,9 +21,51 @@ struct TemplateComponent
 	std::unordered_map<std::string, std::string> fields;
 	std::unordered_map<std::string, TemplateComponent> subcomponents;
 	// Get a field value by key
-	std::optional<std::string> GetField(const std::string& key) const {
+	/*std::optional<std::string> GetField(const std::string& key) const {
 		auto it = fields.find(key);
 		return it != fields.end() ? std::optional(it->second) : std::nullopt;
+	}*/
+
+	const std::string* GetField(const std::string& key) const {
+		auto it = fields.find(key);
+		return it != fields.end() ? &it->second : nullptr;
+	}
+	int GetInt(const std::string& key, int defaultValue = 0) const {
+		if (auto* str = GetField(key))
+			return std::stoi(*str);
+		return defaultValue;
+	}
+	float GetFloat(const std::string& key, float defaultValue = 0.0f) const {
+		if (auto* str = GetField(key))
+			return std::stof(*str);
+		return defaultValue;
+	}    
+	
+	// Extract the part before the comma (level)
+	std::string SkillLevelString(const std::string& key) const
+	{
+		if (const std::string* val = GetField(key))
+		{
+			size_t commaPos = val->find(',');
+			if (commaPos != std::string::npos)
+				return val->substr(0, commaPos);
+			else
+				return *val; // whole string if no comma
+		}
+		return ""; // field not found
+	}
+	// Extract the part after the comma (experience)
+	std::string SkillExpString(const std::string& key) const
+	{
+		if (const std::string* val = GetField(key))
+		{
+			size_t commaPos = val->find(',');
+			if (commaPos != std::string::npos)
+				return val->substr(commaPos + 1);
+			else
+				return "0"; // default 0 if no comma
+		}
+		return "0"; // field not found
 	}
 
 	// Get a nested component by name
@@ -93,6 +135,8 @@ public:
 
 	void MergeComponent(TemplateComponent& target, const TemplateComponent& parent);
 	void ResolveTemplateInheritance();
+
+	const auto& GetAll() const { return templates; }
 };
 
 extern TemplateManager manager;

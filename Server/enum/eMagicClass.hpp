@@ -29,4 +29,25 @@
 		mc_nature_magic = 3,
 	};
 
+	inline eMagicClass mcStringToNum(const std::string& s)
+	{
+		if (s == "mc_none") 				return mc_none;
+		else if (s == "mc_potion") 			return mc_potion;
+		else if (s == "mc_combat_magic") 			return mc_combat_magic;
+		else if (s == "mc_nature_magic") 			return mc_nature_magic;
+
+		return mc_none; // unknown string
+	}
+
+	inline bool FromString(const string& s, eMagicClass& e)
+	{
+		if (s == "mc_none") 				e = mc_none;
+		else if (s == "mc_potion") 			e = mc_potion;
+		else if (s == "mc_combat_magic") 	e = mc_combat_magic;
+		else if (s == "mc_nature_magic") 	e = mc_nature_magic;
+		else { return false; }
+
+		return true;
+	}
+
 #endif /* EMAGICCLAS_HPP_ */

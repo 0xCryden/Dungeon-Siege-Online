@@ -107,5 +107,33 @@
 		return il_invalid; // unknown string
 	}
 
+	inline bool FromString(const string& s, eInventoryLocation& e)
+	{
+		if (s == "il_active_melee_weapon") 		e = il_active_melee_weapon;
+		else if (s == "il_active_ranged_weapon") e = il_active_ranged_weapon;
+		else if (s == "il_active_primary_spell") e = il_active_primary_spell;
+		else if (s == "il_active_secondary_spell") e = il_active_secondary_spell;
+		else if (s == "il_spell_1") 			 e = il_spell_1;
+		else if (s == "il_spell_2") 			 e = il_spell_2;
+		else if (s == "il_spell_3") 			 e = il_spell_3;
+		else if (s == "il_spell_4") 			 e = il_spell_4;
+		else if (s == "il_spell_5") 			 e = il_spell_5;
+		else if (s == "il_spell_6") 			 e = il_spell_6;
+		else if (s == "il_spell_7") 			 e = il_spell_7;
+		else if (s == "il_spell_8") 			 e = il_spell_8;
+		else if (s == "il_spell_9") 			 e = il_spell_9;
+		else if (s == "il_spell_10") 			 e = il_spell_10;
+		else if (s == "il_spell_11") 			 e = il_spell_11;
+		else if (s == "il_spell_12") 			 e = il_spell_12;
+		else if (s == "il_shield") 				 e = il_shield;
+		else if (s == "il_invalid") 			 e = il_invalid;
+		else if (s == "il_all") 				 e = il_all;
+		else if (s == "il_all_active") 			 e = il_all_active;
+		else if (s == "il_all_spells") 			 e = il_all_spells;
+		else if (s == "il_main") 				 e = il_main;
+		else { return false; }
+
+		return true;
+	}
 
 #endif /* EINVENTORYLOCATION_HPP_ */

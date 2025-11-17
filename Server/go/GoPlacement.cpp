@@ -59,6 +59,15 @@ GoPlacement :: GoPlacement (Go * go, xmlNode * node) : GoComponent (go)
 	}
 }
 
+GoPlacement::GoPlacement(Go* go, const GoPlacement& placement) : GoComponent(go)
+{
+	m_region = placement.m_region;
+	m_position.Node = placement.m_position.Node;
+	m_position.X = placement.m_position.X;
+	m_position.Y = placement.m_position.Y;
+	m_position.Z = placement.m_position.Z;
+}
+
 void GoPlacement :: Save(xmlNode* placementNode) const
 {
 	xml::SetAttribute(placementNode, "region", m_region);

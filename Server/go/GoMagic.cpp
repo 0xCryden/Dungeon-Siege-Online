@@ -24,6 +24,8 @@
 
 #include "Go.hpp"
 #include "GoMagic.hpp"
+#include "../enum/eMagicClass.hpp"
+#include "../helper/Helper.h"
 
 GoMagic :: GoMagic (Go * go) : GoComponent (go)
 {
@@ -40,7 +42,7 @@ GoMagic :: GoMagic (Go * go, xmlNode * node) : GoComponent (go)
 
 			if (xmlStrEqual (current->name, (const xmlChar *) "spell_class") != 0)
 			{
-				m_skill_class = xml::XReadString (current, "value", "");
+				m_skill_class = xml::XReadString(current, "value", "mc_none");
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "required_level") != 0)
 			{
@@ -72,6 +74,22 @@ GoMagic :: GoMagic (Go * go, xmlNode * node) : GoComponent (go)
 			}
 		}
 	}
+}
+
+GoMagic::GoMagic(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+	if (f = tmplComp->GetField("flesh")) { try { m_skill_class = *f; } catch (...) { m_skill_class = "mc_none"; } }
+	if (f = tmplComp->GetField("required_level")) { try { m_required_level = std::stof(*f); } catch (...) { m_required_level = 1.0f; } }
+	if (f = tmplComp->GetField("cast_sub_animation")) { try { m_cast_sub_animation = static_cast<int8_t>(std::stoi(*f)); } catch (...) { m_cast_sub_animation = 1; } }
+	if (f = tmplComp->GetField("cast_range")) { try { m_cast_range = std::stof(*f); } catch (...) { m_cast_range = 1.0f; } }
+	if (f = tmplComp->GetField("cast_reload_delay")) { try { m_cast_reload_delay = static_cast<int32_t>(std::stoi(*f)); } catch (...) { m_cast_reload_delay = 1; } }
+	if (f = tmplComp->GetField("effect_duration")) { try { m_effect_duration = static_cast<int32_t>(std::stoi(*f)); } catch (...) { m_effect_duration = 1; } }
+	if (f = tmplComp->GetField("defensive")) { if (FromString(*f, m_defensive) != true) m_defensive = false; }
+	if (f = tmplComp->GetField("offensive")) { if (FromString(*f, m_offensive) != true) m_offensive = false; }
 }
 
 bool GoMagic :: IsCastableOn (Go * go) const

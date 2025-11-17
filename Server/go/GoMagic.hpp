@@ -18,36 +18,36 @@
 #ifndef GOMAGIC_HPP_
 #define GOMAGIC_HPP_
 
-	#include "GoComponent.hpp"
+#include "GoComponent.hpp"
+#include "../enum/eMagicClass.hpp"
 	
-	class GoMagic : public GoComponent
-	{
-		public:
+class GoMagic : public GoComponent
+{
+	public:
+		GoMagic (Go * go);
+		GoMagic (Go * go, xmlNode * node);
+		GoMagic(Go* go, const TemplateComponent* tmpl);
 			
-			GoMagic (Go * go);
-			GoMagic (Go * go, xmlNode * node);
+		bool IsCastableOn (Go * go) const;
+		bool IsDefensive () const;
+		bool IsOffensive () const;
+		bool Cast (Go * go);
+		float CastRange () const;
+		float RequiredLevel () { return m_required_level; };
+		int32_t CastReloadDelay () const;
+		uint8_t CastSubAnimation () const;
+		int32_t EffectDuration () const;
+		string SkillClass () const;
 			
-			bool IsCastableOn (Go * go) const;
-			bool IsDefensive () const;
-			bool IsOffensive () const;
-			bool Cast (Go * go);
-			float CastRange () const;
-			float RequiredLevel () { return m_required_level; };
-			int32_t CastReloadDelay () const;
-			uint8_t CastSubAnimation () const;
-			int32_t EffectDuration () const;
-			string SkillClass () const;
-			
-		private:
-			
-			string m_skill_class;
-			float m_required_level;
-			uint8_t m_cast_sub_animation;
-			float m_cast_range;
-			int32_t m_cast_reload_delay;
-			int32_t m_effect_duration;
-			bool m_defensive;
-			bool m_offensive;
-	};
+	private:
+		string m_skill_class;
+		float m_required_level;
+		uint8_t m_cast_sub_animation;
+		float m_cast_range;
+		int32_t m_cast_reload_delay;
+		int32_t m_effect_duration;
+		bool m_defensive;
+		bool m_offensive;
+};
 
 #endif /* GOMAGIC_HPP_ */

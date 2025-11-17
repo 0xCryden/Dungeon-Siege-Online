@@ -33,7 +33,8 @@
 		public:
 			
 			GoInventory (Go * go);
-			GoInventory (Go * go, xmlNode * node);
+			GoInventory(Go* go, xmlNode* node);
+			GoInventory(Go* go, const TemplateComponent* tmplComp);
 			
 			void Save(xmlNode* inventoryNode) const;
 			bool Add (Go * item);
@@ -47,8 +48,8 @@
 
 			Go * ItemFromLocation (eInventoryLocation loc) const;
 
-			void SetSelectedSlot(int num);
-			int GetSelectedSlot() { return m_selectedSlot; };
+			void SetSelectedSlot(eInventoryLocation num);
+			eInventoryLocation GetSelectedSlot() { return m_selected_active_location; };
 
 			bool IsAnyWeaponEquipped () const;
 			bool IsEquipped (const Go * item) const;
@@ -66,7 +67,7 @@
 		private:
 			
 			GopSet m_inventory;
-			int m_selectedSlot;
+			eInventoryLocation m_selected_active_location;
 			map<eEquipSlot, Go *> m_equipment;
 
 			string m_custom_head;

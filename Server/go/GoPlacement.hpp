@@ -13,6 +13,8 @@ class GoPlacement : public GoComponent
 			
 		GoPlacement (Go * go);
 		GoPlacement (Go * go, xmlNode * node);
+		// Copy constructor
+		GoPlacement(Go* go, const GoPlacement& other);
 			
 		void Save (xmlNode* placementNode) const;
 

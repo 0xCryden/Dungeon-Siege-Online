@@ -44,7 +44,29 @@ GoDb :: ~GoDb ()
 	}}
 }
 
-void GoDb::LoadGasToGo()
+/*void GoDb::GasToContentDb()
+{
+    size_t totalLoaded = 0;
+
+    for (const auto& [name, tmpl] : manager.GetAll()) {
+        std::cout << "Template: " << name << "\n";
+        // Access tmpl (const TemplateData&)
+
+        if (m_contentdb.find(tmpl.name) != m_contentdb.end())
+            continue;
+
+        // Construct a new Go using your custom constructor
+        Go* go = new Go(*tmpl);  // Uses Go(const TemplateData&, const PlacementData&) constructor
+        m_contentdb[tmpl.name] = go;
+
+        ++totalLoaded;
+        //cout << "Instantiated Go from template: " << templateName << endl;
+    }
+    cout << "[INFO] Finished converting Gas to Gos. Total: " << totalLoaded << endl;
+}*/
+
+// mob spawns
+/*void GoDb::LoadGasToGo()
 {
     size_t totalLoaded = 0;
 	for (const auto& [instanceName, placement] : placementManager.GetAll())
@@ -77,7 +99,7 @@ void GoDb::LoadGasToGo()
 		}
 	}
 	cout << "[INFO] Finished converting Gas to Gos. Total: " << totalLoaded << endl;
-}
+}*/
 
 void GoDb::LoadGoDbFolder(const string& folderName)
 {

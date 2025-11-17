@@ -84,5 +84,25 @@
 	    return ac_invalid; // unknown string
 	}
 
+	inline bool FromString(const string& s, eAttackClass& e)
+	{
+		if (s == "ac_beastfu") 				e = ac_beastfu;
+		else if (s == "ac_axe") 			e = ac_axe;
+		else if (s == "ac_club") 			e = ac_club;
+		else if (s == "ac_dagger") 			e = ac_dagger;
+		else if (s == "ac_hammer") 			e = ac_hammer;
+		else if (s == "ac_mace") 			e = ac_mace;
+		else if (s == "ac_staff") 			e = ac_staff;
+		else if (s == "ac_sword") 			e = ac_sword;
+		else if (s == "ac_bow") 			e = ac_bow;
+		else if (s == "ac_minigun") 		e = ac_minigun;
+		else if (s == "ac_arrow") 			e = ac_arrow;
+		else if (s == "ac_bolt") 			e = ac_bolt;
+		else if (s == "ac_combat_magic") 	e = ac_combat_magic;
+		else if (s == "ac_nature_magic") 	e = ac_nature_magic;
+		else { return false; }
+
+		return true;
+	}
 
 #endif /* EATTACKCLASS_HPP_ */

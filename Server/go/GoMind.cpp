@@ -2,6 +2,7 @@
 #include "GoMind.h"
 #include "../utils/AIQuery.h"
 #include <iostream>
+#include "../helper/Helper.h"
 
 GoMind :: GoMind (Go * go) : GoComponent (go)
 {
@@ -11,6 +12,39 @@ GoMind :: GoMind (Go * go) : GoComponent (go)
 GoMind :: GoMind (Go * go, xmlNode * node) : GoComponent (go)
 {
 	m_melee = 0;
+}
+
+GoMind::GoMind(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+	if (f = tmplComp->GetField("actor_auto_defends_others")) { if (FromString(*f, m_actor_auto_defends_others) != true) m_actor_auto_defends_others = false; }
+	if (f = tmplComp->GetField("actor_auto_heals_others_life")) { if (FromString(*f, m_actor_auto_heals_others_life) != true) m_actor_auto_heals_others_life = false; }
+	if (f = tmplComp->GetField("actor_auto_switches_to_karate")) { if (FromString(*f, m_actor_auto_switches_to_karate) != true) m_actor_auto_switches_to_karate = false; }
+	if (f = tmplComp->GetField("actor_auto_switches_to_melee")) { if (FromString(*f, m_actor_auto_switches_to_melee) != true) m_actor_auto_switches_to_melee = false; }
+	//eWeaponPreference actor_weapon_preference;
+
+	if (f = tmplComp->GetField("actor_life_ratio_high_threshold")) { try { m_actor_life_ratio_high_threshold = std::stof(*f); } catch (...) { m_actor_life_ratio_high_threshold = 0.0f; } }
+	if (f = tmplComp->GetField("actor_life_ratio_low_threshold")) { try { m_actor_life_ratio_low_threshold = std::stof(*f); } catch (...) { m_actor_life_ratio_low_threshold = 0.0f; } }
+	if (f = tmplComp->GetField("actor_mana_ratio_high_threshold")) { try { m_actor_mana_ratio_high_threshold = std::stof(*f); } catch (...) { m_actor_mana_ratio_high_threshold = 0.0f; } }
+	if (f = tmplComp->GetField("actor_mana_ratio_low_threshold")) { try { m_actor_mana_ratio_low_threshold = std::stof(*f); } catch (...) { m_actor_mana_ratio_low_threshold = 0.0f; } }
+
+	if (f = tmplComp->GetField("actor_may_attack")) { if (FromString(*f, m_actor_may_attack) != true) m_actor_may_attack = false; }
+	if (f = tmplComp->GetField("actor_may_be_attacked")) { if (FromString(*f, m_actor_may_be_attacked) != true) m_actor_may_be_attacked = false; }
+
+	if (f = tmplComp->GetField("jat_brain")) { try { m_jat_brain = *f; } catch (...) { m_jat_brain = ""; } }
+	if (f = tmplComp->GetField("jat_listen")) { try { m_jat_listen = *f; } catch (...) { m_jat_listen = ""; } }
+	if (f = tmplComp->GetField("melee_engage_range")) { try { m_melee_engage_range = std::stof(*f); } catch (...) { m_melee_engage_range = 0.0f; } }
+	//eMovementOrders movement_orders = mo_limited;
+
+	if (f = tmplComp->GetField("on_enemy_entered_icz_switch_to_melee")) { if (FromString(*f, m_on_enemy_entered_icz_switch_to_melee) != true) m_on_enemy_entered_icz_switch_to_melee = false; }
+	if (f = tmplComp->GetField("on_engaged_lost_consciousness_abort_attack")) { if (FromString(*f, m_on_engaged_lost_consciousness_abort_attack) != true) m_on_engaged_lost_consciousness_abort_attack = false; }
+
+	if (f = tmplComp->GetField("ranged_engage_range")) { try { m_ranged_engage_range = std::stof(*f); } catch (...) { m_ranged_engage_range = 0.0f; } }
+	if (f = tmplComp->GetField("sensor_scan_period")) { try { m_sensor_scan_period = std::stof(*f); } catch (...) { m_sensor_scan_period = 0.0f; } }
+	if (f = tmplComp->GetField("sight_range")) { try { m_sight_range = std::stof(*f); } catch (...) { m_sight_range = 0.0f; } }
 }
 
 int64_t GoMind :: TimeElapsedSinceLastMeleeAttack () const

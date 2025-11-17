@@ -340,12 +340,12 @@ class InGame : public WorldState
 					if (location == il_spell_1)
 					{
 					    std::cout << "[RSINVENMOVE] Location is il_spell_1, setting selected slot to 3" << std::endl;
-					    m_go->Inventory()->SetSelectedSlot(3);
+					    m_go->Inventory()->SetSelectedSlot(il_active_primary_spell);
 					}
 					else if (location == il_spell_2)
 					{
 					    std::cout << "[RSINVENMOVE] Location is il_spell_2, setting selected slot to 4" << std::endl;
-					    m_go->Inventory()->SetSelectedSlot(4);
+					    m_go->Inventory()->SetSelectedSlot(il_active_secondary_spell);
 					}
 
 					std::cout << "[RSINVENMOVE] Inventory move completed" << std::endl;
@@ -384,13 +384,12 @@ class InGame : public WorldState
 
 				case RSSELECTSLOT:
 				{
-					uint8_t selectedSlot = incoming.ReadUInt8();
+					uint8_t selectedSlotValue = incoming.ReadUInt8();
 
 					GoInventory * inv = m_go->Inventory();
-					//if ((uint8_t)selectedSlot != inv->GetSelectedSlot())
-
-
-					inv->SetSelectedSlot((int)selectedSlot);
+					// Convert the uint8_t to your enum
+					eInventoryLocation selectedSlot = static_cast<eInventoryLocation>(selectedSlotValue);
+					inv->SetSelectedSlot(selectedSlot);
 					//cout << "[RSSELECTSLOT] User selected: " << (int)selectedSlot << endl;
 				}
 				break;

@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="go\GoGui.cpp" />
     <ClCompile Include="utils\AIQuery.cpp" />
     <ClCompile Include="helper\CurrentTime.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="xml\XmlCleanupGuard.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="go\GoGui.h" />
     <ClInclude Include="utils\AIQuery.h" />
     <ClInclude Include="enum\eActorAlignment.hpp" />
     <ClInclude Include="enum\eAttackClass.hpp" />

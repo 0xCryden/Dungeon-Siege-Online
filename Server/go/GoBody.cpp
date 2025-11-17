@@ -32,6 +32,18 @@ GoBody :: GoBody (Go * go, xmlNode * node) : GoComponent (go)
 	}
 }
 
+GoBody::GoBody(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+
+	if (f = tmplComp->GetField("avg_move_velocity")) { try { m_avg_move_velocity = std::stof(*f); } catch (...) { m_avg_move_velocity = 0.0f; } }
+	if (f = tmplComp->GetField("max_move_velocity")) { try { m_max_move_velocity = std::stof(*f); } catch (...) { m_max_move_velocity = 0.0f; } }
+	if (f = tmplComp->GetField("min_move_velocity")) { try { m_min_move_velocity = std::stof(*f); } catch (...) { m_min_move_velocity = 0.0f; } }
+}
+
 float GoBody :: AvgMoveVelocity () const
 {
 	return m_avg_move_velocity;

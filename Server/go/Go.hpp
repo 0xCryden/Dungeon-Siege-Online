@@ -26,6 +26,7 @@
 #include "GoBody.hpp"
 #include "GoCommon.hpp"
 #include "GoDefend.hpp"
+#include "GoGui.h"
 #include "GoInventory.hpp"
 #include "GoMagic.hpp"
 #include "GoMind.h"
@@ -62,7 +63,7 @@ class Go
 		Go (uint32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
 		//Go (uint32_t id); // create empty go for later use
 
-		Go(const TemplateData& tmpl);
+		Go(const TemplateData& tmpl, const GoPlacement& placement);
 		~Go ();
 
 		GoActor * Actor () const;
@@ -81,6 +82,7 @@ class Go
 		GoCommon * Common () const;
 		// GoConversation * Conversation () const;
 		GoDefend * Defend () const;
+		GoGui* Gui() const;
 		const GopSet & Frustum ();
 		GoScriptComponent * GetComponent (const string & component) const;
 		uint32_t Goid () const;
@@ -179,7 +181,8 @@ class Go
 		GoAttack * m_attack;
 		GoBody * m_body;
 		GoCommon * m_common;
-		GoDefend * m_defend;
+		GoDefend* m_defend;
+		GoGui* m_gui;
 		GoInventory * m_inventory;
 		GoMagic * m_magic;
 		GoMind * m_mind;

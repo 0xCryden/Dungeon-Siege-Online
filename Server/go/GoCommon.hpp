@@ -26,7 +26,8 @@
 			
 			GoCommon (Go * go);
 			GoCommon (Go * go, xmlNode * node);
-			
+			GoCommon(Go* go, const TemplateComponent* tmplComp);
+
 			void Save(xmlNode* commonNode) const;
 
 			string AutoExpirationClass () const;

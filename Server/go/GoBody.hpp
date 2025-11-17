@@ -24,8 +24,9 @@
 	{
 		public:
 			
-			GoBody (Go * go);
-			GoBody (Go * go, xmlNode * node);
+			GoBody(Go * go);
+			GoBody(Go * go, xmlNode * node);
+			GoBody(Go* go, const TemplateComponent* tmplComp);
 			
 			float AvgMoveVelocity () const;
 			float MaxMoveVelocity () const;

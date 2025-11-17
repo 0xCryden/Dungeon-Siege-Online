@@ -3102,3 +3102,33 @@
 [2025-11-16 23:56:52] [INFO]  [RECV] [RSPLAYERREADY] (id=2), size: 3
 [2025-11-16 23:56:52] [INFO]  [RECV] [RSSELECTSLOT] (id=36), size: 4
 [2025-11-16 23:56:52] [INFO]  [RECV] [RSSELECTSLOT] (id=36), size: 4
+[2025-11-17 13:13:48] [INFO]  
+[2025-11-17 13:13:48] [INFO]      ###   DungeonSiegeOnline v0.5   ###
+[2025-11-17 13:13:48] [INFO]  
+[2025-11-17 13:13:48] [INFO]  [INIT] Network constructor entered
+[2025-11-17 13:13:48] [INFO]  [INIT] WSAStartup result: 0
+[2025-11-17 13:13:48] [INFO]  [INIT] Network constructor finished
+[2025-11-17 13:13:48] [INFO]  [BIND] Listening on port 4000, socket: 344
+[2025-11-17 13:13:48] [INFO]  Loaded region 1
+[2025-11-17 13:13:48] [INFO]  Loaded Map dsmmorpg
+[2025-11-17 13:13:48] [INFO]  Loaded region town_center
+[2025-11-17 13:13:48] [INFO]  Loaded Map multiplayer_world
+[2025-11-17 13:13:54] [INFO]  [INFO] Finished resolving Inheritances. Total components merged: 67728
+[2025-11-17 13:13:54] [INFO]  [INFO] Finished loading templates. Total loaded: 4227
+[2025-11-17 13:13:56] [INFO]  Total actor placements loaded: 9669
+[2025-11-17 20:33:28] [INFO]  
+[2025-11-17 20:33:28] [INFO]      ###   DungeonSiegeOnline v0.5   ###
+[2025-11-17 20:33:28] [INFO]  
+[2025-11-17 20:33:28] [INFO]  [INIT] Network constructor entered
+[2025-11-17 20:33:28] [INFO]  [INIT] WSAStartup result: 0
+[2025-11-17 20:33:28] [INFO]  [INIT] Network constructor finished
+[2025-11-17 20:33:28] [INFO]  [BIND] Listening on port 4000, socket: 332
+[2025-11-17 20:33:28] [INFO]  Loaded region 1
+[2025-11-17 20:33:28] [INFO]  Loaded Map dsmmorpg
+[2025-11-17 20:33:28] [INFO]  Loaded region town_center
+[2025-11-17 20:33:28] [INFO]  Loaded Map multiplayer_world
+[2025-11-17 20:33:33] [INFO]  [INFO] Finished resolving Inheritances. Total components merged: 67728
+[2025-11-17 20:33:33] [INFO]  [INFO] Finished loading templates. Total loaded: 4227
+[2025-11-17 20:33:35] [INFO]  Total actor placements loaded: 9669
+[2025-11-17 20:34:38] [INFO]  [ENGINE] Players saved
+[2025-11-17 20:34:38] [INFO]  [ENGINE] Items saved

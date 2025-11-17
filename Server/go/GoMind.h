@@ -15,7 +15,8 @@ class GoMind : public GoComponent
 			
 		GoMind (Go * go);
 		GoMind (Go * go, xmlNode * node);
-			
+		GoMind(Go* go, const TemplateComponent* tmplComp);
+
 		int64_t TimeElapsedSinceLastMeleeAttack () const;
 		int64_t TimeElapsedSinceLastRangedAttack () const;
 		int64_t TimeElapsedSinceLastSpellCast () const;
@@ -53,6 +54,32 @@ class GoMind : public GoComponent
 		eEquipSlot m_oldslot;
 		eEquipSlot m_oldslot2;
 		eInventoryLocation m_location;
+
+		bool m_actor_auto_defends_others;
+		bool m_actor_auto_heals_others_life;
+		bool m_actor_auto_switches_to_karate;
+		bool m_actor_auto_switches_to_melee;
+		//eWeaponPreference actor_weapon_preference;
+
+		float m_actor_life_ratio_high_threshold;
+		float m_actor_life_ratio_low_threshold;
+		float m_actor_mana_ratio_high_threshold;
+		float m_actor_mana_ratio_low_threshold;
+
+		bool m_actor_may_attack;
+		bool m_actor_may_be_attacked;
+
+		string m_jat_brain;
+		string m_jat_listen;
+		float m_melee_engage_range;
+
+		//eMovementOrders movement_orders = mo_limited;
+		bool m_on_enemy_entered_icz_switch_to_melee;
+		bool m_on_engaged_lost_consciousness_abort_attack;
+
+		float m_ranged_engage_range;
+		float m_sensor_scan_period;
+		float m_sight_range;
 };
 
 #endif /* GOMIND_H_ */

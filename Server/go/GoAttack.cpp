@@ -4,6 +4,7 @@
 #include "../utils/AIQuery.h"
 #include "GoAttack.hpp"
 #include "../Engine.hpp"
+#include "../helper/Helper.h"
 
 GoAttack :: GoAttack (Go * go) : GoComponent (go)
 {
@@ -48,6 +49,22 @@ GoAttack :: GoAttack (Go * go, xmlNode * node) : GoComponent (go)
 			}
 		}
 	}
+}
+
+GoAttack::GoAttack(Go* go, const TemplateComponent* tmplComp) : GoComponent (go)
+{
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+
+	if (f = tmplComp->GetField("attack_range")) { try { m_attack_range = std::stof(*f); } catch (...) { m_attack_range = 1.0f; } }
+	if (f = tmplComp->GetField("critical_hit_chance")) { try { m_critical_hit_chance = std::stof(*f); } catch (...) { m_critical_hit_chance = 0.0f; } }
+	if (f = tmplComp->GetField("damage_max")) { try { m_damage_max = std::stof(*f); } catch (...) { m_damage_max = 0.0f; } }
+	if (f = tmplComp->GetField("damage_min")) { try { m_damage_min = std::stof(*f); } catch (...) { m_damage_min = 0.0f; } }
+	if (f = tmplComp->GetField("is_two_handed")) { if (FromString(*f, m_two_handed) != true) m_two_handed = false; }
+	if (f = tmplComp->GetField("reload_delay")) { try { m_reload_delay = static_cast<uint64_t>(std::stoi(*f)); } catch (...) { m_reload_delay = 0; } }
+	if (f = tmplComp->GetField("attack_class")) { if (FromString(*f, m_attack_class) != true) m_attack_class = ac_beastfu; }
 }
 
 void GoAttack :: Save (xmlNode* attackNode) const

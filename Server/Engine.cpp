@@ -511,12 +511,12 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			std::string skill = "melee";
 			switch (fromInv->GetSelectedSlot())
 			{
-				case 1: skill = "melee"; break;
-				case 2: skill = "ranged"; break;
-				case 3:
-				case 4:
+				case il_active_melee_weapon: skill = "melee"; break;
+				case il_active_ranged_weapon: skill = "ranged"; break;
+				case il_active_primary_spell:
+				case il_active_secondary_spell:
 				{
-					Go * item = fromInv->ItemFromLocation((eInventoryLocation)(fromInv->GetSelectedSlot() + 1));
+					Go * item = fromInv->ItemFromLocation(fromInv->GetSelectedSlot());
 					if (item) skill = item->Magic()->SkillClass();
 					break;
 				}
@@ -601,12 +601,12 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			std::string skill = "melee";
 			switch (fromInv->GetSelectedSlot())
 			{
-				case 1: skill = "melee"; break;
-				case 2: skill = "ranged"; break;
-				case 3:
-				case 4:
+				case il_active_melee_weapon: skill = "melee"; break;
+				case il_active_ranged_weapon: skill = "ranged"; break;
+				case il_active_primary_spell:
+				case il_active_secondary_spell:
 				{
-					Go * item = fromInv->ItemFromLocation((eInventoryLocation)(fromInv->GetSelectedSlot() + 1));
+					Go * item = fromInv->ItemFromLocation(fromInv->GetSelectedSlot());
 					if (item) skill = item->Magic()->SkillClass();
 					break;
 				}

@@ -48,6 +48,17 @@ GoCommon :: GoCommon (Go * go, xmlNode * node) : GoComponent (go)
 	}
 }
 
+GoCommon::GoCommon(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+	if (f = tmplComp->GetField("auto_expiration_class")) { try { m_auto_expiration_class = *f; } catch (...) { m_auto_expiration_class = ""; } }
+	if (f = tmplComp->GetField("forced_expiration_class")) { try { m_forced_expiration_class = *f; } catch (...) { m_forced_expiration_class = ""; } }
+	if (f = tmplComp->GetField("screen_name")) { try { m_screen_name = *f; } catch (...) { m_screen_name = ""; } }
+}
+
 void GoCommon :: Save (xmlNode* commonNode) const
 {
 	xml::SetOrUpdateChildValue(commonNode, "auto_expiration_class", m_auto_expiration_class);

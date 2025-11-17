@@ -28,8 +28,9 @@
 	{
 		public:
 			
-			GoAspect (Go * go);
-			GoAspect (Go * go, xmlNode * node);
+			GoAspect(Go * go);
+			GoAspect(Go * go, xmlNode * node);
+			GoAspect(Go* go, const TemplateComponent* tmpl);
 
 			void Save(xmlNode* aspectNode) const;
 
@@ -65,10 +66,6 @@
 			void RecoverMana();
 
 			float ExperienceValue() const { return m_experience_value; }
-			int64_t LastLifeReg () const { return m_last_life_regen; };
-			void SetLastLifeReg (int64_t time) { m_last_life_regen = time; };
-			int64_t LastManaReg () const { return m_last_mana_regen; };
-			void SetLastManaReg (int64_t time) { m_last_mana_regen = time; };
 			
 			void SetHpRecUnit (float rate) { m_life_recovery_unit = rate; };
 			void SetMpRecUnit (float rate) { m_mana_recovery_unit = rate; };
@@ -78,8 +75,6 @@
 			float m_bounding_sphere_radius;
 			float m_current_life;
 			float m_current_mana;
-			int64_t m_last_life_regen;
-			int64_t m_last_mana_regen;
 			string m_textures[2];
 			bool m_invincible;
 			bool m_visible;

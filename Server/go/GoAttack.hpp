@@ -27,8 +27,9 @@ class GoAttack : public GoComponent
 {
 	public:
 
-		GoAttack (Go * go);
-		GoAttack (Go * go, xmlNode * node);
+		GoAttack(Go * go);
+		GoAttack(Go * go, xmlNode * node);
+		GoAttack(Go* go, const TemplateComponent* tmpl);
 
 		void Save (xmlNode* attackNode) const;
 

@@ -87,5 +87,27 @@
 	    return es_none; // unknown string
 	}
 
+	inline bool FromString(const string& s, eEquipSlot& e)
+	{
+		if (s == "es_shield_hand") 				e = es_shield_hand;
+		else if (s == "es_weapon_hand") 		e = es_weapon_hand;
+		else if (s == "es_feet") 				e = es_feet;
+		else if (s == "es_chest") 				e = es_chest;
+		else if (s == "es_head") 				e = es_head;
+		else if (s == "es_forearms") 			e = es_forearms;
+		else if (s == "es_amulet") 				e = es_amulet;
+		else if (s == "es_spellbook") 			e = es_spellbook;
+		else if (s == "es_ring_0") 				e = es_ring_0;
+		else if (s == "es_ring_1") 				e = es_ring_1;
+		else if (s == "es_ring_2") 				e = es_ring_2;
+		else if (s == "es_ring_3") 				e = es_ring_3;
+		else if (s == "es_ring") 				e = es_ring;
+		else if (s == "es_none") 				e = es_none;
+		else if (s == "es_any") 				e = es_any;
+		else { return false; }
+
+		return true;
+	}
+
 
 #endif /* EEQUIPSLOT_HPP_ */

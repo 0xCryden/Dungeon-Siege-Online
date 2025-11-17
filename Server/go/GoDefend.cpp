@@ -23,25 +23,37 @@ GoDefend :: GoDefend (Go * go) : GoComponent (go)
 {
 }
 
-GoDefend :: GoDefend (Go * go, xmlNode * node) : GoComponent (go)
+GoDefend::GoDefend(Go* go, xmlNode* node) : GoComponent(go)
 {
 	if (node != NULL)
 	{
-		xmlNode * current = NULL;
+		xmlNode* current = NULL;
 		for (current = node->children; current != NULL; current = current->next)
 		{
 			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "defense") != 0)
+
+			if (xmlStrEqual(current->name, (const xmlChar*)"defense") != 0)
 			{
-				m_defense = xml::ReadAttribute<float> (current, "value", 0.0);
+				m_defense = xml::ReadAttribute<float>(current, "value", 0.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "defend_class") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"defend_class") != 0)
 			{
-				m_defend_class = StringToDc(xml::XReadString (current, "value", "dc_skin"));
+				m_defend_class = StringToDc(xml::XReadString(current, "value", "dc_skin"));
 			}
 		}
 	}
+}
+
+GoDefend::GoDefend(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+
+	if (f = tmplComp->GetField("defense")) { try { m_defense = std::stof(*f); } catch (...) { m_defense = 0.0f; } }
+	if (f = tmplComp->GetField("defend_class")) { if (FromString(*f, m_defend_class) != true) m_defend_class = dc_skin; }
 }
 
 float GoDefend :: Defense () const

@@ -40,7 +40,7 @@ int main(int argc, char** argv)
         // TODO dont load into m_contentdb but m_godb (ínstances instead of templates)
         //godb.LoadGasToGo();
 
-        if (TemplateData* tpl = manager.GetTemplate("minigun_dragon"))
+        if (TemplateData* tpl = manager.GetTemplate("bd_ch_f_g_c_avg"))
         {
             cout << "[info] template: " << tpl->name << "\n";
             if (!tpl->specializes.empty())

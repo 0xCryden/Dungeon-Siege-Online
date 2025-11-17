@@ -26,7 +26,8 @@
 		public:
 			
 			GoDefend (Go * go);
-			GoDefend (Go * go, xmlNode * node);
+			GoDefend(Go* go, xmlNode* node);
+			GoDefend(Go* go, const TemplateComponent* tmpl);
 			
 			float Defense () const;
 

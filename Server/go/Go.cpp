@@ -19,7 +19,7 @@
 #include "../Engine.hpp"
 #include "Go.hpp"
 
-Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL)
+Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_gui(NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL)
 {
 	if (node != NULL)
 	{
@@ -57,10 +57,15 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 				//Log::WriteF("[Go %u] Creating common...", m_goid);
 				if (m_common == NULL) m_common = new GoCommon (this, current);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "defend") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"defend") != 0)
 			{
 				//Log::WriteF("[Go %u] Creating defend...", m_goid);
-				if (m_defend == NULL) m_defend = new GoDefend (this, current);
+				if (m_defend == NULL) m_defend = new GoDefend(this, current);
+			}
+			else if (xmlStrEqual(current->name, (const xmlChar*)"gui") != 0)
+			{
+				//Log::WriteF("[Go %u] Creating gui...", m_goid);
+				if (m_gui == NULL) m_gui = new GoGui(this, current);
 			}
 			else if (xmlStrEqual (current->name, (const xmlChar *) "inventory") != 0)
 			{
@@ -107,7 +112,7 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 	}
 }
 
-Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL)
+Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_gui(NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL)
 {
 	m_goid = id;
 	m_template_name = go->m_template_name;
@@ -117,51 +122,36 @@ Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspec
 	if (go->m_attack != NULL) m_attack = new GoAttack (this);
 	if (go->m_body != NULL) m_body = new GoBody (this);
 	if (go->m_common != NULL) m_common = new GoCommon (this);
-	if (go->m_defend != NULL) m_defend = new GoDefend (this);
+	if (go->m_defend != NULL) m_defend = new GoDefend(this);
+	if (go->m_gui != NULL) m_gui = new GoGui(this);
 	if (go->m_inventory != NULL) m_inventory = new GoInventory (this);
 	if (go->m_magic != NULL) m_magic = new GoMagic (this);
 	if (go->m_mind != NULL) m_mind = new GoMind (this);
 	if (go->m_placement != NULL) m_placement = new GoPlacement (this);
 }
 
-Go :: Go(const TemplateData& tmpl)
+Go :: Go(const TemplateData& tmpl, const GoPlacement& placement)
 	: m_template_name(tmpl.name),
 	  m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
-	  m_body(NULL), m_common(NULL), m_defend(NULL),
+	  m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
 	  m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
 {
-	m_goid = 0;
-
 	const TemplateComponent* comp;
+	if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
+	if ((comp = tmpl.GetComponent("aspect"))) { m_aspect = new GoAspect(this, comp); }
+	if ((comp = tmpl.GetComponent("attack"))) { m_attack = new GoAttack(this, comp); }
+	if ((comp = tmpl.GetComponent("body"))) { m_body = new GoBody(this, comp); }
+	if ((comp = tmpl.GetComponent("common"))) { m_common = new GoCommon(this, comp); }
+	if ((comp = tmpl.GetComponent("defend"))) { m_defend = new GoDefend(this, comp); }
+	// X 2 more subcomponents remaining implementation for mob drops
+	if ((comp = tmpl.GetComponent("inventory"))) { m_inventory = new GoInventory(this, comp); }
+	if ((comp = tmpl.GetComponent("magic"))) { m_magic = new GoMagic(this, comp); }
+	if ((comp = tmpl.GetComponent("mind"))) { m_mind = new GoMind(this, comp); }
+	// TODO Pcontent
+	if ((comp = tmpl.GetComponent("gui"))) { m_gui = new GoGui(this, comp); }
+	// TODO Physics
 
-	//if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
-
-	/*if ((comp = tmpl.GetComponent("aspect"))) {
-		m_aspect = new GoAspect(this, comp);
-	}
-	if ((comp = tmpl.GetComponent("attack"))) {
-		m_attack = new GoAttack(this, comp);
-	}
-	if ((comp = tmpl.GetComponent("body"))) {
-		m_body = new GoBody(this, comp);
-	}
-	if ((comp = tmpl.GetComponent("common"))) {
-		m_common = new GoCommon(this, comp);
-	}
-	if ((comp = tmpl.GetComponent("defend"))) {
-		m_defend = new GoDefend(this, comp);
-	}
-	if ((comp = tmpl.GetComponent("inventory"))) {
-		m_inventory = new GoInventory(this, comp);
-	}
-	if ((comp = tmpl.GetComponent("magic"))) {
-		m_magic = new GoMagic(this, comp);
-	}
-	if ((comp = tmpl.GetComponent("mind"))) {
-		m_mind = new GoMind(this, comp);
-	}*/
-
-	// Skip placement for now — as you said
+	m_placement = new GoPlacement(this, placement);
 }
 
 Go :: ~Go ()
@@ -551,7 +541,7 @@ bool Go :: HasDefend () const
 
 bool Go :: HasGui () const
 {
-	return false;
+	return m_gui != NULL;
 }
 
 bool Go :: HasInventory () const
@@ -771,14 +761,24 @@ GoCommon * Go :: Common () const
 	throw logic_error ("null pointer referenced");
 }
 
-GoDefend * Go :: Defend () const
+GoDefend* Go::Defend() const
 {
 	if (m_defend != NULL)
 	{
 		return m_defend;
 	}
-	
-	throw logic_error ("null pointer referenced");
+
+	throw logic_error("null pointer referenced");
+}
+
+GoGui* Go::Gui() const
+{
+	if (m_gui != NULL)
+	{
+		return m_gui;
+	}
+
+	throw logic_error("null pointer referenced");
 }
 
 uint32_t Go :: Goid () const

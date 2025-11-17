@@ -31,8 +31,8 @@ class GoActor : public GoComponent
 public:
 			
 	GoActor (Go * go);
-	GoActor (Go * go, xmlNode * node); // should be GoActor (xmlNode * node);
-	//GoActor (Go * go, TemplateComponent* tmpl); // should be GoActor (xmlNode * node);
+	GoActor(Go* go, xmlNode* node); // should be GoActor (xmlNode * node);
+	GoActor (Go* go, const TemplateComponent* tmpl);
 	~GoActor ();
 			
 	void Save(xmlNode* actorNode) const;

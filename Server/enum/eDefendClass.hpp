@@ -61,5 +61,14 @@
 	    return dc_skin; // unknown string
 	}
 
+	inline bool FromString(const string& s, eDefendClass& e)
+	{
+		if (s == "dc_skin") 			e = dc_skin;
+		else if (s == "dc_shield") 		e = dc_shield;
+		else { return false; }
+
+		return true;
+	}
+
 
 #endif /* EDEFENDCLASS_HPP_ */

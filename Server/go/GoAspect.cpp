@@ -20,101 +20,134 @@
 #include "GoAspect.hpp"
 #include "../events/SendWorldMessageEvent.hpp"
 #include <cmath>
+#include "../helper/Helper.h"
 
 GoAspect :: GoAspect (Go * go) : GoComponent (go)
 {
 }
 
-GoAspect :: GoAspect (Go * go, xmlNode * node) : GoComponent (go)
+GoAspect::GoAspect(Go* go, xmlNode* node) : GoComponent(go)
 {
 	if (node != NULL)
 	{
-		xmlNode * current = NULL;
+		xmlNode* current = NULL;
 		for (current = node->children; current != NULL; current = current->next)
 		{
 			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "bounding_sphere_radius") != 0)
+
+			if (xmlStrEqual(current->name, (const xmlChar*)"bounding_sphere_radius") != 0)
 			{
-				m_bounding_sphere_radius = xml::ReadAttribute<float> (current, "value", 0.0);
+				m_bounding_sphere_radius = xml::ReadAttribute<float>(current, "value", 0.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "current_life") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"current_life") != 0)
 			{
-				m_current_life = xml::ReadAttribute<float> (current, "value", 0.0);
+				m_current_life = xml::ReadAttribute<float>(current, "value", 0.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "current_mana") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"current_mana") != 0)
 			{
-				m_current_mana = xml::ReadAttribute<float> (current, "value", 0.0);
+				m_current_mana = xml::ReadAttribute<float>(current, "value", 0.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "flesh") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"flesh") != 0)
 			{
-				m_textures[0] = xml::XReadString (current, "value", "");
+				m_textures[0] = xml::XReadString(current, "value", "");
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "cloth") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"cloth") != 0)
 			{
-				m_textures[1] = xml::XReadString (current, "value", "");
+				m_textures[1] = xml::XReadString(current, "value", "");
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "is_invincible") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"is_invincible") != 0)
 			{
-				m_invincible = xml::ReadAttribute<bool> (current, "value", false);
+				m_invincible = xml::ReadAttribute<bool>(current, "value", false);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "is_visible") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"is_visible") != 0)
 			{
-				m_visible = xml::ReadAttribute<float> (current, "value", true);
+				m_visible = xml::ReadAttribute<float>(current, "value", true);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "life_recovery_period") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"life_recovery_period") != 0)
 			{
-				m_life_recovery_period = xml::ReadAttribute<int16_t> (current, "value", 0);
+				m_life_recovery_period = xml::ReadAttribute<int16_t>(current, "value", 0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "life_recovery_unit") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"life_recovery_unit") != 0)
 			{
-				m_life_recovery_unit = xml::ReadAttribute<float> (current, "value", 0.0);
+				m_life_recovery_unit = xml::ReadAttribute<float>(current, "value", 0.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "life_state") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"life_state") != 0)
 			{
-				string life_state = xml::XReadString (current, "value", "");
-				if (FromString (life_state, m_life_state) != true)
-				{ m_life_state = ls_alive_conscious; }
+				string life_state = xml::XReadString(current, "value", "");
+				if (FromString(life_state, m_life_state) != true)
+				{
+					m_life_state = ls_alive_conscious;
+				}
 				else
-				{ m_life_state = ToState(life_state); }
+				{
+					m_life_state = ToState(life_state);
+				}
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "last_died") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"last_died") != 0)
 			{
-				m_last_died = xml::ReadAttribute<int64_t> (current, "value", 0);
+				m_last_died = xml::ReadAttribute<int64_t>(current, "value", 0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "mana_recovery_period") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"mana_recovery_period") != 0)
 			{
-				m_mana_recovery_period = xml::ReadAttribute<int16_t> (current, "value", 0);
+				m_mana_recovery_period = xml::ReadAttribute<int16_t>(current, "value", 0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "mana_recovery_unit") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"mana_recovery_unit") != 0)
 			{
-				m_mana_recovery_unit = xml::ReadAttribute<float> (current, "value", 0.0);
+				m_mana_recovery_unit = xml::ReadAttribute<float>(current, "value", 0.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "max_life") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"max_life") != 0)
 			{
-				m_max_life = xml::ReadAttribute<float> (current, "value", 0.0);
+				m_max_life = xml::ReadAttribute<float>(current, "value", 0.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "max_mana") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"max_mana") != 0)
 			{
-				m_max_mana = xml::ReadAttribute<float> (current, "value", 0.0);
+				m_max_mana = xml::ReadAttribute<float>(current, "value", 0.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "model") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"model") != 0)
 			{
-				m_model = xml::XReadString (current, "value", "");
+				m_model = xml::XReadString(current, "value", "");
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "render_scale") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"render_scale") != 0)
 			{
-				m_render_scale = xml::ReadAttribute<float> (current, "value", 1.0);
+				m_render_scale = xml::ReadAttribute<float>(current, "value", 1.0);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "experience_value") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"experience_value") != 0)
 			{
-				m_experience_value = xml::ReadAttribute<float> (current, "value", 1.0);
+				m_experience_value = xml::ReadAttribute<float>(current, "value", 1.0);
 			}
 		}
-		int64_t now = CurrentTime();
-		m_last_life_regen = now;
-		m_last_mana_regen = now;
 	}
+}
+
+GoAspect::GoAspect(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+	if (f = tmplComp->GetField("bounding_sphere_radius")) { try { m_bounding_sphere_radius = std::stof(*f); } catch (...) { m_bounding_sphere_radius = 0.0f; } }
+
+	if (f = tmplComp->GetField("current_life")) { try { m_current_life = std::stof(*f); } catch (...) { m_current_life = 0.0f; } }
+	if (f = tmplComp->GetField("current_mana")) { try { m_current_mana = std::stof(*f); } catch (...) { m_current_mana = 0.0f; } }
+
+	if (f = tmplComp->GetField("flesh")) { try { m_textures[0] = *f; } catch (...) { m_textures[0] = ""; } }
+	if (f = tmplComp->GetField("cloth")) { try { m_textures[1] = *f; } catch (...) { m_textures[1] = ""; } }
+
+	if (f = tmplComp->GetField("is_invincible")) { if (FromString(*f, m_invincible) != true) m_invincible = false; }
+	if (f = tmplComp->GetField("is_visible")) { if (FromString(*f, m_visible) != true) m_visible = true; }
+
+
+	if (f = tmplComp->GetField("life_recovery_period")) { try { m_life_recovery_period = static_cast<int16_t>(std::stof(*f)); } catch (...) { m_life_recovery_period = 0; } }
+	if (f = tmplComp->GetField("life_recovery_unit")) { try { m_life_recovery_unit = std::stof(*f); } catch (...) { m_life_recovery_unit = 0.0f; } }
+	if (f = tmplComp->GetField("life_state")) { if (FromString(*f, m_life_state) != true) m_life_state = ls_alive_conscious; }
+	if (f = tmplComp->GetField("last_died")) { try { m_last_died = static_cast<int64_t>(std::stof(*f)); } catch (...) { m_last_died = 0; } }
+	if (f = tmplComp->GetField("mana_recovery_period")) { try { m_mana_recovery_period = static_cast<int16_t>(std::stoi(*f)); } catch (...) { m_mana_recovery_period = 0; } }
+	if (f = tmplComp->GetField("mana_recovery_unit")) { try { m_mana_recovery_unit = std::stof(*f); } catch (...) { m_mana_recovery_unit = 0.0f; } }
+	if (f = tmplComp->GetField("max_life")) { try { m_max_life = std::stof(*f); } catch (...) { m_max_life = 0.0f; } }
+	if (f = tmplComp->GetField("max_mana")) { try { m_max_mana = std::stof(*f); } catch (...) { m_max_mana = 0.0f; } }
+	if (f = tmplComp->GetField("model")) { try { m_model = *f; } catch (...) { m_model = ""; } }
+	if (f = tmplComp->GetField("render_scale")) { try { m_render_scale = std::stof(*f); } catch (...) { m_render_scale = 1.0f; } }
+	if (f = tmplComp->GetField("experience_value")) { try { m_experience_value = std::stof(*f); } catch (...) { m_experience_value = 1.0f; } }
 }
 
 void GoAspect::Save(xmlNode* aspectNode) const

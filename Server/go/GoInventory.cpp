@@ -85,6 +85,53 @@ GoInventory :: GoInventory (Go * go, xmlNode * node) : GoComponent (go)
 	}
 }
 
+GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+
+	m_custom_head = "";
+	m_selected_active_location = il_active_melee_weapon;
+
+	if (f = tmplComp->GetField("custom_head")) { try { m_custom_head = *f; } catch (...) { m_custom_head = ""; } }
+	if (f = tmplComp->GetField("selected_active_location")) { if (FromString(*f, m_selected_active_location) != true) m_selected_active_location = il_active_melee_weapon; }
+
+	if (const TemplateComponent* equipComponent = tmplComp->GetSubcomponent("equipment"))
+	{
+		for (std::unordered_map<string, string>::const_iterator it = equipComponent->fields.begin();
+			it != equipComponent->fields.end(); ++it)
+		{
+			const string& equipSlot = it->first;
+			const string& itemTemplateName = it->second;
+
+			Go* item = nullptr;
+			item = godb.CloneGo(itemTemplateName);
+			if (!item) // error template not found
+			{
+				cout << "ERROR item template not found for inventory of go" << endl;
+				continue;
+			}
+
+			if (Add(item))
+			{
+				// Set inventory location
+				item->SetLoc(item->IntendedLoc());
+
+				// If equip_slot is present, equip it
+				eEquipSlot slot = StringToNum(equipSlot); // You need to implement this
+				if (slot != es_none)
+				{
+					Equip(slot, item); // Will only succeed if not already equipped
+				}
+			}
+		}
+	}
+	// TODO add [other]
+	// TODO add [pcontent]
+}
+
 void GoInventory :: Save (xmlNode* inventoryNode) const
 {
 	//cout << "Entering save inventory" << endl;
@@ -286,20 +333,12 @@ bool GoInventory :: Equip (eEquipSlot slot, Go * item)
 	//set location
 	item->SetLoc(item->IntendedLoc());
 
-	if (slot == es_weapon_hand)
-	{
-		SetSelectedSlot(1);
-	}
-	else if (slot == es_shield_hand)
+	if (slot == es_weapon_hand || slot == es_shield_hand)
 	{
 		if (item->IsRangedWeapon())
-		{
-			SetSelectedSlot(2);
-		}
+			SetSelectedSlot(il_active_ranged_weapon);
 		else
-		{
-			SetSelectedSlot(1);
-		}
+			SetSelectedSlot(il_active_melee_weapon);
 	}
 		
 	return true;
@@ -345,11 +384,11 @@ eEquipSlot GoInventory :: GetEquippedSlot (const Go * item) const
 	return es_none;
 }
 
-void GoInventory::SetSelectedSlot(int num)
+void GoInventory::SetSelectedSlot(eInventoryLocation num)
 {
     std::cout << "[SetSelectedSlot] Called with num = " << num << std::endl;
 
-    if (num == 3 || num == 4) // if switching from weapon to spell unequip
+    if (num == il_active_primary_spell || num == il_active_secondary_spell) // if switching from weapon to spell unequip
     {
         std::cout << "[SetSelectedSlot] Switching to spell slot: " << num << std::endl;
 
@@ -363,10 +402,10 @@ void GoInventory::SetSelectedSlot(int num)
             {
                 std::cout << "[SetSelectedSlot] Spellbook has inventory" << std::endl;
 
-                Go* spellItem = spellInv->ItemFromLocation((eInventoryLocation)(num + 1));
+                Go* spellItem = spellInv->ItemFromLocation(num);
                 if (spellItem)
                 {
-                    std::cout << "[SetSelectedSlot] Found spell item at location " << (int)(num + 1) << ": " << spellItem->Goid() << std::endl;
+                    std::cout << "[SetSelectedSlot] Found spell item at location " << (int)num << ": " << spellItem->Goid() << std::endl;
 
                     GoMagic* magic = spellItem->Magic();
                     if (magic)
@@ -391,7 +430,7 @@ void GoInventory::SetSelectedSlot(int num)
                 }
                 else
                 {
-                    std::cerr << "[SetSelectedSlot] No spell item at location " << (int)(num + 1) << std::endl;
+                    std::cerr << "[SetSelectedSlot] No spell item at location " << (int)num << std::endl;
                 }
             }
             else
@@ -404,9 +443,9 @@ void GoInventory::SetSelectedSlot(int num)
             std::cerr << "[SetSelectedSlot] No equipped spellbook" << std::endl;
         }
 
-        if (m_selectedSlot == 1)
+        if (m_selected_active_location == il_active_melee_weapon)
         {
-            std::cout << "[SetSelectedSlot] Currently selected slot is 1" << std::endl;
+            std::cout << "[SetSelectedSlot] Currently selected slot is il_active_melee_weapon" << std::endl;
 
             Go* weapon = GetEquipped(es_weapon_hand);
             if (!weapon || weapon->Attack()->AttackClass() != ac_staff)
@@ -420,7 +459,7 @@ void GoInventory::SetSelectedSlot(int num)
                 std::cout << "[SetSelectedSlot] Equipped weapon is a staff, no unequip" << std::endl;
             }
         }
-        else if (m_selectedSlot == 2)
+        else if (m_selected_active_location == il_active_ranged_weapon)
         {
             std::cout << "[SetSelectedSlot] Currently selected slot is 2, unequipping shield hand" << std::endl;
             Unequip(es_shield_hand);
@@ -428,7 +467,7 @@ void GoInventory::SetSelectedSlot(int num)
     }
 
     std::cout << "[SetSelectedSlot] Finalizing: setting m_selectedSlot to " << num << std::endl;
-    m_selectedSlot = num;
+	m_selected_active_location = num;
 }
 
 /*void GoInventory :: SetSelectedSlot ( int num )

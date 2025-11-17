@@ -123,6 +123,9 @@
     <ClCompile Include="xml\XmlCleanupGuard.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="go\GoGui.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.hpp">
@@ -294,6 +297,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="xml\XmlCleanupGuard.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="go\GoGui.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

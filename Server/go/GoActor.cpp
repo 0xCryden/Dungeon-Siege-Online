@@ -17,6 +17,7 @@
 #include "Go.hpp"
 #include "GoActor.hpp"
 #include "../Engine.hpp"
+#include "../helper/Helper.h"
 
 static const vector<float> experience_table = {
     0.0f, 70.0f, 650.0f, 1450.0f, 2350.0f, 3350.0f, 4650.0f, 6650.0f, 9450.0f, 12950.0f,
@@ -48,50 +49,92 @@ GoActor :: GoActor (Go * go) : GoComponent (go)
 	m_can_level_up = false;
 }
 
-GoActor :: GoActor (Go * go, xmlNode * node) : GoComponent (go)
+GoActor::GoActor(Go* go, xmlNode* node) : GoComponent(go)
 {
 	m_alignment = aa_neutral;
 	m_can_level_up = false;
 
 	if (node != NULL)
 	{
-		xmlNode * current = NULL;
+		xmlNode* current = NULL;
 		for (current = node->children; current != NULL; current = current->next)
 		{
 			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "alignment") != 0)
+
+			if (xmlStrEqual(current->name, (const xmlChar*)"alignment") != 0)
 			{
-				string alignment = xml::XReadString (current, "value", "aa_neutral");
-				if (FromString (alignment, m_alignment) != true) m_alignment = aa_neutral;
+				string alignment = xml::XReadString(current, "value", "aa_neutral");
+				if (FromString(alignment, m_alignment) != true) m_alignment = aa_neutral;
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "can_level_up") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"can_level_up") != 0)
 			{
-				m_can_level_up = xml::ReadAttribute<bool> (current, "value", true);
+				m_can_level_up = xml::ReadAttribute<bool>(current, "value", true);
 			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "skills") != 0)
+			else if (xmlStrEqual(current->name, (const xmlChar*)"skills") != 0)
 			{
-				xmlNode * child = NULL;
+				xmlNode* child = NULL;
 				for (child = current->children; child != NULL; child = child->next)
 				{
 					if (child->type != XML_ELEMENT_NODE) continue;
-					
-					if (xmlStrEqual (child->name, (const xmlChar *) "skill") != 0)
+
+					if (xmlStrEqual(child->name, (const xmlChar*)"skill") != 0)
 					{
-						string name = (const char *) child->name;
-						
-						map<string, Skill *>::iterator iterator = m_skills.find (name);
+						string name = (const char*)child->name;
+
+						map<string, Skill*>::iterator iterator = m_skills.find(name);
 						if (iterator == m_skills.end())
 						{
-							Skill * skill = new Skill;
-							skill->name = xml::XReadString (child, "name", name);
-							skill->level = xml::ReadAttribute<float> (child, "level", 0.0);
-							skill->experience = xml::ReadAttribute<float> (child, "experience", 0.0);
-							
+							Skill* skill = new Skill;
+							skill->name = xml::XReadString(child, "name", name);
+							skill->level = xml::ReadAttribute<float>(child, "level", 0.0);
+							skill->experience = xml::ReadAttribute<float>(child, "experience", 0.0);
+
 							m_skills[skill->name] = skill;
 						}
 					}
 				}
+			}
+		}
+	}
+}
+
+GoActor::GoActor(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+	m_alignment = aa_neutral;
+	m_can_level_up = false;
+
+	if (tmplComp == nullptr)
+		return;
+
+	const string* f;
+
+	if (f = tmplComp->GetField("alignment"))
+	{
+		if (FromString(*f, m_alignment) != true) m_alignment = aa_neutral;
+	}
+	if (f = tmplComp->GetField("can_level_up"))
+	{
+		if (FromString(*f, m_can_level_up) != true) m_can_level_up = false;
+	}
+	if (const TemplateComponent* skillComponent = tmplComp->GetSubcomponent("skills"))
+	{
+		for (std::unordered_map<string, string>::const_iterator it = skillComponent->fields.begin();
+			it != skillComponent->fields.end(); ++it)
+		{
+			const string& fieldName = it->first;
+			const string& fieldValue = it->second;
+
+			map<string, Skill*>::iterator iterator = m_skills.find(fieldName);
+			if (iterator == m_skills.end())
+			{
+				Skill* skill = new Skill;
+				skill->name = fieldName;
+				try { skill->level = std::stof(skillComponent->SkillLevelString(fieldName)); }
+				catch (...) { skill->level = 0.0f; }
+				try { skill->experience = std::stof(skillComponent->SkillExpString(fieldName)); }
+				catch (...) { skill->experience = 0.0f; }
+
+				m_skills[skill->name] = skill;
 			}
 		}
 	}
