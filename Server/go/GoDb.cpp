@@ -43,6 +43,40 @@ GoDb :: ~GoDb ()
 		iterator++;
 	}}
 }
+void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
+{
+    const TemplateData* tmpl = manager.GetTemplate(templateName);
+    if (!tmpl) {
+        Log::Write(Log::Level::ERR,
+            "Unknown template: " + templateName, true);
+        return;
+    }
+
+    // check if the node exists
+    /*const auto& nodes = g_world.GetRegion(summonerGo->Placement()->GetRegion())->GetNodes();
+    if (nodes.find(placement.position.Node) == nodes.end())
+    {
+        //std::cout << "Skipping spawn .. region has no nodes" << std::endl;
+        return;
+    }*/
+
+    try
+    {
+        Go* t = new Go(*tmpl, *summonerGo->Placement());
+        m_godb[NextId()] = t;
+
+        string region = t->Placement()->GetRegion();
+        if (!region.empty())
+        {
+            SendWorldMessage(we_entered_world, t, t, region);
+            cout << "[GODB] Spawned Go " << NextId() << " using template: " << templateName << " in region: " << region << " at: " << summonerGo->Placement()->Position().X << " | " << summonerGo->Placement()->Position().Y << " | " << summonerGo->Placement()->Position().Z << " in node: " << summonerGo->Placement()->Position().Node << endl;
+        }
+    }
+    catch (exception& e)
+    {
+        Log::WriteF(Log::Level::ERR, "go %u was not loaded because: %s", NextId(), e.what());
+    }
+}
 
 void GoDb::GasToGoDb()
 {

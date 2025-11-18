@@ -115,6 +115,7 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_gui(NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL)
 {
 	m_goid = id;
+	m_admin = 0;
 	m_template_name = go->m_template_name;
 	
 	if (go->m_actor != NULL) m_actor = new GoActor (this);
@@ -130,12 +131,46 @@ Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspec
 	if (go->m_placement != NULL) m_placement = new GoPlacement (this);
 }
 
-Go :: Go(const TemplateData& tmpl, const PlacementData& placement)
+Go::Go(const TemplateData& tmpl, const PlacementData& placement)
 	: m_template_name(tmpl.name),
-	  m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
-	  m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
-	  m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
+	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
+	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
+	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
 {
+	m_goid = godb.NextId();
+	m_admin = 0;
+	m_template_name = tmpl.name;
+
+	const TemplateComponent* comp;
+	if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
+	if ((comp = tmpl.GetComponent("aspect"))) { m_aspect = new GoAspect(this, comp); }
+	if ((comp = tmpl.GetComponent("attack"))) { m_attack = new GoAttack(this, comp); }
+	if ((comp = tmpl.GetComponent("body"))) { m_body = new GoBody(this, comp); }
+	if ((comp = tmpl.GetComponent("common"))) { m_common = new GoCommon(this, comp); }
+	if ((comp = tmpl.GetComponent("defend"))) { m_defend = new GoDefend(this, comp); }
+	// X 2 more subcomponents remaining implementation for mob drops
+	if ((comp = tmpl.GetComponent("inventory"))) { m_inventory = new GoInventory(this, comp); }
+	if ((comp = tmpl.GetComponent("magic"))) { m_magic = new GoMagic(this, comp); }
+	if ((comp = tmpl.GetComponent("mind"))) { m_mind = new GoMind(this, comp); }
+	// TODO Pcontent
+	if ((comp = tmpl.GetComponent("gui"))) { m_gui = new GoGui(this, comp); }
+	// TODO Physics
+
+	m_placement = new GoPlacement(this, placement);
+
+	m_conversations = placement.conversations;
+}
+
+Go::Go(const TemplateData& tmpl, const GoPlacement& placement)
+	: m_template_name(tmpl.name),
+	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
+	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
+	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
+{
+	m_goid = godb.NextId();
+	m_admin = 0;
+	m_template_name = tmpl.name;
+
 	const TemplateComponent* comp;
 	if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
 	if ((comp = tmpl.GetComponent("aspect"))) { m_aspect = new GoAspect(this, comp); }
@@ -167,6 +202,7 @@ Go :: ~Go ()
 	if (m_body) delete m_body;
 	if (m_common) delete m_common;
 	if (m_defend) delete m_defend;
+	if (m_gui) delete m_gui;
 	if (m_inventory) delete m_inventory;
 	if (m_magic) delete m_magic;
 	if (m_mind) delete m_mind;
@@ -227,11 +263,27 @@ void Go :: HandleCommand (const string& command)
             return;
         }
 
+		if (TemplateData* tpl = manager.GetTemplate(templateName))
+		{
+			cout << "[info] template: " << tpl->name << "\n";
+			if (!tpl->specializes.empty())
+				cout << "  specializes: " << tpl->specializes << "\n";
+
+			for (const auto& [compname, comp] : tpl->components) {
+				gas.LogComponent(compname, comp, "  ");
+			}
+			// access fields
+			/*auto* comp = tpl->getcomponent("aspect");
+			if (comp) {
+				auto experience_value = comp->getfield("experience_value");
+				if (experience_value) {
+					std::cout << "experience_value: " << *experience_value << "\n";
+				}
+			}*/
+		}
+
         // Try to spawn or add using the template name
-       // if (!AddTemplate(templateName))
-        {
-            cout << "Error: Template not found or failed to spawn." << endl;
-        }
+		godb.SpawnGo(templateName, this);
     }
     else if (cmd == "/setlvl")
     {
@@ -848,6 +900,14 @@ GoPlacement * Go :: Placement () const
 
 string Go :: TemplateName () const
 {
+	if (m_template_name.empty())
+	{
+		if (HasAspect() && (Aspect()->Model().empty() == false))
+		{
+			return Aspect()->Model();
+		}
+	}
+
 	return m_template_name;
 }
 

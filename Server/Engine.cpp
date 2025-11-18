@@ -540,7 +540,11 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			// now after we already checked we can queue a message with new delay for distance
 			double distance = from->GetDistanceTo(to);
 			int velocity = 25;
-			if (from->Inventory()->GetEquipped(es_shield_hand)->Attack()->AttackClass() == ac_minigun)
+
+			Go* equippedWep;
+			equippedWep = from->Inventory()->ItemFromLocation(from->Inventory()->GetSelectedSlot());
+
+			if (equippedWep->Attack()->AttackClass() == ac_minigun)
 				velocity = 75;
 
 			uint64_t airTime = (uint64_t)((distance * 1000) / velocity);
@@ -685,7 +689,7 @@ void Engine :: UpdateGoExp(Go* go, float value)
 		return;
 
 	// Always send to self first
-	go->Send(WorldMessage(we_add_exp, go, go, ""));
+	go->Send(WorldMessage(we_add_exp, go, go, std::to_string(value)));
 
 	// Then send to nearby objects
 	const GopSet & frustum = go->Frustum();

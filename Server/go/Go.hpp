@@ -61,9 +61,8 @@ class Go
 		void LoadFromXml(xmlNode* node);
 		Go (sqlResult * query); // only used for loading a 'save game'
 		Go (uint32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
-		//Go (uint32_t id); // create empty go for later use
-
 		Go(const TemplateData& tmpl, const PlacementData& placement);
+		Go(const TemplateData& tmpl, const GoPlacement& placement);
 		~Go ();
 
 		GoActor * Actor () const;
@@ -165,6 +164,7 @@ class Go
 
 		int Admin() { return m_admin; }
 		void SetAdmin(int level) { m_admin = (uint8_t)level; }
+		vector<string> Conversations() { return m_conversations; }
 
 	private:
 			
@@ -197,6 +197,8 @@ class Go
 		uint8_t m_admin = 0;
 
 		map<string, GoScriptComponent*> m_scripts;
+
+		vector<string> m_conversations;
 };
 
 #endif /* GO_HPP_ */

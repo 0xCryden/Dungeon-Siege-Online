@@ -147,7 +147,9 @@ struct PlacementData {
 
 	SiegePos position;
 	vector_3 orientation; // Store only the vector part of the quaternion
-	std::string regionName;
+	std::string regionName; 
+	vector<string> conversations; 
+	unordered_map<string, TemplateComponent> components;
 };
 
 class PlacementManager {

@@ -496,8 +496,15 @@ float GoAttack::CalcDamage(Go* target, const string& skill, int hitType, GoMagic
 		max_damage = attacker->Attack()->DamageMax();
 	}
 
-	// Random roll in range
-	float base_damage = (rand() % (int)(max_damage - min_damage)) + min_damage;//min_damage + static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * (max_damage - min_damage);
+	// Random roll in rangefloat range = max_damage - min_damage;
+	float base_damage = 0.0f;
+	float range = max_damage - min_damage;
+	if (range <= 0.0f) {
+		base_damage = min_damage;   // or max_damage, same when equal
+	}
+	else {
+		base_damage = (rand() % (int)range) + min_damage;
+	}//min_damage + static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * (max_damage - min_damage);
 	if (log) cout << "[CalcDamage] Rolled base damage: " << base_damage << endl;
 
 	// Pre-defense backup for relative clamp

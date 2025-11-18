@@ -124,8 +124,18 @@ GoAspect::GoAspect(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (tmplComp == nullptr)
 		return;
 
+	m_render_scale = 1.0f;
+	m_life_recovery_period = 4;
+	m_mana_recovery_period = 4;
+
 	const string* f;
 	if (f = tmplComp->GetField("bounding_sphere_radius")) { try { m_bounding_sphere_radius = std::stof(*f); } catch (...) { m_bounding_sphere_radius = 0.0f; } }
+
+	if (f = tmplComp->GetField("max_life")) { try { m_max_life = std::stof(*f); } catch (...) { m_max_life = 0.0f; } }
+	if (f = tmplComp->GetField("max_mana")) { try { m_max_mana = std::stof(*f); } catch (...) { m_max_mana = 0.0f; } }
+
+	m_current_life = m_max_life;
+	m_current_mana = m_max_mana;
 
 	if (f = tmplComp->GetField("current_life")) { try { m_current_life = std::stof(*f); } catch (...) { m_current_life = 0.0f; } }
 	if (f = tmplComp->GetField("current_mana")) { try { m_current_mana = std::stof(*f); } catch (...) { m_current_mana = 0.0f; } }
@@ -143,8 +153,6 @@ GoAspect::GoAspect(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("last_died")) { try { m_last_died = static_cast<int64_t>(std::stof(*f)); } catch (...) { m_last_died = 0; } }
 	if (f = tmplComp->GetField("mana_recovery_period")) { try { m_mana_recovery_period = static_cast<int16_t>(std::stoi(*f)); } catch (...) { m_mana_recovery_period = 0; } }
 	if (f = tmplComp->GetField("mana_recovery_unit")) { try { m_mana_recovery_unit = std::stof(*f); } catch (...) { m_mana_recovery_unit = 0.0f; } }
-	if (f = tmplComp->GetField("max_life")) { try { m_max_life = std::stof(*f); } catch (...) { m_max_life = 0.0f; } }
-	if (f = tmplComp->GetField("max_mana")) { try { m_max_mana = std::stof(*f); } catch (...) { m_max_mana = 0.0f; } }
 	if (f = tmplComp->GetField("model")) { try { m_model = *f; } catch (...) { m_model = ""; } }
 	if (f = tmplComp->GetField("render_scale")) { try { m_render_scale = std::stof(*f); } catch (...) { m_render_scale = 1.0f; } }
 	if (f = tmplComp->GetField("experience_value")) { try { m_experience_value = std::stof(*f); } catch (...) { m_experience_value = 1.0f; } }
@@ -329,8 +337,11 @@ void GoAspect::RecoverLife()
 	//queue next regen tick if still below max
 	if (m_current_life < m_max_life)
 	{
-		int64_t lifePeriodMs = (int64_t)(m_life_recovery_period * 1000.0f);
-		PostWorldMessage(we_player_data_changed, m_go, m_go, "life", lifePeriodMs);
+		if (m_life_recovery_period > 0 && m_life_recovery_unit > 0)
+		{
+			int64_t lifePeriodMs = (int64_t)(m_life_recovery_period * 1000.0f);
+			PostWorldMessage(we_player_data_changed, m_go, m_go, "life", lifePeriodMs);
+		}
 	}
 }
 
@@ -339,7 +350,6 @@ void GoAspect::RecoverMana()
 	if (m_life_state > ls_alive_unconscious)
 		return;
 
-	int64_t manaPeriodMs = (int64_t)(m_mana_recovery_period * 1000.0f);
 	if (m_current_mana < m_max_mana)
 	{
 		m_current_mana = min(m_current_mana + m_mana_recovery_unit, m_max_mana);
@@ -347,6 +357,10 @@ void GoAspect::RecoverMana()
 
 	if (m_current_mana < m_max_mana)
 	{
-		PostWorldMessage(we_player_data_changed, m_go, m_go, "mana", manaPeriodMs);
+		if (m_mana_recovery_period > 0 && m_mana_recovery_unit > 0)
+		{
+			int64_t manaPeriodMs = (int64_t)(m_mana_recovery_period * 1000.0f);
+			PostWorldMessage(we_player_data_changed, m_go, m_go, "mana", manaPeriodMs);
+		}
 	}
 }

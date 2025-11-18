@@ -65,7 +65,8 @@ int main(int argc, char** argv)
         godb.LoadContentDb(dataDir + "\\static\\actors.xml");
         server.LoadAccounts(dataDir + "\\dynamic\\accounts.xml");
 
-        //godb.GasToGoDb();
+        // mob spawns
+        godb.GasToGoDb();
 
         PostWorldMessage(we_frustum_active_state_changed, 0, 0, "", 2500);
         

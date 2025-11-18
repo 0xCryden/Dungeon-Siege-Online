@@ -342,7 +342,135 @@ void Gas::ParseGasBlock(istream& stream, TemplateComponent& outComp)
     }
 }
 
-bool Gas::ReadActorPlacements(const string& fullPath, vector<PlacementData>& outPlacements)
+bool Gas::ReadActorPlacements(const string& fullPath,
+    vector<PlacementData>& outPlacements)
+{
+    ifstream file(fullPath);
+    if (!file.is_open()) {
+        cerr << "[ERROR] Failed to open actor placement file: " << fullPath << endl;
+        return false;
+    }
+
+    string line;
+    while (getline(file, line))
+    {
+        line = Trim(line);
+
+        // Detect actor header: [t:<name>,n:<instance>]
+        if (line.rfind("[t:", 0) == 0 && line.find(",n:") != string::npos)
+        {
+            PlacementData data;
+            data.orientation = { 0,0,0 };
+            data.position = SiegePos();
+
+            // ---------------------------------------
+            // Parse template name & instance id
+            // ---------------------------------------
+            size_t tPos = line.find("t:");
+            size_t nPos = line.find("n:");
+            size_t end = line.find(']');
+
+            data.templateName = Trim(line.substr(tPos + 2, nPos - tPos - 3));
+            data.instanceName = Trim(line.substr(nPos + 2, end - nPos - 2));
+
+            // ---------------------------------------
+            // Read full actor block into a string
+            // ---------------------------------------
+            string actorBlock;
+            {
+                // Seek first '{'
+                char ch;
+                while (file.get(ch)) {
+                    if (ch == '{') {
+                        actorBlock += ch;
+                        break;
+                    }
+                }
+
+                // copy until matching brace closes
+                int depth = 1;
+                while (depth > 0 && file.get(ch)) {
+                    actorBlock += ch;
+                    if (ch == '{') depth++;
+                    else if (ch == '}') depth--;
+                }
+            }
+
+            // ---------------------------------------
+            // Parse using the GAS hierarchy logic
+            // ---------------------------------------
+            TemplateComponent root;
+
+            try {
+                stringstream ss(actorBlock);
+                ParseGasBlock(ss, root);
+            }
+            catch (const exception& e) {
+                cerr << "[ERROR] ParseGasBlock failed for actor '"
+                    << data.templateName << "': " << e.what() << endl;
+                continue;
+            }
+
+            // Store full block hierarchy (all subcomponents)
+            data.components = root.subcomponents;
+
+
+            // ---------------------------------------
+            // Extract placement fields (if present)
+            // ---------------------------------------
+            auto itPlace = root.subcomponents.find("placement");
+            if (itPlace != root.subcomponents.end())
+            {
+                auto& pc = itPlace->second;
+
+                if (pc.fields.count("p position"))
+                {
+                    const string& v = pc.fields.at("p position");
+                    float px, py, pz;
+                    uint32_t node;
+
+                    if (sscanf_s(v.c_str(), "%f,%f,%f,0x%x", &px, &py, &pz, &node) == 4)
+                        data.position = SiegePos(node, px, py, pz);
+                }
+
+                if (pc.fields.count("q orientation"))
+                {
+                    const string& v = pc.fields.at("q orientation");
+                    float ox, oy, oz, ow;
+
+                    if (sscanf_s(v.c_str(), "%f,%f,%f,%f", &ox, &oy, &oz, &ow) == 4)
+                        data.orientation = { oy, oz, ow };  // your existing behavior
+                }
+            }
+
+
+            // ---------------------------------------
+            // Extract conversations
+            // ---------------------------------------
+            auto itConv = root.subcomponents.find("conversation");
+            if (itConv != root.subcomponents.end())
+            {
+                auto itList = itConv->second.subcomponents.find("conversations");
+                if (itList != itConv->second.subcomponents.end())
+                {
+                    // Iterate over all fields inside "conversations"
+                    for (const auto& kv : itList->second.fields)
+                    {
+                        data.conversations.push_back(kv.second);
+                    }
+                }
+            }
+
+            // Push result
+            outPlacements.push_back(move(data));
+        }
+    }
+
+    return true;
+}
+
+
+/*bool Gas::ReadActorPlacements(const string& fullPath, vector<PlacementData>& outPlacements)
 {
     ifstream file(fullPath);
     if (!file.is_open()) {
@@ -392,30 +520,52 @@ bool Gas::ReadActorPlacements(const string& fullPath, vector<PlacementData>& out
             }
 
             // Search for [placement] block inside actorBlock
+            // Search blocks inside actorBlock
             string blockLine;
+
+            // State tracking
             bool inPlacement = false;
+            bool inConversation = false;
+            bool inConversationsInner = false;
+
             int placementDepth = 0;
+            int conversationDepth = 0;
+            int conversationsDepth = 0;
 
             while (getline(actorBlock, blockLine)) {
                 blockLine = Trim(blockLine);
                 if (blockLine.empty()) continue;
 
+                // ------------------------------
+                // ENTER [placement]
+                // ------------------------------
                 if (!inPlacement && blockLine == "[placement]") {
-                    // Enter placement block
-                    while (actorBlock.get(ch)) {
-                        if (ch == '{') {
-                            inPlacement = true;
-                            placementDepth = 1;
-                            break;
-                        }
+                    // find opening brace
+                    char ch2;
+                    while (actorBlock.get(ch2)) {
+                        if (ch2 == '{') { inPlacement = true; placementDepth = 1; break; }
                     }
                     continue;
                 }
 
+                // ------------------------------
+                // ENTER [conversation]
+                // ------------------------------
+                if (!inConversation && blockLine == "[conversation]") {
+                    char ch2;
+                    while (actorBlock.get(ch2)) {
+                        if (ch2 == '{') { inConversation = true; conversationDepth = 1; break; }
+                    }
+                    continue;
+                }
+
+                // PROCESS PLACEMENT BLOCK
+                // ------------------------------
                 if (inPlacement) {
+                    // detect closing brace
                     if (blockLine.find('}') != string::npos) {
                         placementDepth--;
-                        if (placementDepth <= 0) break;
+                        if (placementDepth <= 0) { inPlacement = false; continue; }
                         continue;
                     }
 
@@ -428,8 +578,7 @@ bool Gas::ReadActorPlacements(const string& fullPath, vector<PlacementData>& out
                     if (key == "q orientation") {
                         float ox, oy, oz, ow;
                         if (sscanf_s(value.c_str(), "%f,%f,%f,%f", &ox, &oy, &oz, &ow) == 4) {
-                            data.orientation = { oy, oz, ow }; // ignore x
-                            //data.orientation = { ox, oy, oz }; // ignore w
+                            data.orientation = { oy, oz, ow };
                         }
                     }
                     else if (key == "p position") {
@@ -439,16 +588,66 @@ bool Gas::ReadActorPlacements(const string& fullPath, vector<PlacementData>& out
                             data.position = SiegePos(node, px, py, pz);
                         }
                     }
+
+                    continue;
+                }
+
+                // PROCESS CONVERSATION BLOCK
+                // ------------------------------
+                if (inConversation) {
+
+                    // leave [conversation]
+                    if (!inConversationsInner && blockLine.find('}') != string::npos) {
+                        conversationDepth--;
+                        if (conversationDepth <= 0) { inConversation = false; continue; }
+                        continue;
+                    }
+
+                    // enter nested [conversations]
+                    if (!inConversationsInner && blockLine == "[conversations]") {
+                        char ch2;
+                        while (actorBlock.get(ch2)) {
+                            if (ch2 == '{') {
+                                inConversationsInner = true;
+                                conversationsDepth = 1;
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+
+                    // inside [conversations]
+                    if (inConversationsInner) {
+                        if (blockLine.find('}') != string::npos) {
+                            conversationsDepth--;
+                            if (conversationsDepth <= 0) {
+                                inConversationsInner = false;
+                            }
+                            continue;
+                        }
+
+                        // expected format: "* = name;"
+                        size_t eq = blockLine.find('=');
+                        if (eq != string::npos) {
+                            string value = Trim(blockLine.substr(eq + 1));
+                            if (!value.empty() && value.back() == ';')
+                                value.pop_back();
+
+                            data.conversations.push_back(value);
+                        }
+
+                        continue;
+                    }
                 }
             }
+
 
             outPlacements.push_back(move(data));
         }
     }
 
     return true;
-    //return !outPlacements.empty();
-}
+}*/
 
 bool Gas::ReadTemplatesFile(const string& fullPath, unordered_map<string, TemplateData>& outTemplates, const unordered_set<string>& allowedComponents)
 {
@@ -622,7 +821,6 @@ void Gas::LoadMapTemplates() {
                         /*cout << "Loaded: " << p.templateName << " at ("
                                   << p.position.X << ", " << p.position.Y << ", " << p.position.Z
                                   << "), facing (" << p.orientation.x << ", " << p.orientation.y << ", " << p.orientation.z << ")\n";*/
-
                         p.regionName = regionName;
                         placementManager.AddPlacement(move(p));
                         ++totalLoaded;

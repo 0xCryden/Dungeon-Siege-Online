@@ -39,6 +39,7 @@ class GoDb
 
 		void LoadContentDb (const string & filename);
 		void GasToGoDb();
+		void SpawnGo(const string& templateName, const Go* go);
 		//void LoadContentDbFolder (const string & folderName);
 		//void LoadContentDbSingle (const string & filename);
 
@@ -50,9 +51,10 @@ class GoDb
 		void MarkGoForDeletion (uint32_t id);
 		void MarkGoAndChildrenForDeletion (uint32_t id);
 
+		uint32_t NextId();
+
 	private:
 
-		uint32_t NextId ();
 
 		map<uint32_t, Go *> m_godb;
 		map<string, Go *> m_contentdb;
