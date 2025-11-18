@@ -59,7 +59,7 @@
 			
 			
 			
-		<item id="10001" equip_slot="es_none" inven_loc="il_main"/></inventory>
-		<placement region="town_center"><position node="1482942462" x="0.620644" y="0" z="0.94137"/></placement>
+		<item id="10001" equip_slot="es_none" inven_loc="il_active_melee_weapon"/></inventory>
+		<placement region="town_center"><position node="1323345966" x="0" y="0" z="0"/></placement>
 	</go>
 </objects>

@@ -39,9 +39,8 @@ class GoDb
 
 		void LoadContentDb (const string & filename);
 		void GasToGoDb();
+		void InstantiateMapTemplates();
 		void SpawnGo(const string& templateName, const Go* go);
-		//void LoadContentDbFolder (const string & folderName);
-		//void LoadContentDbSingle (const string & filename);
 
 		Go * FindGoById (uint32_t id);
 

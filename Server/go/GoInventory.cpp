@@ -307,7 +307,7 @@ void GoInventory::Transfer(Go* item, Go* container, eInventoryLocation loc)
 
 bool GoInventory :: Equip (eEquipSlot slot, Go * item)
 {
-	cout << "Inventory Equip item: " << item->Aspect()->Model() << endl;
+	cout << "####### GoInventory.Equip item: " << item->Aspect()->Model() << " for Go: " << GetGo()->Common()->ScreenName() << " in slot " << (int)slot << endl;
 
 	if (IsSlotEquipped (slot) != false) return false;
 	if (IsEquipped (item) != false) return false;
@@ -386,6 +386,9 @@ eEquipSlot GoInventory :: GetEquippedSlot (const Go * item) const
 
 void GoInventory::SetSelectedSlot(eInventoryLocation num)
 {
+	// when selecting a new slot:
+	// change m_equipment
+	// keep items inventory location
     std::cout << "[SetSelectedSlot] Called with num = " << num << std::endl;
 
     if (num == il_active_primary_spell || num == il_active_secondary_spell) // if switching from weapon to spell unequip
@@ -465,60 +468,28 @@ void GoInventory::SetSelectedSlot(eInventoryLocation num)
             Unequip(es_shield_hand);
         }
     }
+	/*else if (num == il_active_melee_weapon)
+	{
+		//reequip item in slot
+		Go* slotItem = ItemFromLocation(num);
+		if (slotItem != NULL)
+		{
+			GetGo()->Mind()->Equip(slotItem->Gui()->EquipSlot(), slotItem);
+		}
+	}
+	else if (num == il_active_ranged_weapon)
+	{
+		Go* slotItem = ItemFromLocation(num);
+		if (slotItem != NULL)
+		{
+			GetGo()->Mind()->Equip(slotItem->Gui()->EquipSlot(), slotItem);
+		}
+	}*/
 
-    std::cout << "[SetSelectedSlot] Finalizing: setting m_selectedSlot to " << num << std::endl;
+
+    //std::cout << "[SetSelectedSlot] Finalizing: setting m_selectedSlot to " << num << std::endl;
 	m_selected_active_location = num;
 }
-
-/*void GoInventory :: SetSelectedSlot ( int num )
-{
-	//cout << "Step 1 num: " << num << endl;
-	if (num == 3 || num == 4 ) // if switching from weapon to spell unequip
-	{
-		if (GetEquipped(es_spellbook) &&
-			GetEquipped(es_spellbook)->Inventory()->ItemFromLocation((eInventoryLocation)(num+1)) &&
-			GetEquipped(es_spellbook)->Inventory()->ItemFromLocation((eInventoryLocation)(num+1))->Magic()->RequiredLevel() > GetGo()->Actor()->GetSkillLevel(GetEquipped(es_spellbook)->Inventory()->ItemFromLocation((eInventoryLocation)(num+1))->Magic()->SkillClass()))
-		{
-			m_selectedSlot = num;
-			return;
-		}
-		//cout << "Step 2 num: " << num << endl;
-		if (m_selectedSlot == 1)
-		{
-			//cout << "Step 3 num: " << num << endl;
-			if (!(GetEquipped(es_weapon_hand) &&
-				(GetEquipped(es_weapon_hand)->Attack()->AttackClass() == ac_staff))) // if !item in il_active_melee_weapon attack class == ac_staff
-			{
-				//cout << "Step 4 num: " << num << endl;
-				Unequip(es_weapon_hand);
-				Unequip(es_shield_hand);
-			}
-		}
-		else if (m_selectedSlot == 2)
-		{
-			Unequip(es_shield_hand);
-		}
-
-	}*/
-	/*else
-	{
-		Equip ((eEquipSlot)(num-1), ItemFromLocation((eInventoryLocation)(num-1)));
-	}*/
-
-	/*if (num == 1 && ItemFromLocation(il_active_melee_weapon) != NULL)
-	{
-		Equip (es_weapon_hand, ItemFromLocation(il_active_melee_weapon));
-		if (ItemFromLocation(il_shield) != NULL)
-			Equip (es_shield_hand, ItemFromLocation(il_shield));
-	}
-	if (num == 2 && ItemFromLocation(il_active_ranged_weapon) != NULL)
-	{
-		Equip (es_shield_hand, ItemFromLocation(il_active_ranged_weapon));
-	}*/
-
-/*	m_selectedSlot = num;
-
-}*/
 
 bool GoInventory :: IsAnyWeaponEquipped () const
 {
@@ -639,6 +610,7 @@ bool GoInventory :: Unequip (eEquipSlot slot)
 		/*
 		 * check if we can actually unequip this item
 		 */
+		cout << "####### GoInventory.Unquip item: " << iterator->second->Aspect()->Model() << " for Go: " << GetGo()->Common()->ScreenName() << " from slot " << (int)slot << endl;
 		m_equipment.erase (iterator);
 		
 		return true;

@@ -59,6 +59,33 @@ void TemplateManager::ResolveTemplateInheritance() {
     }
     Log::Write(Log::Level::INFO, "[INFO] Finished resolving Inheritances. Total components merged: " + to_string(totalLoaded), true);
 }
+// normal template = child, scid template = parent
+void TemplateManager::MergeTemplates(TemplateData& child, const TemplateData& parent)
+{
+    size_t mergedCount = 0;
+
+    for (const auto& [compName, parentComp] : parent.components)
+    {
+        // If child does not have this component → copy parent component
+        if (!child.components.contains(compName))
+        {
+            child.components[compName] = parentComp;
+            ++mergedCount;
+            continue;
+        }
+
+        // If child *does* have this component → merge, child overrides parent
+        auto& childComp = child.components[compName];
+        MergeComponent(childComp, parentComp);
+        ++mergedCount;
+    }
+
+    /*Log::Write(Log::Level::INFO,
+        "[INFO] MergeTemplates: Merged " + std::to_string(mergedCount) +
+        " components from parent '" + parent.name +
+        "' into child '" + child.scid + "'",
+        true);*/
+}
 
 Gas::Gas()
 {
@@ -226,71 +253,6 @@ void Gas::ParseGasBlock(istream& stream, TemplateComponent& outComp)
             }
             continue;
         }
-        /*
-        if (StartsWith(line, "[") && line.find(']') != string::npos)
-        {
-            // Extract component name between [ and ]
-            pendingComponentName = ParseComponentName(line);
-
-            // Check for inline block { ... }
-            size_t braceOpen = line.find('{');
-            size_t braceClose = line.find('}');
-
-            if (braceOpen != string::npos && braceClose != string::npos && braceClose > braceOpen)
-            {
-                // Inline block present on same line, create component now
-                TemplateComponent newComp;
-                TemplateComponent* parent = stack.back();
-                auto& inserted = parent->subcomponents[pendingComponentName];
-                inserted = move(newComp);
-                stack.push_back(&inserted);
-
-                // Parse fields inside { ... }
-                string insideBraces = line.substr(braceOpen + 1, braceClose - braceOpen - 1);
-                insideBraces = Trim(insideBraces);
-
-                size_t start = 0;
-                while (start < insideBraces.length())
-                {
-                    size_t end = insideBraces.find(';', start);
-                    string field;
-                    if (end == string::npos)
-                    {
-                        field = insideBraces.substr(start);
-                        start = insideBraces.length();
-                    }
-                    else
-                    {
-                        field = insideBraces.substr(start, end - start);
-                        start = end + 1;
-                    }
-                    field = Trim(field);
-                    if (!field.empty())
-                    {
-                        size_t eqPos = field.find('=');
-                        if (eqPos != string::npos)
-                        {
-                            string key = Trim(field.substr(0, eqPos));
-                            string val = Trim(field.substr(eqPos + 1));
-                            inserted.fields[key] = val;
-                        }
-                    }
-                }
-
-                // Inline block closes immediately, pop stack now
-                if (stack.size() > 1)
-                    stack.pop_back();
-
-                pendingComponentName.clear();
-            }
-            else
-            {
-                // No inline block; wait for '{' line before creating component
-                // Keep pendingComponentName, but do not insert yet
-            }
-            continue;
-        }
-        */
         // Block opening after a standalone [name] on previous line
         if (line == "{" && !pendingComponentName.empty())
         {
@@ -469,186 +431,6 @@ bool Gas::ReadActorPlacements(const string& fullPath,
     return true;
 }
 
-
-/*bool Gas::ReadActorPlacements(const string& fullPath, vector<PlacementData>& outPlacements)
-{
-    ifstream file(fullPath);
-    if (!file.is_open()) {
-        cerr << "[ERROR] Failed to open actor placement file: " << fullPath << endl;
-        return false;
-    }
-
-    string line;
-    while (getline(file, line)) {
-        line = Trim(line);
-        if (line.rfind("[t:", 0) == 0 && line.find(",n:") != string::npos) {
-            PlacementData data;
-            data.orientation = { 0.0f, 0.0f, 0.0f };
-            data.position = SiegePos(); // default init
-
-            // Parse t: and n:
-            size_t tPos = line.find("t:");
-            size_t nPos = line.find("n:");
-            size_t end = line.find(']');
-
-            if (tPos == string::npos || nPos == string::npos || end == string::npos) {
-                cerr << "[WARN] Malformed header: " << line << endl;
-                continue;
-            }
-
-            data.templateName = Trim(line.substr(tPos + 2, nPos - tPos - 3));
-            data.instanceName = Trim(line.substr(nPos + 2, end - nPos - 2));
-
-            // Read full actor block (handle nested braces)
-            stringstream actorBlock;
-            int braceDepth = 0;
-            char ch;
-
-            // First opening brace
-            while (file.get(ch)) {
-                if (ch == '{') {
-                    braceDepth = 1;
-                    actorBlock << ch;
-                    break;
-                }
-            }
-
-            while (braceDepth > 0 && file.get(ch)) {
-                actorBlock << ch;
-                if (ch == '{') braceDepth++;
-                else if (ch == '}') braceDepth--;
-            }
-
-            // Search for [placement] block inside actorBlock
-            // Search blocks inside actorBlock
-            string blockLine;
-
-            // State tracking
-            bool inPlacement = false;
-            bool inConversation = false;
-            bool inConversationsInner = false;
-
-            int placementDepth = 0;
-            int conversationDepth = 0;
-            int conversationsDepth = 0;
-
-            while (getline(actorBlock, blockLine)) {
-                blockLine = Trim(blockLine);
-                if (blockLine.empty()) continue;
-
-                // ------------------------------
-                // ENTER [placement]
-                // ------------------------------
-                if (!inPlacement && blockLine == "[placement]") {
-                    // find opening brace
-                    char ch2;
-                    while (actorBlock.get(ch2)) {
-                        if (ch2 == '{') { inPlacement = true; placementDepth = 1; break; }
-                    }
-                    continue;
-                }
-
-                // ------------------------------
-                // ENTER [conversation]
-                // ------------------------------
-                if (!inConversation && blockLine == "[conversation]") {
-                    char ch2;
-                    while (actorBlock.get(ch2)) {
-                        if (ch2 == '{') { inConversation = true; conversationDepth = 1; break; }
-                    }
-                    continue;
-                }
-
-                // PROCESS PLACEMENT BLOCK
-                // ------------------------------
-                if (inPlacement) {
-                    // detect closing brace
-                    if (blockLine.find('}') != string::npos) {
-                        placementDepth--;
-                        if (placementDepth <= 0) { inPlacement = false; continue; }
-                        continue;
-                    }
-
-                    size_t eq = blockLine.find('=');
-                    if (eq == string::npos) continue;
-
-                    string key = Trim(blockLine.substr(0, eq));
-                    string value = Trim(blockLine.substr(eq + 1));
-
-                    if (key == "q orientation") {
-                        float ox, oy, oz, ow;
-                        if (sscanf_s(value.c_str(), "%f,%f,%f,%f", &ox, &oy, &oz, &ow) == 4) {
-                            data.orientation = { oy, oz, ow };
-                        }
-                    }
-                    else if (key == "p position") {
-                        float px, py, pz;
-                        uint32_t node;
-                        if (sscanf_s(value.c_str(), "%f,%f,%f,0x%x", &px, &py, &pz, &node) == 4) {
-                            data.position = SiegePos(node, px, py, pz);
-                        }
-                    }
-
-                    continue;
-                }
-
-                // PROCESS CONVERSATION BLOCK
-                // ------------------------------
-                if (inConversation) {
-
-                    // leave [conversation]
-                    if (!inConversationsInner && blockLine.find('}') != string::npos) {
-                        conversationDepth--;
-                        if (conversationDepth <= 0) { inConversation = false; continue; }
-                        continue;
-                    }
-
-                    // enter nested [conversations]
-                    if (!inConversationsInner && blockLine == "[conversations]") {
-                        char ch2;
-                        while (actorBlock.get(ch2)) {
-                            if (ch2 == '{') {
-                                inConversationsInner = true;
-                                conversationsDepth = 1;
-                                break;
-                            }
-                        }
-                        continue;
-                    }
-
-                    // inside [conversations]
-                    if (inConversationsInner) {
-                        if (blockLine.find('}') != string::npos) {
-                            conversationsDepth--;
-                            if (conversationsDepth <= 0) {
-                                inConversationsInner = false;
-                            }
-                            continue;
-                        }
-
-                        // expected format: "* = name;"
-                        size_t eq = blockLine.find('=');
-                        if (eq != string::npos) {
-                            string value = Trim(blockLine.substr(eq + 1));
-                            if (!value.empty() && value.back() == ';')
-                                value.pop_back();
-
-                            data.conversations.push_back(value);
-                        }
-
-                        continue;
-                    }
-                }
-            }
-
-
-            outPlacements.push_back(move(data));
-        }
-    }
-
-    return true;
-}*/
-
 bool Gas::ReadTemplatesFile(const string& fullPath, unordered_map<string, TemplateData>& outTemplates, const unordered_set<string>& allowedComponents)
 {
     //cerr << "[INFO] Reading templates from: " << fullPath << endl;
@@ -745,6 +527,130 @@ bool Gas::ReadTemplatesFile(const string& fullPath, unordered_map<string, Templa
     return true;
 }
 
+bool Gas::ReadMapTemplatesFile(
+    const string& fullPath,
+    unordered_map<string, TemplateData>& outTemplates,
+    const unordered_set<string>& allowedComponents)
+{
+    ifstream file(fullPath);
+    if (!file.is_open()) {
+        cerr << "[ERROR] Failed to open file: " << fullPath << endl;
+        return false;
+    }
+
+    string line;
+    while (getline(file, line))
+    {
+        line = Trim(line);
+
+        // Accept lines like: [t:<name>,n:<scid>]
+        // Reject old-style:  [t:template, ...]
+        if (line.rfind("[t:", 0) == 0 && line.rfind("[t:template", 0) != 0)
+        {
+            TemplateData tpl;
+
+            // Extract "t:<template_name>"
+            size_t tPos = line.find("t:");
+            if (tPos == string::npos) {
+                cerr << "[ERROR] Missing t: field in: " << line << endl;
+                continue;
+            }
+            tPos += 2;
+
+            size_t tEnd = line.find(',', tPos);
+            if (tEnd == string::npos) {
+                cerr << "[ERROR] Missing ',' after t: in: " << line << endl;
+                continue;
+            }
+
+            tpl.name = Trim(line.substr(tPos, tEnd - tPos));
+            transform(tpl.name.begin(), tpl.name.end(), tpl.name.begin(), ::tolower);
+
+            // Extract "n:<scid>"
+            size_t nPos = line.find("n:", tEnd);
+            if (nPos == string::npos) {
+                cerr << "[ERROR] Missing n: field in: " << line << endl;
+                continue;
+            }
+            nPos += 2;
+
+            size_t nEnd = line.find(']', nPos);
+            if (nEnd == string::npos) {
+                cerr << "[ERROR] Missing trailing ']' for SCID template in: " << line << endl;
+                continue;
+            }
+
+            string scid = Trim(line.substr(nPos, nEnd - nPos));
+            tpl.scid = scid;   // <-- Add this field to TemplateData if you want to store SCID
+
+            // -------------------------------------
+            // Skip to '{'
+            // -------------------------------------
+            char ch;
+            bool foundBlockStart = false;
+            while (file.get(ch)) {
+                if (ch == '{') {
+                    foundBlockStart = true;
+                    break;
+                }
+            }
+
+            if (!foundBlockStart) {
+                cerr << "[ERROR] Failed to find '{' for template: " << tpl.name << endl;
+                continue;
+            }
+
+            // -------------------------------------
+            // Parse block
+            // -------------------------------------
+            TemplateComponent root;
+            try {
+                ParseGasBlock(file, root);
+            }
+            catch (const exception& e) {
+                cerr << "[ERROR] Exception while parsing block for '" << tpl.name
+                    << "': " << e.what() << endl;
+                continue;
+            }
+
+            tpl.components = move(root.subcomponents);
+
+            // Optional allowlist (commented out in original)
+            /*
+            if (!allowedComponents.empty()) {
+                for (auto it = tpl.components.begin(); it != tpl.components.end(); ) {
+                    if (!allowedComponents.contains(it->first)) {
+                        it = tpl.components.erase(it);
+                    } else {
+                        ++it;
+                    }
+                }
+            }
+            */
+
+            // Supports inheritance and doc fields if provided
+            if (root.fields.count("specializes"))
+                tpl.specializes = root.fields["specializes"];
+
+            if (root.fields.count("doc"))
+                tpl.doc = root.fields["doc"];
+
+            // -------------------------------------
+            // Store new template
+            // -------------------------------------
+            outTemplates[tpl.scid] = move(tpl);
+        }
+    }
+
+    if (outTemplates.empty()) {
+        cerr << "[WARN] No SCID templates found in file: " << fullPath << endl;
+        return false;
+    }
+
+    return true;
+}
+
+
 void Gas::LogComponent(const string& name, const TemplateComponent& comp, const string& indent)
 {
     cout << indent << "- [" << name << "] (fields: " << comp.fields.size()
@@ -763,7 +669,7 @@ void Gas::LogComponent(const string& name, const TemplateComponent& comp, const 
 
 void Gas::LoadTemplates()
 {
-    unordered_map<string, TemplateData> templates;
+    //unordered_map<string, TemplateData> templates;
     unordered_set<string> allowed = { "actor", "aspect", "mind" };
 
     const string rootPath = "data/static/templates";
@@ -789,7 +695,87 @@ void Gas::LoadTemplates()
     Log::Write(Log::Level::INFO, "[INFO] Finished loading templates. Total loaded: " + to_string(totalLoaded), true);
 }
 
-void Gas::LoadMapTemplates() {
+void Gas::LoadMapTemplates()
+{
+    string basePath = "data/static/map/multiplayer_world/regions";
+    size_t totalLoaded = 0;
+
+    // Iterate through all region subfolders
+    for (const auto& entry : fs::recursive_directory_iterator(basePath))
+    {
+        if (!entry.is_regular_file())
+            continue;
+
+        const fs::path& path = entry.path();
+
+        // Accept ANY .gas inside objects/regular/
+        if (path.extension() == ".gas" && path.filename() == "actor.gas")
+        {
+            auto parent = path.parent_path();        // regular
+            auto grandparent = parent.parent_path();       // objects
+            auto regionFolder = grandparent.parent_path(); // .../<REGION>
+
+            // Check folder structure: .../objects/regular/<file>.gas
+            if (parent.filename() == "regular" &&
+                grandparent.filename() == "objects")
+            {
+                string regionName = regionFolder.filename().string();
+                string fullPath = path.string();
+
+                unordered_map<string, TemplateData> fileTemplates;
+                unordered_set<string> allowedComponents; // no filtering
+
+                // --- Load SCID templates from file ---
+                if (!ReadMapTemplatesFile(fullPath, fileTemplates, allowedComponents)) {
+                    Log::Write(Log::Level::ERR,
+                        "Failed to load SCID templates from " + fullPath, true);
+                    continue;
+                }
+
+                // --- Store SCID templates with region name ---
+                for (auto& [scid, tpl] : fileTemplates)
+                {
+                    tpl.region = regionName;
+
+                    manager.mapTemplates[scid] = tpl;
+                    ++totalLoaded;
+                }
+            }
+        }
+    }
+
+    Log::Write(Log::Level::INFO,
+        "[INFO] Finished loading SCID map templates. Total loaded: "
+        + std::to_string(totalLoaded), true);
+
+    // -----------------------------------------
+    // Merge SCID templates → normal templates
+    // -----------------------------------------
+    size_t mergeCount = 0;
+
+    for (auto& [scid, scidTpl] : manager.mapTemplates)
+    {
+        TemplateData* normalTpl = manager.GetTemplate(scidTpl.name);
+        if (!normalTpl)
+        {
+            cerr << "[WARN] SCID template '" << scid
+                << "' (region: " << scidTpl.region
+                << ") has no matching base template." << endl;
+            continue;
+        }
+
+        // Merge SCID parent into normal child
+        manager.MergeTemplates(scidTpl, *normalTpl);
+        ++mergeCount;
+    }
+
+    Log::Write(Log::Level::INFO,
+        "[INFO] SCID template merge done. Templates updated: "
+        + std::to_string(mergeCount), true);
+}
+
+
+/*void Gas::LoadMapTemplates() {
     namespace fs = filesystem;
 
     string basePath = "data/static/map/multiplayer_world/regions";
@@ -818,9 +804,9 @@ void Gas::LoadMapTemplates() {
                     //cout << "Loaded " << placements.size() << " actor placements from " << fullPath << ":\n";
 
                     for (auto& p : placements) {
-                        /*cout << "Loaded: " << p.templateName << " at ("
-                                  << p.position.X << ", " << p.position.Y << ", " << p.position.Z
-                                  << "), facing (" << p.orientation.x << ", " << p.orientation.y << ", " << p.orientation.z << ")\n";*/
+                        //cout << "Loaded: " << p.templateName << " at ("
+                        //          << p.position.X << ", " << p.position.Y << ", " << p.position.Z
+                        //         << "), facing (" << p.orientation.x << ", " << p.orientation.y << ", " << p.orientation.z << ")\n";
                         p.regionName = regionName;
                         placementManager.AddPlacement(move(p));
                         ++totalLoaded;
@@ -834,35 +820,4 @@ void Gas::LoadMapTemplates() {
     }
     Log::Write(Log::Level::INFO, "Total actor placements loaded: " + to_string(totalLoaded), true);
 }
-
-void Gas::LoadGasToGo()
-{
-    /*for (const auto& [instanceName, placement] : placementManager.GetAll())
-    {
-        const string& templateName = placement.templateName;
-
-        // Skip if already instantiated
-        if (m_contentdb.find(templateName) != m_contentdb.end())
-            continue;
-
-        if (templateName.empty())
-            continue;
-
-        try
-        {
-            const TemplateData* tmpl = manager.GetTemplate(templateName);
-            if (!tmpl)
-                throw runtime_error("template not found in TemplateManager");
-
-            // Construct a new Go using your custom constructor
-            Go* go = new Go(*tmpl);  // Uses Go(const TemplateData&, const PlacementData&) constructor
-            m_contentdb[templateName] = go;
-
-            cout << "Instantiated Go from template: " << templateName << endl;
-        }
-        catch (const exception& e)
-        {
-            Log::WriteF("Failed to instantiate Go from template %s: %s", templateName.c_str(), e.what());
-        }
-    }*/
-}
+*/

@@ -56,9 +56,9 @@
 		<mind/>
 		<inventory>
 			<custom_head value="default"/>
-		<item id="10009" equip_slot="es_none" inven_loc="il_main"/><item id="10005" equip_slot="es_none" inven_loc="il_active_ranged_weapon"/><item id="10001" equip_slot="es_weapon_hand" inven_loc="il_active_melee_weapon"/></inventory>
+		<item id="10001" equip_slot="es_weapon_hand" inven_loc="il_active_melee_weapon"/><item id="10009" equip_slot="es_none" inven_loc="il_main"/><item id="10005" equip_slot="es_none" inven_loc="il_active_ranged_weapon"/></inventory>
 		<placement region="town_center">
-			<position node="1323345966" x="-3.26066" y="0" z="-0.57159"/>
+			<position node="401778701" x="0.360064" y="-2" z="-0.895526"/>
 		</placement>
 	</go>
 </objects>

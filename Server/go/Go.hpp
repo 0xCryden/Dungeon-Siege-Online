@@ -84,7 +84,8 @@ class Go
 		GoGui* Gui() const;
 		const GopSet & Frustum ();
 		GoScriptComponent * GetComponent (const string & component) const;
-		uint32_t Goid () const;
+		uint32_t Goid() const;
+		uint32_t Scid() const;
 		// GoGui * Gui () const;
 		bool HasActor () const;
 		bool HasAspect () const;
@@ -167,8 +168,9 @@ class Go
 		vector<string> Conversations() { return m_conversations; }
 
 	private:
-			
+
 		uint32_t m_goid;
+		uint32_t m_scid;
 		string m_template_name;
 			
 		GopSet m_objects;

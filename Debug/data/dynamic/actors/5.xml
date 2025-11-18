@@ -2,7 +2,7 @@
 <objects>
 	<go id="5">
 		<actor>
-			<alignment value="aa_evil"/>
+			<alignment value="aa_good"/>
 			<can_level_up value="1"/>
 			<skills>
 				<skill name="uber" level="0.0" experience="0"/>

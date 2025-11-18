@@ -21,6 +21,7 @@ WorldMap :: ~WorldMap ()
 
 void WorldMap :: LoadMap (const string & filename, const string & worldname)
 {
+	int loadedRegions = 0;
 	m_name = worldname;
 
 	xmlDoc * document = xmlReadFile (filename.c_str(), NULL, 0);
@@ -61,11 +62,7 @@ void WorldMap :: LoadMap (const string & filename, const string & worldname)
 					m_regions[name] = region;
 					m_active.insert (region);
 
-					Log::Write(Log::Level::INFO, "Loaded region " + name, true);
-					/*auto now = chrono::system_clock::now();
-					time_t now_time = chrono::system_clock::to_time_t(now);
-					cout << "[" << put_time(localtime(&now_time), "%Y-%m-%d %H:%M:%S") << "] "
-							  << "Loaded region " << name.c_str() << endl;*/
+					//Log::Write(Log::Level::INFO, "Loaded region " + name, true);
 				}
 				catch (exception & e)
 				{
@@ -73,8 +70,11 @@ void WorldMap :: LoadMap (const string & filename, const string & worldname)
 				}
 			}
 		}
+		loadedRegions++;
 	}
-	
+
+	Log::Write(Log::Level::INFO, to_string(loadedRegions) + " regions loaded in map " + worldname, true);
+
 	xmlFreeDoc (document);
 }
 

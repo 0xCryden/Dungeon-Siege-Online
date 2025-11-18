@@ -257,13 +257,15 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 		
 		case we_entered_frustum:
 		{
-			if (from->IsActor() && from->Conversations().empty())
+			if (from->IsActor()/* && from->Conversations().empty()*/)
 			{
 				Packet packet;
 				packet.WriteUInt8 (RCCREATEACTOR);
-				packet.WriteUInt32 (from->Goid());
+				packet.WriteUInt32(from->Goid());
+				packet.WriteUInt32(from->Scid());
 				packet.WriteString (from->Common()->ScreenName());
 				packet.WriteString (from->TemplateName());
+				packet.WriteString(from->Aspect()->Model());
 				packet.WriteUInt8 (from->Actor()->Alignment());
 				packet.WriteFloat (from->Aspect()->RenderScale());
 				packet.WriteString (from->Aspect()->GetDynamicTexture (0));

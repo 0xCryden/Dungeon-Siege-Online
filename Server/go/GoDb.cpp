@@ -137,6 +137,138 @@ void GoDb::GasToGoDb()
     cout << "[INFO] Finished converting Gas to Gos. Total: " << totalLoaded << endl;
 }
 
+void GoDb::InstantiateMapTemplates()
+{
+    int totalLoaded = 0;
+
+    // Iterate over SCID map templates instead of placementManager
+    for (auto& [name, mapTpl] : manager.GetAllMap())
+    {
+        // SCID template name == base template name
+        TemplateData* baseTpl = manager.GetTemplate(mapTpl.name);
+        if (!baseTpl)
+        {
+            Log::Write(Log::Level::ERR,
+                "SCID template '" + mapTpl.name +
+                "' has no matching base template.", true);
+            continue;
+        }
+
+        // --------------------------------------------
+        // Extract placement data from TemplateData component
+        // --------------------------------------------
+        const TemplateComponent* placementComp = mapTpl.GetComponent("placement");
+        if (!placementComp)
+        {
+            Log::Write(Log::Level::ERR,
+                "SCID template '" + mapTpl.name +
+                "' has no 'placement' component.", true);
+            continue;
+        }
+
+        const auto& pc = *placementComp;
+
+        float px = 0, py = 0, pz = 0;
+        uint32_t node = 0;
+
+        float ox = 0, oy = 0, oz = 0, ow = 1;
+
+        if (pc.fields.count("p position"))
+        {
+            const std::string& v = pc.fields.at("p position");
+            if (sscanf_s(v.c_str(), "%f,%f,%f,0x%x", &px, &py, &pz, &node) != 4)
+                continue; // invalid position format ? skip
+        }
+        else
+            continue; // placement must have a position
+
+        if (pc.fields.count("q orientation"))
+        {
+            const std::string& v = pc.fields.at("q orientation");
+            sscanf_s(v.c_str(), "%f,%f,%f,%f", &ox, &oy, &oz, &ow);
+        }
+        PlacementData placement;
+        // REGION
+        placement.regionName = mapTpl.region;
+        placement.position.X = px;
+        placement.position.Y = py;
+        placement.position.Z = pz;
+        placement.position.Node = node;
+        // ORIENTATION
+        placement.orientation.x = ox;
+        placement.orientation.y = oy;
+        placement.orientation.z = oz;
+        placement.templateName = mapTpl.name;
+        placement.instanceName = mapTpl.name; // or mapTpl.name + some id
+
+        // --------------------------------------------
+        // Check if the node exists in the region
+        // --------------------------------------------
+        auto region = g_world.GetRegion(placement.regionName);
+        if (!region)
+        {
+            Log::Write(Log::Level::ERR,
+                "Region '" + placement.regionName +
+                "' does not exist for template '" + mapTpl.name + "'", true);
+            continue;
+        }
+
+        const auto& nodes = region->GetNodes();
+        if (nodes.find(placement.position.Node) == nodes.end())
+        {
+            // Region has no such node ? skip spawn
+            continue;
+        }
+
+        // --------------------------------------------
+        // Construct the Go from TemplateData + Placement
+        // --------------------------------------------
+        try
+        {
+            Go* go = new Go(mapTpl, placement);
+            uint32_t id = NextId();
+            m_godb[id] = go;
+
+            string regionName = go->Placement()->GetRegion();
+            if (!regionName.empty())
+            {
+                SendWorldMessage(we_entered_world, go, go, regionName);
+
+                cout << "[GODB] Spawned Go " << id
+                    << " using SCID template: " << mapTpl.name
+                    << " in region: " << regionName
+                    << " at: " << placement.position.X
+                    << " | " << placement.position.Y
+                    << " | " << placement.position.Z
+                    << " node: " << placement.position.Node
+                    << endl;
+
+                ++totalLoaded;
+            }
+        }
+        catch (const exception& e)
+        {
+            Log::WriteF(Log::Level::ERR,
+                "Go %u failed to load because: %s", NextId(), e.what());
+        }
+    }
+
+    /*if (TemplateData* tpl = manager.GetMapTemplate("0x032007b5"))
+    {
+        cout << "[info] template: " << tpl->name << "\n";
+        if (!tpl->specializes.empty())
+            cout << "  specializes: " << tpl->specializes << "\n";
+
+        for (const auto& [compname, comp] : tpl->components) {
+            gas.LogComponent(compname, comp, "  ");
+        }
+    }*/
+
+    cout << "[INFO] Finished creating Gos from SCID map templates. Total: "
+        << totalLoaded << endl;
+}
+
+
 // mob spawns
 /*void GoDb::LoadGasToGo()
 {

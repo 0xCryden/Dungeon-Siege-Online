@@ -18,6 +18,6 @@
 			<forced_expiration_class value="auto"/>
 			<screen_name value="Dragon Minigun"/>
 		</common>
-		<placement region="town_center"><position node="1323345966" x="0" y="0" z="0"/></placement>
+		<placement region=""><position node="1482942462" x="0.594421" y="0" z="1.3826"/></placement>
 	</go>
 </objects>

@@ -148,96 +148,65 @@ void GoMind :: Drop (Go * item)
 
 void GoMind :: Equip (eEquipSlot slot, Go * item)
 {
-	if (item != NULL)
+	if (item == NULL || slot == es_none || !m_go->Inventory()->Contains(item))
 	{
-		if (slot != es_none)
-		{
-			if (slot == es_any)
-			{
-				slot = item->IntendedSlot();
-			    cout << "Equip: auto-mapped item " << item->Goid() << "(location to slot " << slot << endl;
-			}
-
-
-			/*if (item->GetLoc() == il_shield)
-			{
-				if (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon) != NULL)
-				{
-					if (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon)->Attack()->IsTwoHanded() == false)
-					{
-						//maybe use message/event instead of inven function
-						m_go->Inventory()->Equip(es_weapon_hand, m_go->Inventory()->ItemFromLocation(il_active_melee_weapon));
-					}
-					else if (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon)->Attack()->IsTwoHanded())
-					{
-						// unequip weapon
-						//maybe use message/event instead of inven function
-						m_go->Inventory()->Unequip(es_weapon_hand);
-					}
-				}
-
-				if ((m_go->Inventory()->ItemFromLocation(il_active_melee_weapon) != NULL) &&
-				  	  (m_go->Inventory()->ItemFromLocation(il_active_melee_weapon)->Attack()->IsTwoHanded() == false))
-				{
-					m_go->Inventory()->Equip(es_weapon_hand, m_go->Inventory()->ItemFromLocation(il_active_melee_weapon));
-				}
-			}*/
-
-			if (m_go->Inventory()->Contains (item))
-			{
-				Go * existing = m_go->Inventory()->GetEquipped (slot);
-
-				if (m_go->Inventory()->IsEquipped (item))
-				{
-					cout << "eww 1" << endl;
-					m_jat = jat_equip;
-					m_position = m_go->Placement()->Position();
-					m_distance = 0.0f;
-					m_object = item;
-					m_slot = m_go->Inventory()->GetEquippedSlot (item);
-
-					SendWorldMessage (we_mind_processing_new_job, m_go, item, "jat_unequip");
-					
-					ContinueLastAction();
-				}
-				else if (existing != NULL)
-				{
-					cout << "eww 2" << endl;
-					m_jat = jat_equip;
-					m_position = m_go->Placement()->Position();
-					m_distance = 0.0f;
-					m_object = item;
-					m_slot = slot;
-
-					SendWorldMessage (we_mind_processing_new_job, m_go, existing, "jat_unequip");
-					
-
-					ContinueLastAction();
-				}
-				else
-				{
-					if (m_jat == jat_unequip)
-					{
-						cout << "calling jat_remember_loc" << endl;
-						m_object->SetLoc(m_object->IntendedLoc());
-					}
-					m_jat = jat_equip;
-					m_position = m_go->Placement()->Position();
-					m_distance = 0.0f;
-					m_object = item;
-					m_slot = slot;
-
-					SendWorldMessage (we_mind_processing_new_job, m_go, item, "jat_equip");
-					
-					Stop();
-				}
-				
-				return;
-			}
-		}
+		Stop();
+		return;
 	}
 	
-	Stop();
+	cout << " ############# ######### GoMind.Equip: itemName: " << item->Common()->ScreenName() << " to slot " << slot << endl;
+
+	if (slot == es_any)
+	{
+		slot = item->IntendedSlot();
+		cout << "Equip: auto-mapped item " << item->Common()->ScreenName() << " location to slot " << slot << endl;
+	}
+
+	Go * existing = m_go->Inventory()->GetEquipped (slot);
+
+	if (m_go->Inventory()->IsEquipped (item))
+	{
+		cout << "eww 1" << endl;
+		m_jat = jat_equip;
+		m_position = m_go->Placement()->Position();
+		m_distance = 0.0f;
+		m_object = item;
+		m_slot = m_go->Inventory()->GetEquippedSlot (item);
+
+		SendWorldMessage (we_mind_processing_new_job, m_go, item, "jat_unequip");
+					
+		ContinueLastAction();
+	}
+	else if (existing != NULL)
+	{
+		cout << "eww 2" << endl;
+		m_jat = jat_equip;
+		m_position = m_go->Placement()->Position();
+		m_distance = 0.0f;
+		m_object = item;
+		m_slot = slot;
+
+		SendWorldMessage (we_mind_processing_new_job, m_go, existing, "jat_unequip");
+					
+		ContinueLastAction();
+	}
+	else
+	{
+		if (m_jat == jat_unequip)
+		{
+			cout << "calling jat_remember_loc" << endl;
+			m_object->SetLoc(m_object->IntendedLoc());
+		}
+		m_jat = jat_equip;
+		m_position = m_go->Placement()->Position();
+		m_distance = 0.0f;
+		m_object = item;
+		m_slot = slot;
+
+		SendWorldMessage (we_mind_processing_new_job, m_go, item, "jat_equip");
+					
+		Stop();
+	}
 }
 
 void GoMind :: Unequip (eEquipSlot slot)

@@ -99,6 +99,8 @@ struct TemplateData
 	std::string name;
 	std::string doc;
 	std::string specializes;
+	std::string region;
+	std::string scid;
 	std::unordered_map<std::string, TemplateComponent> components;
 	// Get pointer to a component by name
 	TemplateComponent* GetComponent(const std::string& name) {
@@ -116,10 +118,16 @@ class TemplateManager {
 public:
 	// Store all templates by name
 	std::unordered_map<std::string, TemplateData> templates;
+	// Store all map templates by scid
+	std::unordered_map<std::string, TemplateData> mapTemplates;
 
 	// Load a template into memory
 	void AddTemplate(TemplateData tmpl) {
 		templates[tmpl.name] = std::move(tmpl);
+	}
+
+	void AddMapTemplate(TemplateData tmpl) {
+		mapTemplates[tmpl.scid] = std::move(tmpl);
 	}
 
 	// Get template by name
@@ -133,10 +141,22 @@ public:
 		return it != templates.end() ? &it->second : nullptr;
 	}
 
+	TemplateData* GetMapTemplate(const std::string& scid) {
+		auto it = mapTemplates.find(scid);
+		return it != mapTemplates.end() ? &it->second : nullptr;
+	}
+
+	const TemplateData* GetMapTemplate(const std::string& scid) const {
+		auto it = mapTemplates.find(scid);
+		return it != mapTemplates.end() ? &it->second : nullptr;
+	}
+
 	void MergeComponent(TemplateComponent& target, const TemplateComponent& parent);
-	void ResolveTemplateInheritance();
+	void ResolveTemplateInheritance(); 
+	void MergeTemplates(TemplateData& child, const TemplateData& parent);
 
 	const auto& GetAll() const { return templates; }
+	const auto& GetAllMap() const { return mapTemplates; }
 };
 
 extern TemplateManager manager;
@@ -210,6 +230,8 @@ public:
 	void ParseGasBlock(std::istream& stream, TemplateComponent& outComp);
 	bool ReadActorPlacements(const std::string& fullPath, std::vector<PlacementData>& outPlacements);
 	bool ReadTemplatesFile(const std::string& fullPath, std::unordered_map<std::string, TemplateData>& outTemplates,
+		const std::unordered_set<std::string>& allowedComponents = {});
+	bool ReadMapTemplatesFile(const std::string& fullPath, std::unordered_map<std::string, TemplateData>& outTemplates,
 		const std::unordered_set<std::string>& allowedComponents = {});
 	void LogComponent(const std::string& name, const TemplateComponent& comp, const std::string& indent = "");
 private:

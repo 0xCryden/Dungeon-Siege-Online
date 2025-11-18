@@ -2,7 +2,7 @@
 <server>
 	<account username="aanderse" password="a" id="1">
 		<go id="1"/>
-	<go id="10"/><go id="11"/><go id="12"/></account>
+	<go id="12"/><go id="13"/></account>
 	<account username="brkopac" password="b" id="2">
 		<go id="2"/>
 	</account>

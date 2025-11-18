@@ -37,10 +37,8 @@ int main(int argc, char** argv)
         g_world.LoadAllMaps();
         gas.LoadTemplates();
         gas.LoadMapTemplates();
-        // TODO dont load into m_contentdb but m_godb (ínstances instead of templates)
-        //godb.LoadGasToGo();
 
-        if (TemplateData* tpl = manager.GetTemplate("bd_ch_f_g_c_avg"))
+        /*if (TemplateData* tpl = manager.GetTemplate("bd_ch_f_g_c_avg"))
         {
             cout << "[info] template: " << tpl->name << "\n";
             if (!tpl->specializes.empty())
@@ -49,15 +47,7 @@ int main(int argc, char** argv)
             for (const auto& [compname, comp] : tpl->components) {
                 gas.LogComponent(compname, comp, "  ");
             }
-            // access fields
-            /*auto* comp = tpl->getcomponent("aspect");
-            if (comp) {
-                auto experience_value = comp->getfield("experience_value");
-                if (experience_value) {
-                    std::cout << "experience_value: " << *experience_value << "\n";
-                }
-            }*/
-        }
+        }*/
 
         // Load specific GO folders & content
         godb.LoadGoDbFolder("items");
@@ -66,7 +56,8 @@ int main(int argc, char** argv)
         server.LoadAccounts(dataDir + "\\dynamic\\accounts.xml");
 
         // mob spawns
-        godb.GasToGoDb();
+        //godb.GasToGoDb();
+        godb.InstantiateMapTemplates();
 
         PostWorldMessage(we_frustum_active_state_changed, 0, 0, "", 2500);
         

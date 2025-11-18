@@ -24,6 +24,7 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 	if (node != NULL)
 	{
 		m_goid = xml::ReadAttribute<uint32_t> (node, "id", 0);
+		m_scid = 0;
 		m_admin = xml::ReadAttribute<uint8_t> (node, "admin", 0);
 		m_template_name = xml::ReadAttribute<string> (node, "template_name", "");
 		
@@ -116,6 +117,7 @@ Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspec
 {
 	m_goid = id;
 	m_admin = 0;
+	m_scid = 0;
 	m_template_name = go->m_template_name;
 	
 	if (go->m_actor != NULL) m_actor = new GoActor (this);
@@ -138,6 +140,10 @@ Go::Go(const TemplateData& tmpl, const PlacementData& placement)
 	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
 {
 	m_goid = godb.NextId();
+	m_scid = 0;
+	if (tmpl.scid != "" )
+		m_scid = static_cast<uint32_t>(std::stoul(tmpl.scid, nullptr, 16));
+
 	m_admin = 0;
 	m_template_name = tmpl.name;
 
@@ -363,6 +369,12 @@ void Go :: HandleCommand (const string& command)
 eEquipSlot Go :: IntendedSlot()
 {
 	// TODO check eEquipSlot value inherited from template instead
+
+	if (HasGui() && Gui()->EquipSlot() != es_none)
+	{
+		return Gui()->EquipSlot();
+	}
+
 	eEquipSlot slot = es_any;
 
 	if (HasAttack() && IsMeleeWeapon())
@@ -391,18 +403,18 @@ eInventoryLocation Go :: IntendedLoc()
 
 	if (HasAttack() && IsMeleeWeapon())
 	{
-		cout << "Mapping item location to il_active_melee_weapon" << endl;
+		//cout << "Mapping item location to il_active_melee_weapon" << endl;
 		loc = il_active_melee_weapon;
 	}
 	if (HasAttack() && IsRangedWeapon())
 	{
-		cout << "Mapping item location to il_active_ranged_weapon" << endl;
+		//cout << "Mapping item location to il_active_ranged_weapon" << endl;
 		loc = il_active_ranged_weapon;
 	}
 
 	if (HasDefend() && Defend()->DefendClass() == dc_shield)
 	{
-		cout << "Mapping item location to il_shield" << endl;
+		//cout << "Mapping item location to il_shield" << endl;
 		loc = il_shield;
 	}
 
@@ -833,9 +845,14 @@ GoGui* Go::Gui() const
 	throw logic_error("null pointer referenced");
 }
 
-uint32_t Go :: Goid () const
+uint32_t Go::Goid() const
 {
 	return m_goid;
+}
+
+uint32_t Go::Scid() const
+{
+	return m_scid;
 }
 
 GoInventory * Go :: Inventory () const
