@@ -60,7 +60,7 @@ void Log::Write(Level level, const std::string& message, bool outputConsole)
 	if (outputConsole)
 		std::cout << line << std::endl;
 
-	m_file.flush(); // optional: could remove for performance
+	//m_file.flush(); // optional: could remove for performance
 }
 
 void Log::WriteF(Level level, const char* fmt, ...)

@@ -302,5 +302,8 @@
     <ClInclude Include="go\GoGui.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

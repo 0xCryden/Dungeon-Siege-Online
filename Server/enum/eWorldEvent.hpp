@@ -82,7 +82,13 @@
 
 		we_weapon_launched = 81,
 		we_weapon_swung = 82,
-		we_projectile_hit
+		we_projectile_hit,
+
+		we_timer_second,
+		we_timer_minute,
+		we_timer_hour,
+		we_timer_day,
+		we_timer_week
 	};
 	
 	inline string ToString (eWorldEvent e)

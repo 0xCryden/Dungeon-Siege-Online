@@ -1,71 +1,19 @@
-﻿#include "Engine.hpp" // extern engine
-#include "net/Network.hpp"
-#include "server/Server.hpp"
-#include "events/SendWorldMessageEvent.hpp"
-#include "helper/Helper.h"
-#include "platform/windows/WinSockApi.h"
-#include "xml/XmlCleanupGuard.h"
-#include <random>
-#include "gas/Gas.hpp"
+﻿#include "server/Server.hpp"
+#include "helper/Log.h"
 
 int main(int argc, char** argv)
 {
     try 
     {
-        Log::Init("log.txt");
-        Log::Write(Log::Level::INFO, "", true);
-        Log::Write(Log::Level::INFO, "    ###   DungeonSiegeOnline v0.5   ###", true);
-        Log::Write(Log::Level::INFO, "", true);
-        // Seeding with modern RNG
-        random_device rd;
-        mt19937 rng(rd());
-
-        // System guards
-        WinSockApi wsaData;
-        XmlCleanupGuard xmlGuard;
-
-        // --- Network Init ----------------------------------------------------
-        Network network;
-        network.Bind(4000);
-
-        // --- Resource Loading ------------------------------------------------
-        /*
-         * load resources in the following order :
-         * map, items, items which can hold items, actors, players
-         */
-        const string dataDir = "data";
-        g_world.LoadAllMaps();
-        gas.LoadTemplates();
-        gas.LoadMapTemplates();
-
-        /*if (TemplateData* tpl = manager.GetTemplate("bd_ch_f_g_c_avg"))
-        {
-            cout << "[info] template: " << tpl->name << "\n";
-            if (!tpl->specializes.empty())
-                cout << "  specializes: " << tpl->specializes << "\n";
-        
-            for (const auto& [compname, comp] : tpl->components) {
-                gas.LogComponent(compname, comp, "  ");
-            }
-        }*/
-
-        // Load specific GO folders & content
-        godb.LoadGoDbFolder("items");
-        godb.LoadGoDbFolder("actors");
-        godb.LoadContentDb(dataDir + "\\static\\actors.xml");
-        server.LoadAccounts(dataDir + "\\dynamic\\accounts.xml");
-
-        // mob spawns
-        //godb.GasToGoDb();
-        godb.InstantiateMapTemplates();
-
-        PostWorldMessage(we_frustum_active_state_changed, 0, 0, "", 2500);
-        
-        while (g_engine.IsRunning()) {
-            network.Listen();
-            g_engine.Loop();
-            sleep_microseconds(1000);
-        }
+        Log::Init();
+        // TODO implement configuration
+        //Config config = Config::loadFromFile("server.cfg");        // step 2
+        Server server; // Server server(config);
+        server.Start();
+        server.Loop();
+        server.Stop();
+        Log::Flush();
+        return EXIT_SUCCESS;
     }
     catch (const std::exception& e) {
         std::cerr << "Fatal std::exception: " << e.what() << "\n";
@@ -88,3 +36,13 @@ int main(int argc, char** argv)
 
     return 0;
 }
+/*if (TemplateData* tpl = manager.GetTemplate("bd_ch_f_g_c_avg"))
+{
+    cout << "[info] template: " << tpl->name << "\n";
+    if (!tpl->specializes.empty())
+        cout << "  specializes: " << tpl->specializes << "\n";
+
+    for (const auto& [compname, comp] : tpl->components) {
+        gas.LogComponent(compname, comp, "  ");
+    }
+}*/

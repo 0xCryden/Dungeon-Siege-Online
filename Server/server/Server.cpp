@@ -2,6 +2,9 @@
 #include "Server.hpp"
 
 #include "../Engine.hpp"
+#include "../helper/Helper.h"
+#include "../events/SendWorldMessageEvent.hpp"
+#include "../Globals.h"
 
 std::vector<std::string> modelStrings = {
 		"humanboy",
@@ -222,16 +225,108 @@ std::vector<std::vector<std::string>> pantsStrings = {
     }
 };
 
-Server server;
+
+
+Server :: Server(/*Config config*/)
+	: m_wsa(std::make_unique<WinSockApi>())
+	, m_network(*this)
+{
+	//m_engine = std::make_unique<Engine>();
+	/*
+	m_config = config;
+	m_member = config.member;
+	*/
+}
 
 Server :: ~Server ()
 {
-	map<string, Account *>::iterator iterator = m_accounts.begin();
-	while (iterator != m_accounts.end())
-	{
-		delete iterator->second;
-		iterator++;
+	for (auto& [name, acc] : m_accounts)
+		delete acc;
+}
+
+void Server::Start()
+{
+	Log::Write(Log::Level::INFO, "", true);
+	Log::Write(Log::Level::INFO, "    ###   DungeonSiegeOnline v0.5   ###", true);
+	Log::Write(Log::Level::INFO, "", true);
+
+	InitRng();
+	InitSystemGuards();
+	InitNetwork(); // InitNetwork(m_config.port);
+	LoadResources();
+	InitTimers();
+
+	Log::Write(Log::Level::INFO, "Server startup complete.");
+}
+
+void Server::Loop()
+{
+	while (g_engine.IsRunning()) {
+		m_network.Listen();
+		g_engine.Loop();
+		sleep_microseconds(TICK_MICROSECONDS);
 	}
+}
+
+void Server::Stop()
+{
+	Log::Write(Log::Level::INFO, "Stopping server...");
+}
+
+void Server::InitRng()
+{
+	std::random_device rd;
+	m_rng = mt19937(rd());
+	Log::Write(Log::Level::INFO, "RNG initialized");
+}
+
+void Server::InitSystemGuards()
+{
+	m_wsa = std::make_unique<WinSockApi>();
+	m_xml = std::make_unique<XmlCleanupGuard>();
+	Log::Write(Log::Level::INFO, "System guards initialized");
+}
+
+void Server::InitNetwork(const uint16_t port)
+{
+	m_network.Bind(port);
+
+	Log::Write(Log::Level::INFO, "Network bound on port " + to_string(port), true);
+}
+
+void Server::LoadResources(const string& dataDir)
+{
+	Log::Write(Log::Level::INFO, "Loading maps...");
+	g_world.LoadAllMaps();
+
+	Log::Write(Log::Level::INFO, "Loading templates...");
+	gas.LoadTemplates();
+	gas.LoadMapTemplates();
+
+	Log::Write(Log::Level::INFO, "Loading GO database...");
+	godb.LoadGoDbFolder("items");
+	godb.LoadGoDbFolder("actors");
+	godb.LoadContentDb(dataDir + "\\static\\actors.xml");
+
+	Log::Write(Log::Level::INFO, "Loading accounts...");
+	LoadAccounts(dataDir + "\\dynamic\\accounts.xml");
+
+	Log::Write(Log::Level::INFO, "Instantiating map templates...");
+	godb.InstantiateMapTemplates();
+
+	Log::Write(Log::Level::INFO, "Resource loading complete");
+}
+
+
+void Server::InitTimers()
+{
+	PostWorldMessage(we_frustum_active_state_changed, 0, 0, "", CALC_FRUSTUM_DELAY);
+
+	PostWorldMessage(we_timer_second, 0, 0, "", SECOND);
+	PostWorldMessage(we_timer_minute, 0, 0, "", MINUTE);
+	PostWorldMessage(we_timer_hour, 0, 0, "", HOUR);
+	//PostWorldMessage(we_timer_day, 0, 0, "", DAY);
+	//PostWorldMessage(we_timer_week, 0, 0, "", WEEK);
 }
 
 void Server :: LoadAccounts (const string & filename)

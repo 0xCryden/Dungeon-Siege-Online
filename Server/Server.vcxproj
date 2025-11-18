@@ -184,6 +184,7 @@
     <ClCompile Include="xml\XmlCleanupGuard.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="go\GoGui.h" />
     <ClInclude Include="utils\AIQuery.h" />
     <ClInclude Include="enum\eActorAlignment.hpp" />

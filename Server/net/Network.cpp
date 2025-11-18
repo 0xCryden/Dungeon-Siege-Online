@@ -1,11 +1,13 @@
 #include "../MainMenu.hpp"
 #include "Network.hpp"
 #include <winsock2.h>
+#include "../server/Server.hpp"
 
 #include <chrono>
 #include <iomanip>
 
-Network::Network()
+Network::Network(Server& server)
+    : m_server(server)
 {
     Log::Write(Log::Level::INFO, "[INIT] Network constructor entered", true);
 
@@ -79,7 +81,7 @@ void Network::Accept()
 
                     Connection& conn = *m_connections.rbegin();
                     conn.SetNonBlockingFlag(true);
-                    conn.SetWorldState(new MainMenu(conn));
+                    conn.SetWorldState(new MainMenu(conn, m_server));
 
                     m_sockets.insert(conn.data());
                     FD_SET(conn.data(), &m_descriptors);

@@ -3,6 +3,8 @@
 
 #include "utils/AIQuery.h"
 
+#include "../Globals.h"
+
 Engine g_engine;
 
 Engine :: Engine ()
@@ -69,26 +71,6 @@ void Engine :: Loop ()
 		
 		delete event;
 	}
-
-	if ((CurrentTime() % 60000) == 0) {
-		//Log::Write("[ENGINE] ####### [START] 60 Second Timer #######", true);
-		for (GopSet::iterator iterator = m_players.begin(); iterator != m_players.end(); iterator++)
-		{
-			(*iterator)->SaveToXml("actors");
-			//Log::Write("[ENGINE] Saving Character ", true);
-		}
-		Log::Write(Log::Level::INFO, "[ENGINE] Players saved", true);
-
-
-
-		for (GopSet::iterator iterator = m_items.begin(); iterator != m_items.end(); iterator++)
-		{
-			(*iterator)->SaveToXml("items");
-			//Log::Write("[ENGINE] Saving Item ", true);
-		}
-		Log::Write(Log::Level::INFO, "[ENGINE] Items saved", true);
-		//Log::Write("[ENGINE] ####### [END] 60 Second Timer #######", true);
-	}
 }
 
 void Engine :: RegisterEvent (Event * event)
@@ -134,14 +116,13 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 		case we_frustum_active_state_changed:
 		{
 			CalculateFrustums();
-
-			PostWorldMessage(we_frustum_active_state_changed, NULL, NULL, "", 1000);
+			PostWorldMessage(we_frustum_active_state_changed, NULL, NULL, "", CALC_FRUSTUM_DELAY);
 		}
 		break;
 
 		case we_entered_frustum:
 		{
-			//cout << "we_entered_frustum from: " << from->Goid() << " to: " << to->Goid() << endl;
+			cout << "we_entered_frustum from: " << from->Goid() << " to: " << to->Goid() << endl;
 			if (from->HasPlacement() && to->HasPlacement())
 			{
 				from->Send (WorldMessage (we_entered_frustum, to, from, ""));
@@ -623,8 +604,69 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 		}
 		break;
 
+		case we_timer_second:
+		{
+			TimerPerSecond();
+			PostWorldMessage(we_timer_second, 0, 0, "", SECOND);
+		}
+		break;
+
+		case we_timer_minute:
+		{
+			TimerPerMinute();
+			PostWorldMessage(we_timer_minute, 0, 0, "", MINUTE);
+		}
+		break;
+
+		case we_timer_hour:
+		{
+			TimerPerHour();
+			PostWorldMessage(we_timer_hour, 0, 0, "", HOUR);
+		}
+		break;
+
+		case we_timer_day:
+		{
+
+		}
+		break;
+
+		case we_timer_week:
+		{
+
+		}
+		break;
+
 		default: break;
 	} /* switch (event) */
+}
+
+void Engine::TimerPerSecond()
+{
+
+}
+void Engine::TimerPerMinute()
+{
+	Log::Write(Log::Level::INFO, "[ENGINE] ####### [START] Timer Per Minute #######", true);
+	for (GopSet::iterator iterator = m_players.begin(); iterator != m_players.end(); iterator++)
+	{
+		(*iterator)->SaveToXml("actors");
+		//Log::Write("[ENGINE] Saving Character ", true);
+	}
+	//Log::Write(Log::Level::INFO, "[ENGINE] Players saved", true);
+
+	for (GopSet::iterator iterator = m_items.begin(); iterator != m_items.end(); iterator++)
+	{
+		(*iterator)->SaveToXml("items");
+		//Log::Write("[ENGINE] Saving Item ", true);
+	}
+	//Log::Write(Log::Level::INFO, "[ENGINE] Items saved", true);
+	//Log::Write("[ENGINE] ####### [END] 60 Second Timer #######", true);
+}
+
+void Engine::TimerPerHour()
+{
+
 }
 
 void Engine :: MessageKnown (Go * go, const WorldMessage & message)

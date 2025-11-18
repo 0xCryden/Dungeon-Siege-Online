@@ -34,9 +34,12 @@ class Engine
 		void Loop ();
 		void RegisterEvent (Event * event);
 		void HandleWorldMessage (const WorldMessage & message);
-		void TryRegenerateAllGos(int64_t currentTime);
 
 	private:
+		void TimerPerSecond();
+		void TimerPerMinute();
+		void TimerPerHour();
+
 		void MessageKnown (Go * go, const WorldMessage & message);
 		void MessageAllPlayers (const WorldMessage & message);
 		void AddGoToRegion (Go * go, const string & data);

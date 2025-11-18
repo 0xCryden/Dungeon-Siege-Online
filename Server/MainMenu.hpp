@@ -27,9 +27,9 @@ class MainMenu : public WorldState
 {
 	public:
 
-		Account * rememberedAccount = NULL;
+		Account* rememberedAccount = NULL;
 
-		MainMenu (Connection & connection) : WorldState (&connection)
+		MainMenu (Connection& connection, Server& server) : WorldState (&connection), m_server(server)
 		{
 			//cout << "main menu entered" << endl;
 		}
@@ -60,7 +60,7 @@ class MainMenu : public WorldState
 
 					Log::Write(Log::Level::INFO, "[AUTH] Request: " + username + " | " + password, true);
 
-					Account * account = server.GetAccount (username);
+					Account * account = m_server.GetAccount (username);
 					if (account != NULL)
 					{
 						rememberedAccount = account;
@@ -93,7 +93,7 @@ class MainMenu : public WorldState
 
 					Log::Write(Log::Level::INFO, "[AUTH] ReqRegistration: " + username + " | " + password, true);
 
-					Account * account = server.GetAccount (username);
+					Account * account = m_server.GetAccount (username);
 					if (account != NULL)
 					{
 						Packet outgoing;
@@ -112,7 +112,7 @@ class MainMenu : public WorldState
 						return;
 					}
 
-					server.CreateAccount(username, password);
+					m_server.CreateAccount(username, password);
 
 					Packet outgoing;
 					outgoing.WriteUInt8 (RCREGISTER);
@@ -258,7 +258,7 @@ class MainMenu : public WorldState
 				{
 					int selectSlot = incoming.ReadUInt8();
 					Account* account = rememberedAccount;
-					server.DeleteChar(selectSlot, account->Username(), account->Password());
+					m_server.DeleteChar(selectSlot, account->Username(), account->Password());
 
 					Packet outgoing;
 					outgoing.WriteUInt8(RCDELETECHAR);
@@ -288,7 +288,7 @@ class MainMenu : public WorldState
 					}
 					else if (account->GetCharacters().size() < (size_t)4)
 					{
-						server.CreateChar(account->Username(), charName, charType, charHead, charSkin, charHair, charShirt, charPants);
+						m_server.CreateChar(account->Username(), charName, charType, charHead, charSkin, charHair, charShirt, charPants);
 
 						Packet outgoing;
 						outgoing.WriteUInt8(RCCREATECHAR);
@@ -320,6 +320,8 @@ class MainMenu : public WorldState
 			const string disallowed = R"(<>:/\|?*.%;)";
 			return str.find_first_of(disallowed) != string::npos;
 		}
+
+			Server& m_server;
 		// string m_username;
 		// string m_password;
 };
