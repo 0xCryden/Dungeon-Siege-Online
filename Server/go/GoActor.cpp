@@ -43,10 +43,17 @@ static const vector<float> experience_table = {
     1758898223446500.0f, 2154650321024540.0f, 2639446640557650.0f
 };
 
-GoActor :: GoActor (Go * go) : GoComponent (go)
+GoActor::GoActor(Go* go) : GoComponent(go)
 {
 	m_alignment = aa_neutral;
 	m_can_level_up = false;
+}
+
+GoActor::GoActor(Go* go, GoActor* actor) : GoComponent(go)
+{
+	m_alignment = actor->Alignment();
+	m_can_level_up = actor->CanLevelUp();
+	m_skills = actor->Skills();
 }
 
 GoActor::GoActor(Go* go, xmlNode* node) : GoComponent(go)
@@ -146,6 +153,23 @@ GoActor :: ~GoActor ()
 	{
 		delete iterator->second;
 	}
+}
+
+void GoActor::InheritFrom(GoActor* parent)
+{
+	if (m_alignment == aa_neutral)
+		m_alignment = parent->Alignment();
+
+	if (m_can_level_up == false)
+		m_can_level_up = parent->CanLevelUp();
+
+	if (m_skills.empty())
+		m_skills = parent->Skills();
+}
+
+map<string, Skill*> GoActor::Skills()
+{
+	return m_skills;
 }
 
 void GoActor::SaveSkills(xmlNode* actorNode) const

@@ -302,17 +302,19 @@ void Server::LoadResources(const string& dataDir)
 	Log::Write(Log::Level::INFO, "Loading templates...");
 	gas.LoadTemplates();
 	gas.LoadMapTemplates();
+	//godb.LoadContentDb();
 
 	Log::Write(Log::Level::INFO, "Loading GO database...");
 	godb.LoadGoDbFolder("items");
 	godb.LoadGoDbFolder("actors");
-	godb.LoadContentDb(dataDir + "\\static\\actors.xml");
+	//godb.LoadContentDb(dataDir + "\\static\\actors.xml");
 
 	Log::Write(Log::Level::INFO, "Loading accounts...");
 	LoadAccounts(dataDir + "\\dynamic\\accounts.xml");
 
 	Log::Write(Log::Level::INFO, "Instantiating map templates...");
 	godb.InstantiateMapTemplates();
+	//godb.LoadSpawns();
 
 	Log::Write(Log::Level::INFO, "Resource loading complete");
 }

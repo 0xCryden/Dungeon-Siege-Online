@@ -37,15 +37,19 @@ class GoDb
 		void LoadGoDbFolder (const string & folderName);
 		void LoadGoDbSingleChar (uint32_t id);
 
-		void LoadContentDb (const string & filename);
+		void LoadContentDb();
+		void LoadContentDbOld(const string& filename);
 		void GasToGoDb();
 		void InstantiateMapTemplates();
+		void LoadSpawns();
 		void SpawnGo(const string& templateName, const Go* go);
 
-		Go * FindGoById (uint32_t id);
+		Go* FindGoById(uint32_t id);
+		Go* FindTemplateByName(const string& template_name);
 
 		Go * CloneGo (const Go * go);
-		Go * CloneGo (const string & template_name);
+		Go* CloneGo(const string& template_name);
+		Go* CloneGo(const string& template_name, const GoPlacement& placement);
 		//Go * GetTemplate (const string & templateName);
 		void MarkGoForDeletion (uint32_t id);
 		void MarkGoAndChildrenForDeletion (uint32_t id);

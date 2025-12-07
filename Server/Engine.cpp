@@ -122,7 +122,9 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 
 		case we_entered_frustum:
 		{
-			cout << "we_entered_frustum from: " << from->Goid() << " to: " << to->Goid() << endl;
+			if (IsPlayer(to))
+				cout << "we_entered_frustum from: " << from->Goid() << " to: " << to->Goid() << endl;
+
 			if (from->HasPlacement() && to->HasPlacement())
 			{
 				from->Send (WorldMessage (we_entered_frustum, to, from, ""));

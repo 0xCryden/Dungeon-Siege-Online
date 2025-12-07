@@ -68,3 +68,142 @@ Fatal int exception: 0
 [2025-11-18 21:41:08] [INFO]  [RemoveGoFromRegion] Notifying 10002 left frustum of 36
 [2025-11-18 21:41:08] [INFO]  [RemoveGoFromRegion] Notifying 10002 left frustum of 27
 [2025-11-18 21:41:08] [INFO]  [RemoveGoFromRegion] Notifying 10002 left frustum of 28
+[2025-12-07 01:12:36] [INFO]  [INIT] Network constructor entered
+[2025-12-07 01:12:36] [INFO]  [INIT] WSAStartup result: 0
+[2025-12-07 01:12:36] [INFO]  [INIT] Network constructor finished
+[2025-12-07 01:12:36] [INFO]  
+[2025-12-07 01:12:36] [INFO]      ###   DungeonSiegeOnline v0.5   ###
+[2025-12-07 01:12:36] [INFO]  
+[2025-12-07 01:12:36] [INFO]  RNG initialized
+[2025-12-07 01:12:36] [INFO]  System guards initialized
+[2025-12-07 01:12:36] [INFO]  [BIND] Listening on port 4000, socket: 316
+[2025-12-07 01:12:36] [INFO]  Network bound on port 4000
+[2025-12-07 01:12:36] [INFO]  Loading maps...
+[2025-12-07 01:12:36] [INFO]  1 regions loaded in map dsmmorpg
+[2025-12-07 01:12:36] [INFO]  Loaded Map dsmmorpg
+[2025-12-07 01:12:36] [INFO]  70 regions loaded in map multiplayer_world
+[2025-12-07 01:12:36] [INFO]  Loaded Map multiplayer_world
+[2025-12-07 01:12:36] [INFO]  Loading templates...
+[2025-12-07 01:12:41] [INFO]  [INFO] Finished resolving Inheritances. Total components merged: 67728
+[2025-12-07 01:12:41] [INFO]  [INFO] Finished loading templates. Total loaded: 4227
+[2025-12-07 01:12:41] [ERROR] Failed to load SCID templates from data/static/map/multiplayer_world/regions\dunes2hades\objects\regular\actor.gas
+[2025-12-07 01:12:41] [ERROR] Failed to load SCID templates from data/static/map/multiplayer_world/regions\dunes2island\objects\regular\actor.gas
+[2025-12-07 01:12:42] [ERROR] Failed to load SCID templates from data/static/map/multiplayer_world/regions\new_hub\objects\regular\actor.gas
+[2025-12-07 01:12:42] [ERROR] Failed to load SCID templates from data/static/map/multiplayer_world/regions\oasis_cave\objects\regular\actor.gas
+[2025-12-07 01:12:43] [INFO]  [INFO] Finished loading SCID map templates. Total loaded: 9669
+[2025-12-07 01:12:51] [INFO]  [INFO] SCID template merge done. Templates updated: 9669
+[2025-12-07 01:12:51] [INFO]  Loading GO database...
+[2025-12-07 01:12:51] [INFO]  Loading accounts...
+[2025-12-07 01:12:51] [INFO]  Instantiating map templates...
+[2025-12-07 01:12:51] [INFO]  Resource loading complete
+[2025-12-07 01:12:51] [INFO]  Server startup complete.
+[2025-12-07 01:13:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:14:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:15:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:16:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:17:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:18:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:19:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:20:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:21:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:22:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:23:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:24:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:25:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:26:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:27:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:28:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:29:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:30:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:31:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:32:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:33:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:34:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:35:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:36:51] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 01:37:51] [INFO]  [ENGINE] ####### [START] Timer Per [2025-12-07 02:34:56] [INFO]  [INIT] Network constructor entered
+[2025-12-07 02:34:56] [INFO]  [INIT] WSAStartup result: 0
+[2025-12-07 02:34:56] [INFO]  [INIT] Network constructor finished
+[2025-12-07 02:34:56] [INFO]  
+[2025-12-07 02:34:56] [INFO]      ###   DungeonSiegeOnline v0.5   ###
+[2025-12-07 02:34:56] [INFO]  
+[2025-12-07 02:34:56] [INFO]  RNG initialized
+[2025-12-07 02:34:56] [INFO]  System guards initialized
+[2025-12-07 02:34:56] [INFO]  [BIND] Listening on port 4000, socket: 220
+[2025-12-07 02:34:56] [INFO]  Network bound on port 4000
+[2025-12-07 02:34:56] [INFO]  Loading maps...
+[2025-12-07 02:34:56] [INFO]  1 regions loaded in map dsmmorpg
+[2025-12-07 02:34:56] [INFO]  Loaded Map dsmmorpg
+[2025-12-07 02:34:56] [INFO]  70 regions loaded in map multiplayer_world
+[2025-12-07 02:34:56] [INFO]  Loaded Map multiplayer_world
+[2025-12-07 02:34:56] [INFO]  Loading templates...
+[2025-12-07 02:35:02] [INFO]  [INFO] Finished resolving Inheritances. Total components merged: 0
+[2025-12-07 02:35:02] [INFO]  [INFO] Finished loading templates. Total loaded: 4227
+[2025-12-07 02:35:02] [INFO]  Loading GO database...
+[2025-12-07 02:35:02] [INFO]  Loading accounts...
+[2025-12-07 02:35:02] [INFO]  Instantiating map templates...
+[2025-12-07 02:35:02] [INFO]  Resource loading complete
+[2025-12-07 02:35:02] [INFO]  Server startup complete.
+[2025-12-07 02:36:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:37:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:38:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:39:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:40:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:41:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:42:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:43:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:44:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:45:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:46:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:47:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:48:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:49:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:50:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:51:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:52:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:53:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:54:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:55:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:56:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:57:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:58:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 02:59:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:00:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:01:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:02:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:03:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:04:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:05:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:06:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:07:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:08:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:09:02] [INFO]  [ENGINE] ####### [START] Timer Per Minute #######
+[2025-12-07 03:10:02] [IN[2025-12-07 03:31:59] [INFO]  [INIT] Network constructor entered
+[2025-12-07 03:31:59] [INFO]  [INIT] WSAStartup result: 0
+[2025-12-07 03:31:59] [INFO]  [INIT] Network constructor finished
+[2025-12-07 03:31:59] [INFO]  
+[2025-12-07 03:31:59] [INFO]      ###   DungeonSiegeOnline v0.5   ###
+[2025-12-07 03:31:59] [INFO]  
+[2025-12-07 03:31:59] [INFO]  RNG initialized
+[2025-12-07 03:31:59] [INFO]  System guards initialized
+[2025-12-07 03:31:59] [INFO]  [BIND] Listening on port 4000, socket: 308
+[2025-12-07 03:31:59] [INFO]  Network bound on port 4000
+[2025-12-07 03:31:59] [INFO]  Loading maps...
+[2025-12-07 03:31:59] [INFO]  1 regions loaded in map dsmmorpg
+[2025-12-07 03:31:59] [INFO]  Loaded Map dsmmorpg
+[2025-12-07 03:31:59] [INFO]  70 regions loaded in map multiplayer_world
+[2025-12-07 03:31:59] [INFO]  Loaded Map multiplayer_world
+[2025-12-07 03:31:59] [INFO]  Loading templates...
+[2025-12-07 03:32:04] [INFO]  [INFO] Finished resolving Inheritances. Total components merged: 67728
+[2025-12-07 03:32:04] [INFO]  [INFO] Finished loading templates. Total loaded: 4227
+[2025-12-07 03:32:04] [ERROR] Failed to load SCID templates from data/static/map/multiplayer_world/regions\dunes2hades\objects\regular\actor.gas
+[2025-12-07 03:32:04] [ERROR] Failed to load SCID templates from data/static/map/multiplayer_world/regions\dunes2island\objects\regular\actor.gas
+[2025-12-07 03:32:05] [ERROR] Failed to load SCID templates from data/static/map/multiplayer_world/regions\new_hub\objects\regular\actor.gas
+[2025-12-07 03:32:05] [ERROR] Failed to load SCID templates from data/static/map/multiplayer_world/regions\oasis_cave\objects\regular\actor.gas
+[2025-12-07 03:32:06] [INFO]  [INFO] Finished loading SCID map templates. Total loaded: 9669
+[2025-12-07 03:32:13] [INFO]  [INFO] SCID template merge done. Templates updated: 9669
+[2025-12-07 03:32:13] [INFO]  Loading GO database...
+[2025-12-07 03:32:13] [INFO]  Loading accounts...
+[2025-12-07 03:32:13] [INFO]  Instantiating map templates...
+[2025-12-07 03:32:14] [INFO]  Resource loading complete
+[2025-12-07 03:32:14] [INFO]  Server startup complete.

@@ -56,14 +56,17 @@ struct sqlResult; // temp until sql implemented
 class Go
 {
 	public:
-			
-		Go (xmlNode * node); // ONLY USED FOR CREATING NEW TEMPLATES
+
+		Go(xmlNode* node); // ONLY USED FOR CREATING NEW TEMPLATES
+		Go(const TemplateData& tmpl); // ONLY USED FOR CREATING NEW TEMPLATES
 		void LoadFromXml(xmlNode* node);
 		Go (sqlResult * query); // only used for loading a 'save game'
 		Go (uint32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
 		Go(const TemplateData& tmpl, const PlacementData& placement);
 		Go(const TemplateData& tmpl, const GoPlacement& placement);
 		~Go ();
+
+		void InheritFrom(const string& parentName); // used for creating a new go from either [an existing go, or a template]
 
 		GoActor * Actor () const;
 
@@ -172,6 +175,7 @@ class Go
 		uint32_t m_goid;
 		uint32_t m_scid;
 		string m_template_name;
+		string m_specializes;
 			
 		GopSet m_objects;
 			

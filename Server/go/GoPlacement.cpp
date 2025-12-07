@@ -59,6 +59,38 @@ GoPlacement :: GoPlacement (Go * go, xmlNode * node) : GoComponent (go)
 	}
 }
 
+GoPlacement::GoPlacement(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
+{
+	if (tmplComp == nullptr)
+		return;
+
+	float px = 0, py = 0, pz = 0;
+	uint32_t node = 0;
+
+	if (tmplComp->fields.count("p position"))
+	{
+		const std::string& v = tmplComp->fields.at("p position");
+		if (sscanf_s(v.c_str(), "%f,%f,%f,0x%x", &px, &py, &pz, &node) != 4)
+			return; // invalid position format ? skip
+	}
+	else
+		return; // placement must have a position
+
+	/*
+	float ox = 0, oy = 0, oz = 0, ow = 1;
+	if (tmplComp->fields.count("q orientation"))
+	{
+		const std::string& v = tmplComp->fields.at("q orientation");
+		sscanf_s(v.c_str(), "%f,%f,%f,%f", &ox, &oy, &oz, &ow);
+	}*/
+
+	m_position.X = px;
+	m_position.Y = py;
+	m_position.Z = pz;
+	m_position.Node = node;
+	m_region = "";
+}
+
 GoPlacement::GoPlacement(Go* go, const GoPlacement& placement) : GoComponent(go)
 {
 	m_region = placement.m_region;

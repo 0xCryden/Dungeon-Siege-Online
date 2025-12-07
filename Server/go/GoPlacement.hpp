@@ -13,6 +13,7 @@ class GoPlacement : public GoComponent
 			
 		GoPlacement (Go * go);
 		GoPlacement (Go * go, xmlNode * node);
+		GoPlacement(Go* go, const TemplateComponent* tmplComp);
 		// Copy constructor
 		GoPlacement(Go* go, const GoPlacement& other);
 		GoPlacement(Go* go, const PlacementData& data);

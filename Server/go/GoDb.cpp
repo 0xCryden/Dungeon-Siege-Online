@@ -97,8 +97,6 @@ void GoDb::GasToGoDb()
             //std::cout << "Skipping spawn .. region has no nodes" << std::endl;
             continue;
         }
-        //GoPlacement gp(nullptr, placement); // owner will be set later inside Go
-        //Go* go = new Go(*tmpl, placement);
 
         try
         {
@@ -118,22 +116,6 @@ void GoDb::GasToGoDb()
             Log::WriteF(Log::Level::ERR, "go %u was not loaded because: %s", NextId(), e.what());
         }
     }
-    /*size_t totalLoaded = 0;
-
-    for (const auto& [name, tmpl] : manager.GetAll()) {
-        std::cout << "Template: " << name << "\n";
-        // Access tmpl (const TemplateData&)
-
-        if (m_contentdb.find(tmpl.name) != m_contentdb.end())
-            continue;
-
-        // Construct a new Go using your custom constructor
-        Go* go = new Go(*tmpl);  // Uses Go(const TemplateData&, const PlacementData&) constructor
-        m_contentdb[tmpl.name] = go;
-
-        ++totalLoaded;
-        //cout << "Instantiated Go from template: " << templateName << endl;
-    }*/
     cout << "[INFO] Finished converting Gas to Gos. Total: " << totalLoaded << endl;
 }
 
@@ -267,43 +249,6 @@ void GoDb::InstantiateMapTemplates()
     cout << "[INFO] Finished creating Gos from SCID map templates. Total: "
         << totalLoaded << endl;
 }
-
-
-// mob spawns
-/*void GoDb::LoadGasToGo()
-{
-    size_t totalLoaded = 0;
-	for (const auto& [instanceName, placement] : placementManager.GetAll())
-	{
-		const string& templateName = placement.templateName;
-
-		// Skip if already instantiated
-		if (m_contentdb.find(templateName) != m_contentdb.end())
-			continue;
-
-		if (templateName.empty())
-			continue;
-
-		try
-		{
-			const TemplateData* tmpl = manager.GetTemplate(templateName);
-			if (!tmpl)
-				throw runtime_error("template not found in TemplateManager");
-
-			// Construct a new Go using your custom constructor
-			Go* go = new Go(*tmpl);  // Uses Go(const TemplateData&, const PlacementData&) constructor
-			m_contentdb[templateName] = go;
-
-			++totalLoaded;
-			//cout << "Instantiated Go from template: " << templateName << endl;
-		}
-		catch (const exception& e)
-		{
-			Log::WriteF(Log::Level::ERR, "Failed to instantiate Go from template %s: %s", templateName.c_str(), e.what());
-		}
-	}
-	cout << "[INFO] Finished converting Gas to Gos. Total: " << totalLoaded << endl;
-}*/
 
 void GoDb::LoadGoDbFolder(const string& folderName)
 {
@@ -480,74 +425,60 @@ void GoDb :: LoadGoDbSingleChar (uint32_t id)
     xmlFreeDoc(document);
     Log::WriteF(Log::Level::ERR, "No matching <go> node with ID %u found in file %s", id, filePath.c_str());
 }
-/*
-void GoDb::LoadContentDbFolder(const string & folderName)
+
+void GoDb::LoadContentDb()
 {
-    string folderPath = "data\\static\\" + folderName + "\\";
-    string searchPattern = folderPath + "*.xml";
+    //unordered_map<string, TemplateData> templates;
+    unordered_set<string> allowed = { "actor", "aspect", "mind" };
 
-    WIN32_FIND_DATA findFileData;
-    HANDLE hFind = FindFirstFile(searchPattern.c_str(), &findFileData);
+    const string rootPath = "data/static/templates";
 
-    if (hFind == INVALID_HANDLE_VALUE)
-    {
-        throw runtime_error("No template XML files found in: " + folderPath);
+    size_t totalLoaded = 0;
+
+    for (const auto& entry : fs::recursive_directory_iterator(rootPath)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".gas") {
+            const string filePath = entry.path().string();
+
+            unordered_map<string, TemplateData> fileTemplates;
+            if (gas.ReadTemplatesFile(filePath, fileTemplates, allowed)) {
+                for (auto& [name, tpl] : fileTemplates) {
+                    //cout << "Loaded Template: " << name << " from " << filePath << endl;
+                    //manager.AddTemplate(move(tpl));
+                    map<string, Go*>::iterator iterator = m_contentdb.find(name);
+                    if (iterator != m_contentdb.end())
+                    {
+                        throw runtime_error("template already exists in contentdb");
+                    }
+
+                    if (name.empty() != true)
+                    {
+                        try
+                        {
+                            Go* t = new Go(tpl);
+                            m_contentdb[name] = t;
+                            cout << "Loaded template " << name.c_str() << endl;
+                        }
+                        catch (exception& e)
+                        {
+                            Log::WriteF(Log::Level::ERR, "template %s was not loaded because : %s", name.c_str(), e.what());
+                        }
+                    }
+
+                    ++totalLoaded;
+                }
+            }
+        }
     }
+    manager.ResolveTemplateInheritance();
 
-    do
-    {
-        string filePath = folderPath + findFileData.cFileName;
-        xmlDoc* document = xmlReadFile(filePath.c_str(), NULL, 0);
-        if (!document)
-        {
-            Log::WriteF("Failed to read file: %s", filePath.c_str());
-            continue;
-        }
-
-        xmlNode* root = xmlDocGetRootElement(document);
-        if (!root)
-        {
-            xmlFreeDoc(document);
-            Log::WriteF("Invalid XML in file: %s", filePath.c_str());
-            continue;
-        }
-
-        for (xmlNode* node = root->children; node != nullptr; node = node->next)
-        {
-            if (node->type != XML_ELEMENT_NODE || !xmlStrEqual(node->name, BAD_CAST "template"))
-                continue;
-
-            string name = xml::ReadAttribute<string>(node, "template_name", "");
-            if (name.empty())
-                continue;
-
-            if (m_contentdb.find(name) != m_contentdb.end())
-            {
-                Log::WriteF("Duplicate template name '%s' found in file: %s", name.c_str(), filePath.c_str());
-                continue;
-            }
-
-            try
-            {
-                Go* t = new Go(node);
-                m_contentdb[name] = t;
-                cout << "[CONTENTDB] Loaded template " << name << endl;
-            }
-            catch (const exception& e)
-            {
-                Log::WriteF("Template '%s' was not loaded because: %s", name.c_str(), e.what());
-            }
-        }
-
-        xmlFreeDoc(document);
-    } while (FindNextFile(hFind, &findFileData) != 0);
-
-    FindClose(hFind);
+    Log::Write(Log::Level::INFO, "[INFO] Finished loading templates. Total loaded: " + to_string(totalLoaded), true);
 }
-*/
 
-void GoDb :: LoadContentDb (const string & filename)
+void GoDb :: LoadContentDbOld (const string & filename)
 {
+    // for loop for all files
+    // read all templates
+
 	xmlDoc * document = xmlReadFile (filename.c_str(), NULL, 0);
 	if (document == NULL)
 	{
@@ -606,6 +537,17 @@ Go * GoDb :: FindGoById (uint32_t id)
 	return iterator != m_godb.end() ? iterator->second : NULL;
 }
 
+Go* GoDb::FindTemplateByName(const string& template_name)
+{
+    map<string, Go*>::iterator iterator = m_contentdb.find(template_name);
+    if (iterator != m_contentdb.end())
+    {
+        return iterator->second;
+    }
+
+    return NULL;
+}
+
 Go * GoDb :: CloneGo (const Go * go)
 {
 	uint32_t id = NextId();
@@ -616,20 +558,36 @@ Go * GoDb :: CloneGo (const Go * go)
 	return clone;
 }
 
-Go * GoDb :: CloneGo (const string & template_name)
+/*Go* GoDb::CloneGo(const string& template_name, const GoPlacement& placement)
 {
-	map<string, Go *>::iterator iterator = m_contentdb.find (template_name);
-	if (iterator != m_contentdb.end())
-	{
-		uint32_t id = NextId();
-		
-		Go * go = new Go (id, iterator->second);
-		m_godb[id] = go;
-		
-		return go;
-	}
-	
-	return NULL;
+    map<string, Go*>::iterator iterator = m_contentdb.find(template_name);
+    if (iterator != m_contentdb.end())
+    {
+        uint32_t id = NextId();
+
+        Go* go = new Go(id, iterator->second);
+        m_godb[id] = go;
+
+        return go;
+    }
+
+    return NULL;
+}*/
+
+Go* GoDb::CloneGo(const string& template_name)
+{
+    map<string, Go*>::iterator iterator = m_contentdb.find(template_name);
+    if (iterator != m_contentdb.end())
+    {
+        uint32_t id = NextId();
+
+        Go* go = new Go(id, iterator->second);
+        m_godb[id] = go;
+
+        return go;
+    }
+
+    return NULL;
 }
 
 void GoDb :: MarkGoForDeletion (uint32_t id)

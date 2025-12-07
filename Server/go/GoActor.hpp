@@ -31,15 +31,20 @@ class GoActor : public GoComponent
 public:
 			
 	GoActor (Go * go);
+	GoActor(Go* go, GoActor* actor); // copy
 	GoActor(Go* go, xmlNode* node); // should be GoActor (xmlNode * node);
 	GoActor (Go* go, const TemplateComponent* tmpl);
 	~GoActor ();
-			
+	
+	void InheritFrom(GoActor* parent);
+
 	void Save(xmlNode* actorNode) const;
 	void SaveSkills(xmlNode* actorNode) const;
 
 	eActorAlignment Alignment () const;
 	bool CanLevelUp();
+	map<string, Skill*> Skills();
+
 	float GetLevelFromXP(float xp);
 	float GetXPFromLevel(float level);
 	float GetMaxExpGainForLevel(float level);

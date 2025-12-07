@@ -19,6 +19,7 @@
 #include "../Engine.hpp"
 #include "Go.hpp"
 
+// for GoDb template creation
 Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_gui(NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL)
 {
 	if (node != NULL)
@@ -27,7 +28,8 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 		m_scid = 0;
 		m_admin = xml::ReadAttribute<uint8_t> (node, "admin", 0);
 		m_template_name = xml::ReadAttribute<string> (node, "template_name", "");
-		
+		m_specializes = "";
+
 		xmlNode * current = NULL;
 		for (current = node->children; current != NULL; current = current->next)
 		{
@@ -113,12 +115,46 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 	}
 }
 
-Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_gui(NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL)
+// for GoDb template creation
+Go::Go(const TemplateData& tmpl)
+	: m_template_name(tmpl.name), m_specializes(tmpl.specializes),
+	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
+	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
+	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
+{
+	//m_goid = godb.NextId();
+	//m_scid = 0;
+	//if (tmpl.scid != "")
+	//	m_scid = static_cast<uint32_t>(std::stoul(tmpl.scid, nullptr, 16));
+
+	//m_admin = 0;
+	//m_template_name = tmpl.name;
+
+	const TemplateComponent* comp;
+	if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
+	if ((comp = tmpl.GetComponent("aspect"))) { m_aspect = new GoAspect(this, comp); }
+	if ((comp = tmpl.GetComponent("attack"))) { m_attack = new GoAttack(this, comp); }
+	if ((comp = tmpl.GetComponent("body"))) { m_body = new GoBody(this, comp); }
+	if ((comp = tmpl.GetComponent("common"))) { m_common = new GoCommon(this, comp); }
+	if ((comp = tmpl.GetComponent("defend"))) { m_defend = new GoDefend(this, comp); }
+	// X 2 more subcomponents remaining implementation for mob drops
+	if ((comp = tmpl.GetComponent("inventory"))) { m_inventory = new GoInventory(this, comp); }
+	if ((comp = tmpl.GetComponent("magic"))) { m_magic = new GoMagic(this, comp); }
+	if ((comp = tmpl.GetComponent("mind"))) { m_mind = new GoMind(this, comp); }
+	// TODO Pcontent
+	if ((comp = tmpl.GetComponent("gui"))) { m_gui = new GoGui(this, comp); }
+	// TODO Physics
+
+	if ((comp = tmpl.GetComponent("placement"))) { m_placement = new GoPlacement(this, comp); }
+}
+
+Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL), m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL), m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
 {
 	m_goid = id;
 	m_admin = 0;
 	m_scid = 0;
 	m_template_name = go->m_template_name;
+	m_specializes = go->m_specializes;
 	
 	if (go->m_actor != NULL) m_actor = new GoActor (this);
 	if (go->m_aspect != NULL) m_aspect = new GoAspect (this);
@@ -134,7 +170,7 @@ Go :: Go (uint32_t id, const Go * go) : m_parent (NULL), m_actor (NULL), m_aspec
 }
 
 Go::Go(const TemplateData& tmpl, const PlacementData& placement)
-	: m_template_name(tmpl.name),
+	: m_template_name(tmpl.name), m_specializes(tmpl.specializes),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
 	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
@@ -168,7 +204,7 @@ Go::Go(const TemplateData& tmpl, const PlacementData& placement)
 }
 
 Go::Go(const TemplateData& tmpl, const GoPlacement& placement)
-	: m_template_name(tmpl.name),
+	: m_template_name(tmpl.name), m_specializes(""),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
 	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
@@ -219,6 +255,88 @@ Go :: ~Go ()
 	{
 		delete iterator->second;
 	}
+}
+
+void Go::InheritFrom(const string& parentName)
+{
+	Go* parent = godb.FindTemplateByName(parentName);
+	if (parent == NULL)
+	{
+		Log::Write(Log::Level::ERR, "Couldnt find parent template to inherit from ERROR", true);
+		return;
+	}
+
+	if (parent->m_specializes != "")
+	{
+		InheritFrom(parent->m_specializes);
+	}
+
+	if (parent->m_actor)
+	{
+		if (!m_actor) m_actor = new GoActor(this, parent->m_actor);
+		else          m_actor->InheritFrom(parent->m_actor);
+	}
+	/*if (parent->m_aspect)
+	{
+		if (!m_aspect) m_aspect = new GoAspect(this, parent->m_aspect);
+		else           m_aspect->InheritFrom(parent->m_aspect);
+	}
+	if (parent->m_attack)
+	{
+		if (!m_attack) m_attack = new GoAttack(this, parent->m_attack);
+		else           m_attack->InheritFrom(parent->m_attack);
+	}
+	if (parent->m_body)
+	{
+		if (!m_body) m_body = new GoBody(this, parent->m_body);
+		else          m_body->InheritFrom(parent->m_body);
+	}
+	if (parent->m_common)
+	{
+		if (!m_common) m_common = new GoCommon(this, parent->m_common);
+		else           m_common->InheritFrom(parent->m_common);
+	}
+	if (parent->m_defend)
+	{
+		if (!m_defend) m_defend = new GoDefend(this, parent->m_defend);
+		else           m_defend->InheritFrom(parent->m_defend);
+	}
+	if (parent->m_gui)
+	{
+		if (!m_gui) m_gui = new GoGui(this, parent->m_gui);
+		else        m_gui->InheritFrom(parent->m_gui);
+	}
+	if (parent->m_inventory)
+	{
+		if (!m_inventory) m_inventory = new GoInventory(this, parent->m_inventory);
+		else              m_inventory->InheritFrom(parent->m_inventory);
+	}
+	if (parent->m_magic)
+	{
+		if (!m_magic) m_magic = new GoMagic(this, parent->m_magic);
+		else          m_magic->InheritFrom(parent->m_magic);
+	}
+	if (parent->m_mind)
+	{
+		if (!m_mind) m_mind = new GoMind(this, parent->m_mind);
+		else         m_mind->InheritFrom(parent->m_mind);
+	}
+	if (parent->m_placement)
+	{
+		if (!m_placement) m_placement = new GoPlacement(this, *parent->m_placement);
+		else              m_placement->InheritFrom(parent->m_placement);
+	}
+	for (const auto& [name, script] : parent->m_scripts)
+	{
+		if (m_scripts.count(name) == 0)
+		{
+			m_scripts[name] = script->CloneFor(this);
+		}
+		else
+		{
+			m_scripts[name]->InheritFrom(script);
+		}
+	}*/
 }
 
 double Go :: GetDistanceTo(Go * target)

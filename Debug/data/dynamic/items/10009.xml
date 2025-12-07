@@ -2,7 +2,7 @@
 <objects>
 	<go id="10009">
 		<aspect>
-			 <model value="dso_minigun_dragon"/>
+			 <model value="minigun_dragon"/>
 		</aspect>
 		<attack>
 			<attack_range value="11"/>
