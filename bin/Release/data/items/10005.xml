@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="10005">
+		<aspect>
+			 <model value="long_bow"/>
+		</aspect>
+		<attack>
+			<attack_range value="12"/>
+			<critical_hit_chance value="30"/>
+			<damage_max value="20"/>
+			<damage_min value="15"/>
+			<is_two_handed value="1"/>
+			<reload_delay value="0.3"/>
+			<attack_class value="ac_bow"/>
+		</attack>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="long bow"/>
+		</common>
+		<placement region="town_center"><position node="1323345966" x="0" y="0" z="0"/></placement>
+	</go>
+</objects>

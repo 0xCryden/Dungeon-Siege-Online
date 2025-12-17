@@ -6,7 +6,7 @@
 # Build results
 bin/Debug/data/
 bin/DebugLOA/data/
-bin/Release/data/
+#bin/Release/data/
 Server/Debug/
 Server/Release/
 dsdll/Debug/

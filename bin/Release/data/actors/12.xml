@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+	<go id="12">
+		<actor>
+			<alignment value="aa_good"/>
+			<can_level_up value="1"/>
+			<skills>
+				<skill name="uber" level="0.9" experience="63"/>
+				<skill name="strength" level="0.192" experience="13.44"/>
+				<skill name="intelligence" level="0.027" experience="1.89"/>
+				<skill name="dexterity" level="0.081" experience="5.67"/>
+				<skill name="melee" level="0.3" experience="21"/>
+				<skill name="ranged" level="0" experience="0"/>
+				<skill name="nature magic" level="0" experience="0"/>
+				<skill name="combat magic" level="0" experience="0"/>
+			</skills>
+		</actor>
+		<aspect>
+			<bounding_sphere_radius value="1"/>
+			<current_life value="41.1655"/>
+			<current_mana value="30"/>
+			<flesh value="b_c_gah_fb_skin_001,b_c_gah_fb_hair_001"/>
+			<cloth value="b_c_pos_a1_pant_004,b_c_pos_a1_jondar"/>
+			<is_invincible value="0"/>
+			<is_visible value="1"/>
+			<life_recovery_period value="4.0"/>
+			<life_recovery_unit value="1.0"/>
+			<mana_recovery_period value="3.0"/>
+			<mana_recovery_unit value="1.0"/>
+			<life_state value="ls_alive_conscious"/>
+			<last_died value="0"/>
+			<max_life value="49"/>
+			<max_mana value="30"/>
+			<model value="humanboy"/>
+			<render_scale value="1"/>
+		</aspect>
+		<attack>
+			<damage_max value="4"/>
+			<damage_min value="2"/>
+			<attack_range value="0"/>
+			<critical_hit_chance value="0"/>
+			<is_two_handed value="0"/>
+			<reload_delay value="1.0"/>
+		</attack>
+		<body>
+			<avg_move_velocity value="4.5"/>
+			<max_move_velocity value="4.5"/>
+			<min_move_velocity value="4.5"/>
+		</body>
+		<common>
+			<auto_expiration_class value="never"/>
+			<forced_expiration_class value="auto"/>
+			<screen_name value="test123"/>
+		</common>
+		<defend/>
+		<mind/>
+		<inventory>
+			<custom_head value="default"/>
+		<item id="10009" equip_slot="es_shield_hand" inven_loc="il_active_ranged_weapon"/><item id="10007" equip_slot="es_none" inven_loc="il_main"/></inventory>
+		<placement region="town_center">
+			<position node="1323345966" x="-3.27316" y="0" z="-0.576212"/>
+		</placement>
+	</go>
+</objects>
