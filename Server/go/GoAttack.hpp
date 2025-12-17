@@ -28,9 +28,11 @@ class GoAttack : public GoComponent
 	public:
 
 		GoAttack(Go * go);
+		GoAttack(Go* go, const GoAttack& other);
 		GoAttack(Go * go, xmlNode * node);
 		GoAttack(Go* go, const TemplateComponent* tmpl);
 
+		void InheritFrom(const GoAttack& other);
 		void Save (xmlNode* attackNode) const;
 
 		int CalcHitType (Go * target, const string & skill, GoMagic * magic = nullptr);

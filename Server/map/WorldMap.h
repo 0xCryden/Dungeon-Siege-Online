@@ -7,7 +7,7 @@ class WorldMap
 		~WorldMap ();
 
 		void LoadAllMaps();
-		void LoadMap (const string & filename, const string & worldname);
+		void LoadMap(const string & worldname);
 		Region * GetRegion (const string & name);
 		set<Region *> & Regions ()
 		{

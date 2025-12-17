@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects>
-	<go id="10">
+	<go id="10" admin="10">
 		<actor>
 			<alignment value="aa_good"/>
 			<can_level_up value="1"/>

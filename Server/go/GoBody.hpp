@@ -23,11 +23,13 @@
 	class GoBody : public GoComponent
 	{
 		public:
-			
-			GoBody(Go * go);
+
+			GoBody(Go* go);
+			GoBody(Go* go, const GoBody& other);
 			GoBody(Go * go, xmlNode * node);
 			GoBody(Go* go, const TemplateComponent* tmplComp);
 			
+			void InheritFrom(const GoBody& other);
 			float AvgMoveVelocity () const;
 			float MaxMoveVelocity () const;
 			float MinMoveVelocity () const;

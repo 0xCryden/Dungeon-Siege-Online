@@ -75,7 +75,7 @@ void WriteItemRecursive(Go* item, Packet& packet)
     packet.WriteUInt8(slot);
     packet.WriteUInt8(loc);
     packet.WriteUInt32(containerId);
-    packet.WriteString(item->Aspect()->Model());
+    packet.WriteString(item->TemplateName());
 
     //GoInventory* inv = item->Inventory();
     if (item->HasInventory() && !item->Inventory()->ListItems().empty())
@@ -105,7 +105,7 @@ void SendRCCreateItemRecursive(Go* item, Connection* conn)
 	packet.WriteUInt8(RCCREATEITEM);
 	packet.WriteUInt32(item->Goid());
 	packet.WriteString(item->Common()->ScreenName());
-	packet.WriteString(item->Aspect()->Model());
+	packet.WriteString(item->TemplateName());
 	packet.WriteUInt32(item->Placement()->Position().Node);
 	packet.WriteFloat(item->Placement()->Position().X);
 	packet.WriteFloat(item->Placement()->Position().Y);
@@ -313,7 +313,8 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 					if (equipment != NULL)
 					{
 						packet.WriteUInt32 (equipment->Goid());
-						packet.WriteString (equipment->Aspect()->Model());
+						//packet.WriteString(equipment->Aspect()->Model());
+						packet.WriteString(equipment->TemplateName());
 					}
 					else
 					{
@@ -428,7 +429,7 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteUInt8 (RCGET);
 				packet.WriteUInt32 (to->Goid());
 				packet.WriteString (to->Common()->ScreenName());
-				packet.WriteString (to->Aspect()->Model());
+				packet.WriteString (to->TemplateName());
 
 				if (to->HasInventory() && !to->Inventory()->ListItems().empty())
 			    {
@@ -453,7 +454,7 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 					    packet.WriteString(child->Common()->ScreenName());
 					    packet.WriteUInt8(slot);
 					    packet.WriteUInt8(loc);
-					    packet.WriteString(child->Aspect()->Model());
+					    packet.WriteString(child->TemplateName());
 			        }
 			    }
 			    else
@@ -589,7 +590,7 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 					packet.WriteUInt32 (from->Goid());
 					packet.WriteUInt8 (slot);
 					packet.WriteUInt32 (to->Goid());
-					packet.WriteString (to->Aspect()->Model());
+					packet.WriteString (to->TemplateName());
 					
 					m_connection->Send (packet.Data(), packet.Size());
 				}

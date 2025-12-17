@@ -49,11 +49,11 @@ GoActor::GoActor(Go* go) : GoComponent(go)
 	m_can_level_up = false;
 }
 
-GoActor::GoActor(Go* go, GoActor* actor) : GoComponent(go)
+GoActor::GoActor(Go* go, const GoActor& actor) : GoComponent(go)
 {
-	m_alignment = actor->Alignment();
-	m_can_level_up = actor->CanLevelUp();
-	m_skills = actor->Skills();
+	m_alignment = actor.m_alignment;
+	m_can_level_up = actor.m_can_level_up;
+	m_skills = actor.m_skills;
 }
 
 GoActor::GoActor(Go* go, xmlNode* node) : GoComponent(go)
@@ -107,8 +107,8 @@ GoActor::GoActor(Go* go, xmlNode* node) : GoComponent(go)
 
 GoActor::GoActor(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 {
-	m_alignment = aa_neutral;
-	m_can_level_up = false;
+	//m_alignment = aa_neutral;
+	//m_can_level_up = false;
 
 	if (tmplComp == nullptr)
 		return;
@@ -155,16 +155,20 @@ GoActor :: ~GoActor ()
 	}
 }
 
-void GoActor::InheritFrom(GoActor* parent)
+void GoActor::InheritFrom(const GoActor& parent)
 {
-	if (m_alignment == aa_neutral)
-		m_alignment = parent->Alignment();
+	if (m_alignment == aa_neutral) m_alignment = parent.m_alignment;
 
-	if (m_can_level_up == false)
-		m_can_level_up = parent->CanLevelUp();
+	if (m_can_level_up == false) m_can_level_up = parent.m_can_level_up;
 
-	if (m_skills.empty())
-		m_skills = parent->Skills();
+	// Merge map: add keys from 'other' if they don't exist in this
+	for (const auto& [key, value] : parent.m_skills)
+	{
+		if (m_skills.find(key) == m_skills.end())
+		{
+			m_skills[key] = value;
+		}
+	}
 }
 
 map<string, Skill*> GoActor::Skills()

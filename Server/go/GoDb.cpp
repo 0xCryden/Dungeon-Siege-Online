@@ -14,7 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with dsmmorpg.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "../Common.h"
+//#include "../Common.h"
 
 #include "GoDb.hpp"
 #include "../Engine.hpp"
@@ -43,6 +43,33 @@ GoDb :: ~GoDb ()
 		iterator++;
 	}}
 }
+
+/*void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
+{
+    Go* tmpl = godb.FindTemplateByName(templateName);
+    if (tmpl == NULL) {
+        Log::Write(Log::Level::ERR,
+            "Unknown template: " + templateName, true);
+        return;
+    }
+
+    try
+    {
+        Go* t = new Go(tmpl, *summonerGo->Placement());
+        m_godb[t->Goid()] = t;
+
+        string region = t->Placement()->GetRegion();
+        if (!region.empty())
+        {
+            SendWorldMessage(we_entered_world, t, t, region);
+            cout << "[GODB] Spawned Go " << NextId() << " using template: " << templateName << " in region: " << region << " at: " << summonerGo->Placement()->Position().X << " | " << summonerGo->Placement()->Position().Y << " | " << summonerGo->Placement()->Position().Z << " in node: " << summonerGo->Placement()->Position().Node << endl;
+        }
+    }
+    catch (exception& e)
+    {
+        Log::WriteF(Log::Level::ERR, "go %u was not loaded because: %s", NextId(), e.what());
+    }
+}*/
 void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
 {
     const TemplateData* tmpl = manager.GetTemplate(templateName);
@@ -51,14 +78,6 @@ void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
             "Unknown template: " + templateName, true);
         return;
     }
-
-    // check if the node exists
-    /*const auto& nodes = g_world.GetRegion(summonerGo->Placement()->GetRegion())->GetNodes();
-    if (nodes.find(placement.position.Node) == nodes.end())
-    {
-        //std::cout << "Skipping spawn .. region has no nodes" << std::endl;
-        return;
-    }*/
 
     try
     {
@@ -69,7 +88,7 @@ void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
         if (!region.empty())
         {
             SendWorldMessage(we_entered_world, t, t, region);
-            cout << "[GODB] Spawned Go " << NextId() << " using template: " << templateName << " in region: " << region << " at: " << summonerGo->Placement()->Position().X << " | " << summonerGo->Placement()->Position().Y << " | " << summonerGo->Placement()->Position().Z << " in node: " << summonerGo->Placement()->Position().Node << endl;
+            cout << "[GODB] Spawned Go " << t->Goid() << " using template: " << templateName << " in region: " << region << " at: " << summonerGo->Placement()->Position().X << " | " << summonerGo->Placement()->Position().Y << " | " << summonerGo->Placement()->Position().Z << " in node: " << summonerGo->Placement()->Position().Node << endl;
         }
     }
     catch (exception& e)
@@ -124,14 +143,16 @@ void GoDb::InstantiateMapTemplates()
     int totalLoaded = 0;
 
     // Iterate over SCID map templates instead of placementManager
-    for (auto& [name, mapTpl] : manager.GetAllMap())
+    auto& maps = manager.GetAllMap();
+
+    for (auto it = maps.begin(); it != maps.end(); )
     {
         // SCID template name == base template name
-        TemplateData* baseTpl = manager.GetTemplate(mapTpl.name);
+        TemplateData* baseTpl = manager.GetTemplate(it->second.name);
         if (!baseTpl)
         {
             Log::Write(Log::Level::ERR,
-                "SCID template '" + mapTpl.name +
+                "SCID template '" + it->second.name +
                 "' has no matching base template.", true);
             continue;
         }
@@ -139,11 +160,11 @@ void GoDb::InstantiateMapTemplates()
         // --------------------------------------------
         // Extract placement data from TemplateData component
         // --------------------------------------------
-        const TemplateComponent* placementComp = mapTpl.GetComponent("placement");
+        const TemplateComponent* placementComp = it->second.GetComponent("placement");
         if (!placementComp)
         {
             Log::Write(Log::Level::ERR,
-                "SCID template '" + mapTpl.name +
+                "SCID template '" + it->second.name +
                 "' has no 'placement' component.", true);
             continue;
         }
@@ -171,7 +192,7 @@ void GoDb::InstantiateMapTemplates()
         }
         PlacementData placement;
         // REGION
-        placement.regionName = mapTpl.region;
+        placement.regionName = it->second.region;
         placement.position.X = px;
         placement.position.Y = py;
         placement.position.Z = pz;
@@ -180,8 +201,8 @@ void GoDb::InstantiateMapTemplates()
         placement.orientation.x = ox;
         placement.orientation.y = oy;
         placement.orientation.z = oz;
-        placement.templateName = mapTpl.name;
-        placement.instanceName = mapTpl.name; // or mapTpl.name + some id
+        placement.templateName = it->second.name;
+        placement.instanceName = it->second.name; // or mapTpl.name + some id
 
         // --------------------------------------------
         // Check if the node exists in the region
@@ -191,7 +212,8 @@ void GoDb::InstantiateMapTemplates()
         {
             Log::Write(Log::Level::ERR,
                 "Region '" + placement.regionName +
-                "' does not exist for template '" + mapTpl.name + "'", true);
+                "' does not exist for template '" + it->second.name + "'", true);
+            it = maps.erase(it);
             continue;
         }
 
@@ -199,6 +221,7 @@ void GoDb::InstantiateMapTemplates()
         if (nodes.find(placement.position.Node) == nodes.end())
         {
             // Region has no such node ? skip spawn
+            it = maps.erase(it);
             continue;
         }
 
@@ -207,17 +230,17 @@ void GoDb::InstantiateMapTemplates()
         // --------------------------------------------
         try
         {
-            Go* go = new Go(mapTpl, placement);
+            Go* go = new Go(it->second, placement);
             uint32_t id = NextId();
-            m_godb[id] = go;
 
             string regionName = go->Placement()->GetRegion();
             if (!regionName.empty())
             {
+                m_godb[id] = go;
                 SendWorldMessage(we_entered_world, go, go, regionName);
 
                 cout << "[GODB] Spawned Go " << id
-                    << " using SCID template: " << mapTpl.name
+                    << " using SCID template: " << it->second.name
                     << " in region: " << regionName
                     << " at: " << placement.position.X
                     << " | " << placement.position.Y
@@ -227,12 +250,18 @@ void GoDb::InstantiateMapTemplates()
 
                 ++totalLoaded;
             }
+            else
+            {
+                delete go;
+            }
         }
         catch (const exception& e)
         {
             Log::WriteF(Log::Level::ERR,
                 "Go %u failed to load because: %s", NextId(), e.what());
         }
+
+        it = maps.erase(it);
     }
 
     /*if (TemplateData* tpl = manager.GetMapTemplate("0x032007b5"))
@@ -248,11 +277,15 @@ void GoDb::InstantiateMapTemplates()
 
     cout << "[INFO] Finished creating Gos from SCID map templates. Total: "
         << totalLoaded << endl;
+
+    size_t templates = manager.GetAll().size();
+    cout << "[INFO] templates remaining in cache: "
+        << templates << endl;
 }
 
 void GoDb::LoadGoDbFolder(const string& folderName)
 {
-    string folderPath = "data\\dynamic\\" + folderName + "\\";
+    string folderPath = "data\\" + folderName + "\\";
     string searchPattern = folderPath + "*.xml";
 
     WIN32_FIND_DATA findFileData;
@@ -369,7 +402,7 @@ void GoDb::LoadGoDbFolder(const string& folderName)
 
 void GoDb :: LoadGoDbSingleChar (uint32_t id)
 {
-	string filePath = "data\\dynamic\\actors\\" + to_string(id) + ".xml";
+	string filePath = "data\\actors\\" + to_string(id) + ".xml";
 
     xmlDoc* document = xmlReadFile(filePath.c_str(), NULL, 0);
     if (!document)

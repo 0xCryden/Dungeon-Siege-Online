@@ -33,6 +33,31 @@ GoInventory :: GoInventory (Go * go) : GoComponent (go)
 	*/
 }
 
+GoInventory::GoInventory(Go* newGo, const GoInventory& other) : GoComponent(newGo) // attach to new Go
+{
+	m_custom_head = other.m_custom_head;
+	m_selected_active_location = other.m_selected_active_location;
+
+	// Copy inventory items
+	for (Go* item : other.m_inventory)
+	{
+		if (item)
+		{
+			// Shallow copy pointer
+			//m_inventory.insert(item);
+
+			// OR deep copy if needed:
+			m_inventory.insert(godb.CloneGo(item->TemplateName()));
+		}
+	}
+
+	// Copy equipped items
+	for (const auto& [slot, item] : other.m_equipment)
+	{
+		m_equipment[slot] = item;
+	}
+}
+
 GoInventory :: GoInventory (Go * go, xmlNode * node) : GoComponent (go)
 {
 	if (node == NULL)
@@ -92,8 +117,8 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 
 	const string* f;
 
-	m_custom_head = "";
-	m_selected_active_location = il_active_melee_weapon;
+	//m_custom_head = "";
+	//m_selected_active_location = il_active_melee_weapon;
 
 	if (f = tmplComp->GetField("custom_head")) { try { m_custom_head = *f; } catch (...) { m_custom_head = ""; } }
 	if (f = tmplComp->GetField("selected_active_location")) { if (FromString(*f, m_selected_active_location) != true) m_selected_active_location = il_active_melee_weapon; }
@@ -106,8 +131,17 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 			const string& equipSlot = it->first;
 			const string& itemTemplateName = it->second;
 
+			TemplateData* itemTmpl = nullptr;
+			itemTmpl = manager.GetTemplate(itemTemplateName);
+			if (!itemTmpl) // error template not found
+			{
+				cout << "ERROR item template not found for inventory of go. name: " << itemTemplateName << endl;
+				continue;
+			}
+
 			Go* item = nullptr;
-			item = godb.CloneGo(itemTemplateName);
+			//item = godb.CloneGo(itemTemplateName);
+			item = new Go(*itemTmpl);
 			if (!item) // error template not found
 			{
 				cout << "ERROR item template not found for inventory of go" << endl;
@@ -131,6 +165,30 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 	// TODO add [other]
 	// TODO add [pcontent]
 }
+
+void GoInventory::InheritFrom(const GoInventory& other)
+{
+	// Merge inventory items
+	m_inventory.insert(other.m_inventory.begin(), other.m_inventory.end());
+
+	// Merge equipped items (only if slot empty)
+	for (const auto& [slot, item] : other.m_equipment)
+	{
+		if (m_equipment.find(slot) == m_equipment.end() && item)
+		{
+			m_equipment[slot] = item;
+		}
+	}
+
+	// Merge custom head
+	if (m_custom_head.empty())
+		m_custom_head = other.m_custom_head;
+
+	// Merge selected active location
+	if (m_selected_active_location == il_active_melee_weapon) // default value
+		m_selected_active_location = other.m_selected_active_location;
+}
+
 
 void GoInventory :: Save (xmlNode* inventoryNode) const
 {
@@ -307,7 +365,7 @@ void GoInventory::Transfer(Go* item, Go* container, eInventoryLocation loc)
 
 bool GoInventory :: Equip (eEquipSlot slot, Go * item)
 {
-	cout << "####### GoInventory.Equip item: " << item->Aspect()->Model() << " for Go: " << GetGo()->Common()->ScreenName() << " in slot " << (int)slot << endl;
+	cout << "####### GoInventory.Equip item: " << item->TemplateName() << " for Go: " << GetGo()->Common()->ScreenName() << " in slot " << (int)slot << endl;
 
 	if (IsSlotEquipped (slot) != false) return false;
 	if (IsEquipped (item) != false) return false;

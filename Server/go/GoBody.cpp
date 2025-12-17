@@ -7,6 +7,13 @@ GoBody :: GoBody (Go * go) : GoComponent (go)
 {
 }
 
+GoBody::GoBody(Go* newGo, const GoBody& other) : GoComponent(newGo) // attach to new Go
+{
+	m_avg_move_velocity = other.m_avg_move_velocity;
+	m_max_move_velocity = other.m_max_move_velocity;
+	m_min_move_velocity = other.m_min_move_velocity;
+}
+
 GoBody :: GoBody (Go * go, xmlNode * node) : GoComponent (go)
 {
 	if (node != NULL)
@@ -42,6 +49,13 @@ GoBody::GoBody(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("avg_move_velocity")) { try { m_avg_move_velocity = std::stof(*f); } catch (...) { m_avg_move_velocity = 0.0f; } }
 	if (f = tmplComp->GetField("max_move_velocity")) { try { m_max_move_velocity = std::stof(*f); } catch (...) { m_max_move_velocity = 0.0f; } }
 	if (f = tmplComp->GetField("min_move_velocity")) { try { m_min_move_velocity = std::stof(*f); } catch (...) { m_min_move_velocity = 0.0f; } }
+}
+
+void GoBody::InheritFrom(const GoBody& other)
+{
+	if (m_avg_move_velocity == 0.0f) m_avg_move_velocity = other.m_avg_move_velocity;
+	if (m_max_move_velocity == 0.0f) m_max_move_velocity = other.m_max_move_velocity;
+	if (m_min_move_velocity == 0.0f) m_min_move_velocity = other.m_min_move_velocity;
 }
 
 float GoBody :: AvgMoveVelocity () const

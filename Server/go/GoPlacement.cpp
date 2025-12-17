@@ -30,6 +30,17 @@ GoPlacement :: GoPlacement (Go * go) : GoComponent (go)
 	m_position.Z = go->Placement()->m_position.Z;
 }
 
+GoPlacement::GoPlacement(Go* newGo, const GoPlacement& other) : GoComponent(newGo) // attach to new Go
+{
+	m_region = other.m_region;
+
+	// Copy position struct
+	m_position.Node = other.m_position.Node;
+	m_position.X = other.m_position.X;
+	m_position.Y = other.m_position.Y;
+	m_position.Z = other.m_position.Z;
+}
+
 GoPlacement :: GoPlacement (Go * go, xmlNode * node) : GoComponent (go)
 {
 	if (node != NULL)
@@ -91,14 +102,14 @@ GoPlacement::GoPlacement(Go* go, const TemplateComponent* tmplComp) : GoComponen
 	m_region = "";
 }
 
-GoPlacement::GoPlacement(Go* go, const GoPlacement& placement) : GoComponent(go)
+/*GoPlacement::GoPlacement(Go* go, const GoPlacement& placement) : GoComponent(go)
 {
 	m_region = placement.m_region;
 	m_position.Node = placement.m_position.Node;
 	m_position.X = placement.m_position.X;
 	m_position.Y = placement.m_position.Y;
 	m_position.Z = placement.m_position.Z;
-}
+}*/
 
 GoPlacement::GoPlacement(Go* go, const PlacementData& data) : GoComponent(go)
 {
@@ -111,6 +122,20 @@ GoPlacement::GoPlacement(Go* go, const PlacementData& data) : GoComponent(go)
 	// TODO implement m_rotation into GoPlacement class
 	//m_orientation = data.orientation;
 }
+
+void GoPlacement::InheritFrom(const GoPlacement& other)
+{
+	// Inherit region only if empty
+	if (m_region.empty())
+		m_region = other.m_region;
+
+	// Inherit position only if default (0) values
+	if (m_position.Node == 0) m_position.Node = other.m_position.Node;
+	if (m_position.X == 0.0f) m_position.X = other.m_position.X;
+	if (m_position.Y == 0.0f) m_position.Y = other.m_position.Y;
+	if (m_position.Z == 0.0f) m_position.Z = other.m_position.Z;
+}
+
 
 void GoPlacement :: Save(xmlNode* placementNode) const
 {

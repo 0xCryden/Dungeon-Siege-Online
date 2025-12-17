@@ -8,9 +8,11 @@ class GoGui : public GoComponent
 {
 	public:
 		GoGui(Go* go);
+		GoGui(Go* go, const GoGui& other);
 		GoGui(Go* go, xmlNode* node);
 		GoGui(Go* go, const TemplateComponent* tmplComp);
 
+		void InheritFrom(const GoGui& other);
 		void SetEquipRequirements(const string& input);
 
 		eEquipSlot EquipSlot() { return m_equip_slot; }

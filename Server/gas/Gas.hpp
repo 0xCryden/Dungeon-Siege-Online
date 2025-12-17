@@ -18,36 +18,36 @@
 
 struct TemplateComponent
 {
-	std::unordered_map<std::string, std::string> fields;
-	std::unordered_map<std::string, TemplateComponent> subcomponents;
+	unordered_map<string, string> fields;
+	unordered_map<string, TemplateComponent> subcomponents;
 	// Get a field value by key
-	/*std::optional<std::string> GetField(const std::string& key) const {
+	/*optional<string> GetField(const string& key) const {
 		auto it = fields.find(key);
-		return it != fields.end() ? std::optional(it->second) : std::nullopt;
+		return it != fields.end() ? optional(it->second) : nullopt;
 	}*/
 
-	const std::string* GetField(const std::string& key) const {
+	const string* GetField(const string& key) const {
 		auto it = fields.find(key);
 		return it != fields.end() ? &it->second : nullptr;
 	}
-	int GetInt(const std::string& key, int defaultValue = 0) const {
+	int GetInt(const string& key, int defaultValue = 0) const {
 		if (auto* str = GetField(key))
-			return std::stoi(*str);
+			return stoi(*str);
 		return defaultValue;
 	}
-	float GetFloat(const std::string& key, float defaultValue = 0.0f) const {
+	float GetFloat(const string& key, float defaultValue = 0.0f) const {
 		if (auto* str = GetField(key))
-			return std::stof(*str);
+			return stof(*str);
 		return defaultValue;
 	}    
 	
 	// Extract the part before the comma (level)
-	std::string SkillLevelString(const std::string& key) const
+	string SkillLevelString(const string& key) const
 	{
-		if (const std::string* val = GetField(key))
+		if (const string* val = GetField(key))
 		{
 			size_t commaPos = val->find(',');
-			if (commaPos != std::string::npos)
+			if (commaPos != string::npos)
 				return val->substr(0, commaPos);
 			else
 				return *val; // whole string if no comma
@@ -55,12 +55,12 @@ struct TemplateComponent
 		return ""; // field not found
 	}
 	// Extract the part after the comma (experience)
-	std::string SkillExpString(const std::string& key) const
+	string SkillExpString(const string& key) const
 	{
-		if (const std::string* val = GetField(key))
+		if (const string* val = GetField(key))
 		{
 			size_t commaPos = val->find(',');
-			if (commaPos != std::string::npos)
+			if (commaPos != string::npos)
 				return val->substr(commaPos + 1);
 			else
 				return "0"; // default 0 if no comma
@@ -69,25 +69,25 @@ struct TemplateComponent
 	}
 
 	// Get a nested component by name
-	TemplateComponent* GetSubcomponent(const std::string& name) {
+	TemplateComponent* GetSubcomponent(const string& name) {
 		auto it = subcomponents.find(name);
 		return it != subcomponents.end() ? &it->second : nullptr;
 	}
 
-	const TemplateComponent* GetSubcomponent(const std::string& name) const {
+	const TemplateComponent* GetSubcomponent(const string& name) const {
 		auto it = subcomponents.find(name);
 		return it != subcomponents.end() ? &it->second : nullptr;
 	}
 
-	std::vector<std::string> GetFieldKeys() const {
-		std::vector<std::string> keys;
+	vector<string> GetFieldKeys() const {
+		vector<string> keys;
 		for (auto& pair : fields)
 			keys.push_back(pair.first);
 		return keys;
 	}
 
-	std::vector<std::string> GetSubcomponentNames() const {
-		std::vector<std::string> names;
+	vector<string> GetSubcomponentNames() const {
+		vector<string> names;
 		for (auto& pair : subcomponents)
 			names.push_back(pair.first);
 		return names;
@@ -96,19 +96,19 @@ struct TemplateComponent
 
 struct TemplateData
 {
-	std::string name;
-	std::string doc;
-	std::string specializes;
-	std::string region;
-	std::string scid;
-	std::unordered_map<std::string, TemplateComponent> components;
+	string name;
+	string doc;
+	string specializes;
+	string region;
+	string scid;
+	unordered_map<string, TemplateComponent> components;
 	// Get pointer to a component by name
-	TemplateComponent* GetComponent(const std::string& name) {
+	TemplateComponent* GetComponent(const string& name) {
 		auto it = components.find(name);
 		return it != components.end() ? &it->second : nullptr;
 	}
 
-	const TemplateComponent* GetComponent(const std::string& name) const {
+	const TemplateComponent* GetComponent(const string& name) const {
 		auto it = components.find(name);
 		return it != components.end() ? &it->second : nullptr;
 	}
@@ -117,82 +117,84 @@ struct TemplateData
 class TemplateManager {
 public:
 	// Store all templates by name
-	std::unordered_map<std::string, TemplateData> templates;
+	unordered_map<string, TemplateData> templates;
 	// Store all map templates by scid
-	std::unordered_map<std::string, TemplateData> mapTemplates;
+	unordered_map<string, TemplateData> mapTemplates;
 
 	// Load a template into memory
 	void AddTemplate(TemplateData tmpl) {
-		templates[tmpl.name] = std::move(tmpl);
+		templates[tmpl.name] = move(tmpl);
 	}
 
 	void AddMapTemplate(TemplateData tmpl) {
-		mapTemplates[tmpl.scid] = std::move(tmpl);
+		mapTemplates[tmpl.scid] = move(tmpl);
 	}
 
 	// Get template by name
-	TemplateData* GetTemplate(const std::string& name) {
+	TemplateData* GetTemplate(const string& name) {
 		auto it = templates.find(name);
 		return it != templates.end() ? &it->second : nullptr;
 	}
 
-	const TemplateData* GetTemplate(const std::string& name) const {
+	const TemplateData* GetTemplate(const string& name) const {
 		auto it = templates.find(name);
 		return it != templates.end() ? &it->second : nullptr;
 	}
 
-	TemplateData* GetMapTemplate(const std::string& scid) {
+	TemplateData* GetMapTemplate(const string& scid) {
 		auto it = mapTemplates.find(scid);
 		return it != mapTemplates.end() ? &it->second : nullptr;
 	}
 
-	const TemplateData* GetMapTemplate(const std::string& scid) const {
+	const TemplateData* GetMapTemplate(const string& scid) const {
 		auto it = mapTemplates.find(scid);
 		return it != mapTemplates.end() ? &it->second : nullptr;
 	}
 
 	void MergeComponent(TemplateComponent& target, const TemplateComponent& parent);
-	void ResolveTemplateInheritance(); 
+	void ResolveTemplateInheritance();
+	void MergeTemplates(TemplateData& child, const string& parent);
 	void MergeTemplates(TemplateData& child, const TemplateData& parent);
 
 	const auto& GetAll() const { return templates; }
+	auto& GetAllMap() { return mapTemplates; }
 	const auto& GetAllMap() const { return mapTemplates; }
 };
 
 extern TemplateManager manager;
 
 struct PlacementData {
-	std::string templateName;
-	std::string instanceName;
+	string templateName;
+	string instanceName;
 
 	SiegePos position;
 	vector_3 orientation; // Store only the vector part of the quaternion
-	std::string regionName; 
+	string regionName; 
 	vector<string> conversations; 
 	unordered_map<string, TemplateComponent> components;
 };
 
 class PlacementManager {
 private:
-	std::unordered_map<std::string, PlacementData> byInstanceName;
-	std::unordered_multimap<std::string, PlacementData*> byTemplateName;
+	unordered_map<string, PlacementData> byInstanceName;
+	unordered_multimap<string, PlacementData*> byTemplateName;
 
 public:
 	void AddPlacement(PlacementData data) {
-		std::string key = data.instanceName;
-		auto inserted = byInstanceName.emplace(key, std::move(data));
+		string key = data.instanceName;
+		auto inserted = byInstanceName.emplace(key, move(data));
 		if (inserted.second) {
 			byTemplateName.emplace(inserted.first->second.templateName, &inserted.first->second);
 		}
 	}
 
-	const PlacementData* GetByInstanceName(const std::string& instanceName) const {
+	const PlacementData* GetByInstanceName(const string& instanceName) const {
 		auto it = byInstanceName.find(instanceName);
 		return it != byInstanceName.end() ? &it->second : nullptr;
 	}
 
-	std::vector<const PlacementData*> GetByTemplateName(const std::string& templateName) const {
-		std::vector<const PlacementData*> result;
+	vector<const PlacementData*> GetByTemplateName(const string& templateName) const {
+		vector<const PlacementData*> result;
 		auto range = byTemplateName.equal_range(templateName);
 		for (auto it = range.first; it != range.second; ++it) {
 			result.push_back(it->second);
@@ -200,8 +202,8 @@ public:
 		return result;
 	}
 
-	std::vector<const PlacementData*> GetAllPlacements() const {
-		std::vector<const PlacementData*> result;
+	vector<const PlacementData*> GetAllPlacements() const {
+		vector<const PlacementData*> result;
 		result.reserve(byInstanceName.size());
 		for (const auto& [_, placement] : byInstanceName) {
 			result.push_back(&placement);
@@ -223,17 +225,17 @@ public:
 	void LoadGasToGo();
 
 	// Helper functions
-	std::string StripLineComment(const std::string& line);
-	std::string Trim(const std::string& s);
-	std::string ParseComponentName(const std::string& raw);
-	bool StartsWith(const std::string& str, const std::string& prefix);
-	void ParseGasBlock(std::istream& stream, TemplateComponent& outComp);
-	bool ReadActorPlacements(const std::string& fullPath, std::vector<PlacementData>& outPlacements);
-	bool ReadTemplatesFile(const std::string& fullPath, std::unordered_map<std::string, TemplateData>& outTemplates,
-		const std::unordered_set<std::string>& allowedComponents = {});
-	bool ReadMapTemplatesFile(const std::string& fullPath, std::unordered_map<std::string, TemplateData>& outTemplates,
-		const std::unordered_set<std::string>& allowedComponents = {});
-	void LogComponent(const std::string& name, const TemplateComponent& comp, const std::string& indent = "");
+	string StripLineComment(const string& line);
+	string Trim(const string& s);
+	string ParseComponentName(const string& raw);
+	bool StartsWith(const string& str, const string& prefix);
+	void ParseGasBlock(istream& stream, TemplateComponent& outComp);
+	bool ReadActorPlacements(const string& fullPath, vector<PlacementData>& outPlacements);
+	bool ReadTemplatesFile(const string& fullPath, unordered_map<string, TemplateData>& outTemplates,
+		const unordered_set<string>& allowedComponents = {});
+	bool ReadMapTemplatesFile(const string& fullPath, unordered_map<string, TemplateData>& outTemplates,
+		const unordered_set<string>& allowedComponents = {});
+	void LogComponent(const string& name, const TemplateComponent& comp, const string& indent = "");
 private:
 };
 extern Gas gas;

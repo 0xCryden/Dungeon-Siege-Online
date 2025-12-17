@@ -3,6 +3,8 @@
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xmlsave.h>
+#include <optional>
+#include <sstream>
 	
 namespace xml
 {
@@ -37,7 +39,42 @@ namespace xml
 		SetAttribute(node, attribute, ss.str());
 	}
 
-	template<typename T>
+	template <typename T>
+	void SetOrUpdateChildValue(xmlNode* parent, const char* tagName, const T& value)
+	{
+		if (!parent || !tagName)
+			return;
+
+		std::stringstream ss;
+		ss << value;
+
+		// Search for existing child node
+		for (xmlNode* child = parent->children; child; child = child->next)
+		{
+			if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST tagName))
+			{
+				// Update value
+				SetAttribute(child, "value", ss.str());
+				return;
+			}
+		}
+
+		// Not found — create new node
+		xmlNode* newNode = xmlNewChild(parent, NULL, BAD_CAST tagName, NULL);
+		SetAttribute(newNode, "value", ss.str());
+	}
+
+	// Specialization for std::optional<T>
+	template <typename T>
+	void SetOrUpdateChildValue(xmlNode* parent, const char* tagName, const std::optional<T>& value)
+	{
+		if (!value.has_value())
+			return; // don't serialize unset optional
+
+		SetOrUpdateChildValue(parent, tagName, *value); // recurse to general template
+	}
+
+	/*template<typename T>
 	void SetOrUpdateChildValue(xmlNode* parent, const char* tagName, const T & value)
 	{
 		stringstream ss;
@@ -59,5 +96,5 @@ namespace xml
 		// Not found — create new node
 		xmlNode* newNode = xmlNewChild(parent, NULL, BAD_CAST tagName, NULL);
 		SetAttribute(newNode, "value", ss.str());
-	}
+	}*/
 }

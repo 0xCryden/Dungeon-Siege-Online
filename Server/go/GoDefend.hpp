@@ -24,11 +24,13 @@
 	class GoDefend : public GoComponent
 	{
 		public:
-			
-			GoDefend (Go * go);
+
+			GoDefend(Go* go);
+			GoDefend(Go* go, const GoDefend& other);
 			GoDefend(Go* go, xmlNode* node);
 			GoDefend(Go* go, const TemplateComponent* tmpl);
 			
+			void InheritFrom(const GoDefend& other);
 			float Defense () const;
 
 			eDefendClass DefendClass () { return m_defend_class; };

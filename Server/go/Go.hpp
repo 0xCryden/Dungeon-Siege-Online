@@ -64,6 +64,8 @@ class Go
 		Go (uint32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
 		Go(const TemplateData& tmpl, const PlacementData& placement);
 		Go(const TemplateData& tmpl, const GoPlacement& placement);
+
+		Go(const Go* tmpl, const GoPlacement& placement);
 		~Go ();
 
 		void InheritFrom(const string& parentName); // used for creating a new go from either [an existing go, or a template]

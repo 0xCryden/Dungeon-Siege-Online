@@ -231,6 +231,77 @@ Go::Go(const TemplateData& tmpl, const GoPlacement& placement)
 	m_placement = new GoPlacement(this, placement);
 }
 
+Go::Go(const Go* tmpl, const GoPlacement& placement)
+	: m_template_name(tmpl->TemplateName()), m_specializes(""),
+	m_parent(nullptr), m_actor(nullptr), m_aspect(nullptr), m_attack(nullptr),
+	m_body(nullptr), m_common(nullptr), m_defend(nullptr), m_gui(nullptr),
+	m_inventory(nullptr), m_magic(nullptr), m_mind(nullptr), m_placement(nullptr)
+{
+	m_goid = godb.NextId();
+	m_admin = 0;
+
+	// Copy the placement first
+	m_placement = new GoPlacement(this, placement);
+
+	// Use the template to fill components
+	if (tmpl->m_specializes != "")
+	{
+		// Recursively inherit from parent template if needed
+		m_specializes = tmpl->m_specializes;
+		InheritFrom(tmpl->m_specializes);
+	}
+
+	if (tmpl->m_actor)
+	{
+		m_actor = new GoActor(this, *tmpl->m_actor);
+	}
+	if (tmpl->m_aspect)
+	{
+		m_aspect = new GoAspect(this, *tmpl->m_aspect);
+	}
+	if (tmpl->m_attack)
+	{
+		m_attack = new GoAttack(this, *tmpl->m_attack);
+	}
+	if (tmpl->m_body)
+	{
+		m_body = new GoBody(this, *tmpl->m_body);
+	}
+	if (tmpl->m_common)
+	{
+		m_common = new GoCommon(this, *tmpl->m_common);
+	}
+	if (tmpl->m_defend)
+	{
+		m_defend = new GoDefend(this, *tmpl->m_defend);
+	}
+	if (tmpl->m_gui)
+	{
+		m_gui = new GoGui(this, *tmpl->m_gui);
+	}
+	if (tmpl->m_inventory)
+	{
+		m_inventory = new GoInventory(this, *tmpl->m_inventory);
+	}
+	if (tmpl->m_magic)
+	{
+		m_magic = new GoMagic(this, *tmpl->m_magic);
+	}
+	if (tmpl->m_mind)
+	{
+		m_mind = new GoMind(this, *tmpl->m_mind);
+	}
+
+	// The placement is already provided, do not override
+	// If tmpl has a placement but you want to merge, you could call:
+	// if (tmpl->m_placement)
+	//     m_placement->InheritFrom(*tmpl->m_placement);
+
+	// TODO: Implement mob drops, pcontent, physics, scripts if needed
+}
+
+
+
 Go :: ~Go ()
 {
 	if (HasComponent("player"))
@@ -273,60 +344,60 @@ void Go::InheritFrom(const string& parentName)
 
 	if (parent->m_actor)
 	{
-		if (!m_actor) m_actor = new GoActor(this, parent->m_actor);
-		else          m_actor->InheritFrom(parent->m_actor);
+		if (!m_actor) m_actor = new GoActor(this, *parent->m_actor);
+		else          m_actor->InheritFrom(*parent->m_actor);
 	}
-	/*if (parent->m_aspect)
+	if (parent->m_aspect)
 	{
-		if (!m_aspect) m_aspect = new GoAspect(this, parent->m_aspect);
-		else           m_aspect->InheritFrom(parent->m_aspect);
+		if (!m_aspect) m_aspect = new GoAspect(this, *parent->m_aspect);
+		else           m_aspect->InheritFrom(*parent->m_aspect);
 	}
 	if (parent->m_attack)
 	{
-		if (!m_attack) m_attack = new GoAttack(this, parent->m_attack);
-		else           m_attack->InheritFrom(parent->m_attack);
+		if (!m_attack) m_attack = new GoAttack(this, *parent->m_attack);
+		else           m_attack->InheritFrom(*parent->m_attack);
 	}
 	if (parent->m_body)
 	{
-		if (!m_body) m_body = new GoBody(this, parent->m_body);
-		else          m_body->InheritFrom(parent->m_body);
+		if (!m_body) m_body = new GoBody(this, *parent->m_body);
+		else          m_body->InheritFrom(*parent->m_body);
 	}
 	if (parent->m_common)
 	{
-		if (!m_common) m_common = new GoCommon(this, parent->m_common);
-		else           m_common->InheritFrom(parent->m_common);
+		if (!m_common) m_common = new GoCommon(this, *parent->m_common);
+		else           m_common->InheritFrom(*parent->m_common);
 	}
 	if (parent->m_defend)
 	{
-		if (!m_defend) m_defend = new GoDefend(this, parent->m_defend);
-		else           m_defend->InheritFrom(parent->m_defend);
+		if (!m_defend) m_defend = new GoDefend(this, *parent->m_defend);
+		else           m_defend->InheritFrom(*parent->m_defend);
 	}
 	if (parent->m_gui)
 	{
-		if (!m_gui) m_gui = new GoGui(this, parent->m_gui);
-		else        m_gui->InheritFrom(parent->m_gui);
+		if (!m_gui) m_gui = new GoGui(this, *parent->m_gui);
+		else        m_gui->InheritFrom(*parent->m_gui);
 	}
 	if (parent->m_inventory)
 	{
-		if (!m_inventory) m_inventory = new GoInventory(this, parent->m_inventory);
-		else              m_inventory->InheritFrom(parent->m_inventory);
+		if (!m_inventory) m_inventory = new GoInventory(this, *parent->m_inventory);
+		else              m_inventory->InheritFrom(*parent->m_inventory);
 	}
 	if (parent->m_magic)
 	{
-		if (!m_magic) m_magic = new GoMagic(this, parent->m_magic);
-		else          m_magic->InheritFrom(parent->m_magic);
+		if (!m_magic) m_magic = new GoMagic(this, *parent->m_magic);
+		else          m_magic->InheritFrom(*parent->m_magic);
 	}
 	if (parent->m_mind)
 	{
-		if (!m_mind) m_mind = new GoMind(this, parent->m_mind);
-		else         m_mind->InheritFrom(parent->m_mind);
+		if (!m_mind) m_mind = new GoMind(this, *parent->m_mind);
+		else         m_mind->InheritFrom(*parent->m_mind);
 	}
 	if (parent->m_placement)
 	{
 		if (!m_placement) m_placement = new GoPlacement(this, *parent->m_placement);
-		else              m_placement->InheritFrom(parent->m_placement);
+		else              m_placement->InheritFrom(*parent->m_placement);
 	}
-	for (const auto& [name, script] : parent->m_scripts)
+	/*for (const auto& [name, script] : parent->m_scripts)
 	{
 		if (m_scripts.count(name) == 0)
 		{
@@ -1078,7 +1149,7 @@ void Go :: RemoveComponent (const string & component)
 void Go::SaveToXml(const string& folderName)
 {
     const string idStr = to_string(Goid());
-    const string path = "data/dynamic/" + folderName + "/" + idStr + ".xml";
+    const string path = "data/" + folderName + "/" + idStr + ".xml";
 
     xmlDoc* doc = xml::LoadFile(path);
     if (!doc) {

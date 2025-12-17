@@ -6,9 +6,10 @@
 #include "../Go/Go.hpp"
 #include "../map/WorldMap.h"
 
-Region :: Region (const string & filename, const string & name)
+Region :: Region (const string & worldname, const string & name)
 {
 	m_name = name;
+	const string filename = "maps/" + worldname + "/" + name + ".xml";
 
 	xmlDoc * document = xmlReadFile (filename.c_str(), NULL, 0);
 	if (document == NULL)
@@ -70,7 +71,7 @@ void Region :: AddNode (uint32_t id, float x, float y, float z, uint8_t rota)
 	}
 	// Add new node to .xml file
 	// Read existing content and remove </region>
-	const string filename = "data\\static\\map\\" + g_world.Name() + "\\" + Name() + ".xml";
+	const string filename = "maps\\" + g_world.Name() + "\\" + Name() + ".xml";
 	ifstream inFile(filename);
 	stringstream buffer;
 	string line;

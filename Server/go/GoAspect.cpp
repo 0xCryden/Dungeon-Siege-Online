@@ -26,6 +26,31 @@ GoAspect :: GoAspect (Go * go) : GoComponent (go)
 {
 }
 
+GoAspect::GoAspect(Go* go, const GoAspect& other) : GoComponent(go)
+{
+	// Copy all primitive members
+	m_bounding_sphere_radius = other.m_bounding_sphere_radius;
+	m_current_life = other.m_current_life;
+	m_current_mana = other.m_current_mana;
+	m_invincible = other.m_invincible;
+	m_visible = other.m_visible;
+	m_life_recovery_period = other.m_life_recovery_period;
+	m_life_recovery_unit = other.m_life_recovery_unit;
+	m_life_state = other.m_life_state;
+	m_last_died = other.m_last_died;
+	m_mana_recovery_period = other.m_mana_recovery_period;
+	m_mana_recovery_unit = other.m_mana_recovery_unit;
+	m_max_life = other.m_max_life;
+	m_max_mana = other.m_max_mana;
+	m_model = other.m_model; // string copies automatically
+	m_render_scale = other.m_render_scale;
+	m_experience_value = other.m_experience_value;
+
+	// Copy the texture array
+	for (int i = 0; i < 2; ++i)
+		m_textures[i] = other.m_textures[i];
+}
+
 GoAspect::GoAspect(Go* go, xmlNode* node) : GoComponent(go)
 {
 	if (node != NULL)
@@ -124,9 +149,11 @@ GoAspect::GoAspect(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (tmplComp == nullptr)
 		return;
 
-	m_render_scale = 1.0f;
-	m_life_recovery_period = 4;
-	m_mana_recovery_period = 4;
+	if (!m_render_scale.has_value())
+		m_render_scale = 1.0f;
+
+	//m_life_recovery_period = 4;
+	//m_mana_recovery_period = 4;
 
 	const string* f;
 	if (f = tmplComp->GetField("bounding_sphere_radius")) { try { m_bounding_sphere_radius = std::stof(*f); } catch (...) { m_bounding_sphere_radius = 0.0f; } }
@@ -157,6 +184,45 @@ GoAspect::GoAspect(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("render_scale")) { try { m_render_scale = std::stof(*f); } catch (...) { m_render_scale = 1.0f; } }
 	if (f = tmplComp->GetField("experience_value")) { try { m_experience_value = std::stof(*f); } catch (...) { m_experience_value = 1.0f; } }
 }
+
+void GoAspect::InheritFrom(const GoAspect& other)
+{
+	// Numeric members: inherit if still default
+	if (m_render_scale == 1.0f) m_render_scale = other.m_render_scale;
+	if (m_life_recovery_period == 4) m_life_recovery_period = other.m_life_recovery_period;
+	if (m_mana_recovery_period == 4) m_mana_recovery_period = other.m_mana_recovery_period;
+
+	if (m_bounding_sphere_radius == 0.0f) m_bounding_sphere_radius = other.m_bounding_sphere_radius;
+	if (m_max_life == 0.0f) m_max_life = other.m_max_life;
+	if (m_max_mana == 0.0f) m_max_mana = other.m_max_mana;
+	if (m_current_life == m_max_life) m_current_life = other.m_current_life;
+	if (m_current_mana == m_max_mana) m_current_mana = other.m_current_mana;
+
+	// Textures
+	if (m_textures[0].empty()) m_textures[0] = other.m_textures[0];
+	if (m_textures[1].empty()) m_textures[1] = other.m_textures[1];
+
+	// Bool members
+	if (!m_invincible) m_invincible = other.m_invincible;
+	if (m_visible == true) m_visible = other.m_visible;
+
+	// Recovery units
+	if (m_life_recovery_unit == 0.0f) m_life_recovery_unit = other.m_life_recovery_unit;
+	if (m_mana_recovery_unit == 0.0f) m_mana_recovery_unit = other.m_mana_recovery_unit;
+
+	// Life state
+	if (m_life_state == ls_alive_conscious) m_life_state = other.m_life_state;
+
+	// Last died
+	if (m_last_died == 0) m_last_died = other.m_last_died;
+
+	// Model
+	if (m_model.empty()) m_model = other.m_model;
+
+	// Experience
+	if (m_experience_value == 1.0f) m_experience_value = other.m_experience_value;
+}
+
 
 void GoAspect::Save(xmlNode* aspectNode) const
 {
@@ -260,7 +326,7 @@ string GoAspect :: Model () const
 
 float GoAspect :: RenderScale () const
 {
-	return m_render_scale;
+	return m_render_scale.value();
 }
 
 void GoAspect :: SetCurrentLife (float life)

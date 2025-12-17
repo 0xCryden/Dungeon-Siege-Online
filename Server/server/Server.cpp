@@ -225,8 +225,6 @@ std::vector<std::vector<std::string>> pantsStrings = {
     }
 };
 
-
-
 Server :: Server(/*Config config*/)
 	: m_wsa(std::make_unique<WinSockApi>())
 	, m_network(*this)
@@ -296,15 +294,15 @@ void Server::InitNetwork(const uint16_t port)
 
 void Server::LoadResources(const string& dataDir)
 {
-	Log::Write(Log::Level::INFO, "Loading maps...");
+	Log::Write(Log::Level::INFO, "Loading maps ...");
 	g_world.LoadAllMaps();
 
-	Log::Write(Log::Level::INFO, "Loading templates...");
+	Log::Write(Log::Level::INFO, "Loading templates ...");
 	gas.LoadTemplates();
 	gas.LoadMapTemplates();
 	//godb.LoadContentDb();
 
-	Log::Write(Log::Level::INFO, "Loading GO database...");
+	Log::Write(Log::Level::INFO, "Loading GO database ...");
 	godb.LoadGoDbFolder("items");
 	godb.LoadGoDbFolder("actors");
 	//godb.LoadContentDb(dataDir + "\\static\\actors.xml");
@@ -317,16 +315,39 @@ void Server::LoadResources(const string& dataDir)
 	//godb.LoadSpawns();
 
 	Log::Write(Log::Level::INFO, "Resource loading complete");
-}
 
+	if (TemplateData* tpl = manager.GetTemplate("mp_townfolk_female_01"))
+	{
+		cout << "[info] template: " << tpl->name << "\n";
+		if (!tpl->specializes.empty())
+			cout << "  specializes: " << tpl->specializes << "\n";
+
+		for (const auto& [compname, comp] : tpl->components) {
+			gas.LogComponent(compname, comp, "  ");
+		}
+	}
+}
 
 void Server::InitTimers()
 {
+	int64_t now = CurrentTime();  // must return ms or whatever your engine uses
+
+	// compute alignment offsets
+	int64_t delay_second = SECOND - (now % SECOND);
+	int64_t delay_minute = MINUTE - (now % MINUTE);
+	int64_t delay_hour = HOUR - (now % HOUR);
+
+	if (delay_second == 0) delay_second = SECOND;
+	if (delay_minute == 0) delay_minute = MINUTE;
+	if (delay_hour == 0) delay_hour = HOUR;
+
+	// this one seems to use a custom delay
 	PostWorldMessage(we_frustum_active_state_changed, 0, 0, "", CALC_FRUSTUM_DELAY);
 
-	PostWorldMessage(we_timer_second, 0, 0, "", SECOND);
-	PostWorldMessage(we_timer_minute, 0, 0, "", MINUTE);
-	PostWorldMessage(we_timer_hour, 0, 0, "", HOUR);
+	// boundary-aligned timers
+	PostWorldMessage(we_timer_second, 0, 0, "", delay_second);
+	PostWorldMessage(we_timer_minute, 0, 0, "", delay_minute);
+	PostWorldMessage(we_timer_hour, 0, 0, "", delay_hour);
 	//PostWorldMessage(we_timer_day, 0, 0, "", DAY);
 	//PostWorldMessage(we_timer_week, 0, 0, "", WEEK);
 }
@@ -358,7 +379,6 @@ void Server :: LoadAccounts (const string & filename)
 			{
 				Account * account = new Account (node);
 				m_accounts[username] = account;
-				std::cout << "Loaded account " << username.c_str() << std::endl;
 			}
 		}
 	}
@@ -375,7 +395,7 @@ Account * Server :: GetAccount (const string & account)
 
 void Server :: CreateAccount (const string & username, const string & password)
 {
-	const std::string path = "data/dynamic/accounts.xml";
+	const std::string path = "data/accounts.xml";
 
 	xmlDoc * document = xmlReadFile(path.c_str(), NULL, 0);
 	if (document == NULL)
@@ -431,7 +451,7 @@ void Server :: CreateAccount (const string & username, const string & password)
 
 void Server :: DeleteChar (int selectSlot, const string & username, const string & password)
 {
-	const std::string path = "data/dynamic/accounts.xml";
+	const std::string path = "data/accounts.xml";
 
 	xmlDoc * document = xmlReadFile (path.c_str(), NULL, 0);
 	if (document == NULL)
@@ -562,7 +582,7 @@ void Server :: CreateChar (const string & username, const string & charName, int
 	std::cout << "Selected Shirt:  " << strShirt << std::endl;
 
 	size_t count = g_engine.GetPlayerCharacters().size();
-	string charFile = "data\\dynamic\\actors\\" + to_string(count+1) + ".xml";
+	string charFile = "data\\actors\\" + to_string(count+1) + ".xml";
 
 	ofstream file(charFile);
 	if (!file.is_open())
@@ -650,7 +670,7 @@ void Server :: CreateChar (const string & username, const string & charName, int
 
 	godb.LoadGoDbSingleChar((uint32_t)(count+1));
 
-	const std::string path = "data/dynamic/accounts.xml";
+	const std::string path = "data/accounts.xml";
 
 	xmlDoc * document = xmlReadFile (path.c_str(), NULL, 0);
 	if (document == NULL)

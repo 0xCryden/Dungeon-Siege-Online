@@ -7,7 +7,7 @@ int main(int argc, char** argv)
     {
         Log::Init();
         // TODO implement configuration
-        //Config config = Config::loadFromFile("server.cfg");        // step 2
+        //Config config = Config::loadFromFile("server.cfg");
         Server server; // Server server(config);
         server.Start();
         server.Loop();

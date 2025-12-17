@@ -1,1 +1,16 @@
-Unhandled std::exception: recursive_directory_iterator::recursive_directory_iterator: The system cannot find the path specified.: "data/static/templates"
+Fatal std::exception: recursive_directory_iterator::recursive_directory_iterator: The system cannot find the path specified.: "data/static/templates"
+[2025-11-19 07:49:12] [INFO]  [INIT] Network constructor entered
+[2025-11-19 07:49:12] [INFO]  [INIT] WSAStartup result: 0
+[2025-11-19 07:49:12] [INFO]  [INIT] Network constructor finished
+[2025-11-19 07:49:12] [INFO]  
+[2025-11-19 07:49:12] [INFO]      ###   DungeonSiegeOnline v0.5   ###
+[2025-11-19 07:49:12] [INFO]  
+[2025-11-19 07:49:12] [INFO]  RNG initialized
+[2025-11-19 07:49:12] [INFO]  System guards initialized
+[2025-11-19 07:49:12] [INFO]  [BIND] Listening on port 4000, socket: 360
+[2025-11-19 07:49:12] [INFO]  Network bound on port 4000
+[2025-11-19 07:49:12] [INFO]  Loading maps...
+[2025-11-19 07:49:12] [ERROR] Error while scanning map directory: directory_iterator::directory_iterator: The system cannot find the path specified.: "data/static/map/"
+[2025-11-19 07:49:12] [INFO]  Loading templates...
+[2025-11-19 07:49:12] [INFO]  [CLEANUP] Cleaning up network...
+[2025-11-19 07:49:12] [INFO]  [CLEANUP] Network cleanup complete.

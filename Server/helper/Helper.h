@@ -3,9 +3,12 @@
 
 #include <thread>
 #include <chrono>
+#include <algorithm>
 
 void sleep_microseconds(unsigned int us);
 void sleep_milliseconds(unsigned int ms);
+std::string StripQuotes(const std::string& s);
+
 inline bool FromString(const std::string& value, bool& out)
 {
     std::string v = value;

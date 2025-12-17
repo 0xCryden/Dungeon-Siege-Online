@@ -396,7 +396,6 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 
 				// Schedule next attack decision at full attack time
 				PostWorldMessage (we_mind_processing_new_job, from, to, "", attTime);
-
 			}
 			
 			else if (job == "jat_attack_object_ranged")

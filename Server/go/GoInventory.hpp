@@ -31,11 +31,13 @@
 	class GoInventory : public GoComponent
 	{
 		public:
-			
-			GoInventory (Go * go);
+
+			GoInventory(Go* go);
+			GoInventory(Go* go, const GoInventory& other);
 			GoInventory(Go* go, xmlNode* node);
 			GoInventory(Go* go, const TemplateComponent* tmplComp);
 			
+			void InheritFrom(const GoInventory& other);
 			void Save(xmlNode* inventoryNode) const;
 			bool Add (Go * item);
 			bool Contains (const Go * item) const;
@@ -65,7 +67,6 @@
 			bool HasCustomHead () const;
 
 		private:
-			
 			GopSet m_inventory;
 			eInventoryLocation m_selected_active_location;
 			map<eEquipSlot, Go *> m_equipment;

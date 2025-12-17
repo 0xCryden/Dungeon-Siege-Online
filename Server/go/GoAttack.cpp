@@ -10,6 +10,17 @@ GoAttack :: GoAttack (Go * go) : GoComponent (go)
 {
 }
 
+GoAttack::GoAttack(Go* newGo, const GoAttack& other) : GoComponent(newGo) // attach to new Go
+{
+	m_attack_range = other.m_attack_range;
+	m_critical_hit_chance = other.m_critical_hit_chance;
+	m_damage_max = other.m_damage_max;
+	m_damage_min = other.m_damage_min;
+	m_two_handed = other.m_two_handed;
+	m_reload_delay = other.m_reload_delay;
+	m_attack_class = other.m_attack_class;
+}
+
 GoAttack :: GoAttack (Go * go, xmlNode * node) : GoComponent (go)
 {
 	if (node != NULL)
@@ -65,6 +76,18 @@ GoAttack::GoAttack(Go* go, const TemplateComponent* tmplComp) : GoComponent (go)
 	if (f = tmplComp->GetField("is_two_handed")) { if (FromString(*f, m_two_handed) != true) m_two_handed = false; }
 	if (f = tmplComp->GetField("reload_delay")) { try { m_reload_delay = static_cast<uint64_t>(std::stoi(*f)); } catch (...) { m_reload_delay = 0; } }
 	if (f = tmplComp->GetField("attack_class")) { if (FromString(*f, m_attack_class) != true) m_attack_class = ac_beastfu; }
+}
+
+void GoAttack::InheritFrom(const GoAttack& other)
+{
+	// Only inherit if still at default/fallback values
+	if (m_attack_range == 1.0f)         m_attack_range = other.m_attack_range;
+	if (m_critical_hit_chance == 0.0f) m_critical_hit_chance = other.m_critical_hit_chance;
+	if (m_damage_max == 0.0f)           m_damage_max = other.m_damage_max;
+	if (m_damage_min == 0.0f)           m_damage_min = other.m_damage_min;
+	if (m_two_handed == false)          m_two_handed = other.m_two_handed;
+	if (m_reload_delay == 0)            m_reload_delay = other.m_reload_delay;
+	if (m_attack_class == ac_beastfu)   m_attack_class = other.m_attack_class;
 }
 
 void GoAttack :: Save (xmlNode* attackNode) const

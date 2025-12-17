@@ -29,9 +29,11 @@
 		public:
 			
 			GoAspect(Go * go);
+			GoAspect(Go* go, const GoAspect& originAspect); // copy
 			GoAspect(Go * go, xmlNode * node);
 			GoAspect(Go* go, const TemplateComponent* tmpl);
 
+			void InheritFrom(const GoAspect& other);
 			void Save(xmlNode* aspectNode) const;
 
 			float BoundingSphereRadius () const;
@@ -87,7 +89,7 @@
 			float m_max_life;
 			float m_max_mana;
 			string m_model; // template name?
-			float m_render_scale;
+			optional<float> m_render_scale;
 
 			float m_experience_value;
 	};

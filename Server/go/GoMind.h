@@ -12,11 +12,13 @@
 class GoMind : public GoComponent
 {
 	public:
-			
-		GoMind (Go * go);
+
+		GoMind(Go* go);
+		GoMind(Go* go, const GoMind& other);
 		GoMind (Go * go, xmlNode * node);
 		GoMind(Go* go, const TemplateComponent* tmplComp);
 
+		void InheritFrom(const GoMind& other);
 		int64_t TimeElapsedSinceLastMeleeAttack () const;
 		int64_t TimeElapsedSinceLastRangedAttack () const;
 		int64_t TimeElapsedSinceLastSpellCast () const;

@@ -23,6 +23,12 @@ GoDefend :: GoDefend (Go * go) : GoComponent (go)
 {
 }
 
+GoDefend::GoDefend(Go* newGo, const GoDefend& other) : GoComponent(newGo) // attach to new Go
+{
+	m_defense = other.m_defense;
+	m_defend_class = other.m_defend_class;
+}
+
 GoDefend::GoDefend(Go* go, xmlNode* node) : GoComponent(go)
 {
 	if (node != NULL)
@@ -54,6 +60,12 @@ GoDefend::GoDefend(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 
 	if (f = tmplComp->GetField("defense")) { try { m_defense = std::stof(*f); } catch (...) { m_defense = 0.0f; } }
 	if (f = tmplComp->GetField("defend_class")) { if (FromString(*f, m_defend_class) != true) m_defend_class = dc_skin; }
+}
+
+void GoDefend::InheritFrom(const GoDefend& other)
+{
+	if (m_defense == 0.0f)          m_defense = other.m_defense;
+	if (m_defend_class == dc_skin)  m_defend_class = other.m_defend_class;
 }
 
 float GoDefend :: Defense () const

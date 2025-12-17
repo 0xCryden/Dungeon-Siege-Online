@@ -10,14 +10,16 @@ class Region;
 class GoPlacement : public GoComponent
 {
 	public:
-			
-		GoPlacement (Go * go);
+
+		GoPlacement(Go* go);
+		GoPlacement(Go* go, const GoPlacement& other);
 		GoPlacement (Go * go, xmlNode * node);
 		GoPlacement(Go* go, const TemplateComponent* tmplComp);
 		// Copy constructor
-		GoPlacement(Go* go, const GoPlacement& other);
+		//GoPlacement(Go* go, const GoPlacement& other);
 		GoPlacement(Go* go, const PlacementData& data);
 
+		void InheritFrom(const GoPlacement& other);
 		void Save (xmlNode* placementNode) const;
 
 		bool IsDirty () const;

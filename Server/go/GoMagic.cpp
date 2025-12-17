@@ -31,6 +31,18 @@ GoMagic :: GoMagic (Go * go) : GoComponent (go)
 {
 }
 
+GoMagic::GoMagic(Go* newGo, const GoMagic& other) : GoComponent(newGo) // attach to new Go
+{
+	m_skill_class = other.m_skill_class;       // default "mc_none"
+	m_required_level = other.m_required_level;    // default 1.0f
+	m_cast_sub_animation = other.m_cast_sub_animation; // default 1
+	m_cast_range = other.m_cast_range;        // default 1.0f
+	m_cast_reload_delay = other.m_cast_reload_delay;  // default 1
+	m_effect_duration = other.m_effect_duration;   // default 1
+	m_defensive = other.m_defensive;         // default false
+	m_offensive = other.m_offensive;         // default false
+}
+
 GoMagic :: GoMagic (Go * go, xmlNode * node) : GoComponent (go)
 {
 	if (node != NULL)
@@ -90,6 +102,18 @@ GoMagic::GoMagic(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("effect_duration")) { try { m_effect_duration = static_cast<int32_t>(std::stoi(*f)); } catch (...) { m_effect_duration = 1; } }
 	if (f = tmplComp->GetField("defensive")) { if (FromString(*f, m_defensive) != true) m_defensive = false; }
 	if (f = tmplComp->GetField("offensive")) { if (FromString(*f, m_offensive) != true) m_offensive = false; }
+}
+
+void GoMagic::InheritFrom(const GoMagic& other)
+{
+	if (m_skill_class == "mc_none")          m_skill_class = other.m_skill_class;
+	if (m_required_level == 1.0f)           m_required_level = other.m_required_level;
+	if (m_cast_sub_animation == 1)           m_cast_sub_animation = other.m_cast_sub_animation;
+	if (m_cast_range == 1.0f)               m_cast_range = other.m_cast_range;
+	if (m_cast_reload_delay == 1)            m_cast_reload_delay = other.m_cast_reload_delay;
+	if (m_effect_duration == 1)              m_effect_duration = other.m_effect_duration;
+	if (m_defensive == false)                m_defensive = other.m_defensive;
+	if (m_offensive == false)                m_offensive = other.m_offensive;
 }
 
 bool GoMagic :: IsCastableOn (Go * go) const

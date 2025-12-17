@@ -9,11 +9,8 @@
 Network::Network(Server& server)
     : m_server(server)
 {
-    Log::Write(Log::Level::INFO, "[INIT] Network constructor entered", true);
-
 #ifdef _WIN32
     int result = WSAStartup(MAKEWORD(2, 2), &m_wsadata);
-    Log::WriteF(Log::Level::INFO, "[INIT] WSAStartup result: %d", result);
 
     if (result != 0) {
         Log::WriteF(Log::Level::ERR, "[ERROR] WSAStartup failed with error %d", result);
@@ -23,8 +20,6 @@ Network::Network(Server& server)
 
     FD_ZERO(&m_descriptors);
     FD_ZERO(&m_active);
-
-    Log::Write(Log::Level::INFO, "[INIT] Network constructor finished", true);
 }
 
 Network::~Network()
@@ -48,8 +43,6 @@ void Network::Bind(uint16_t port)
 {
     m_listening.Bind(port);
     m_listening.Listen();
-
-    Log::WriteF(Log::Level::INFO, "[BIND] Listening on port %u, socket: %llu", port, static_cast<unsigned long long>(m_listening.data()));
 
     m_listening.SetNonBlockingFlag(true);
     FD_SET(m_listening.data(), &m_descriptors);

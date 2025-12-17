@@ -8,6 +8,14 @@ GoGui::GoGui(Go* go) : GoComponent(go)
 {
 }
 
+GoGui::GoGui(Go* newGo, const GoGui& other) : GoComponent(newGo) // attach to new Go
+{
+    m_equip_slot = other.m_equip_slot;
+    m_inventory_width = other.m_inventory_width;
+    m_inventory_height = other.m_inventory_height;
+    m_equip_requirements = other.m_equip_requirements; // assuming std::string or similar
+}
+
 GoGui::GoGui(Go* go, xmlNode* node) : GoComponent(go)
 {
 	if (node != NULL)
@@ -51,6 +59,21 @@ GoGui::GoGui(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 
     // TODO implement usage
     if (f = tmplComp->GetField("equip_requirements")) { SetEquipRequirements(*f); }
+}
+
+void GoGui::InheritFrom(const GoGui& other)
+{
+    // Merge map: add keys from 'other' if they don't exist in this
+    for (const auto& [key, value] : other.m_equip_requirements)
+    {
+        if (m_equip_requirements.find(key) == m_equip_requirements.end())
+        {
+            m_equip_requirements[key] = value;
+        }
+    }
+    if (m_equip_slot == es_none)                 m_equip_slot = other.m_equip_slot;
+    if (m_inventory_width == 0)                  m_inventory_width = other.m_inventory_width;
+    if (m_inventory_height == 0)                 m_inventory_height = other.m_inventory_height;
 }
 
 void GoGui::SetEquipRequirements(const std::string& input)

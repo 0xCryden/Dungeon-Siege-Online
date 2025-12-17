@@ -18,9 +18,17 @@
 
 #include "Go.hpp"
 #include "GoCommon.hpp"
+#include "../helper/Helper.h"
 
 GoCommon :: GoCommon (Go * go) : GoComponent (go)
 {
+}
+
+GoCommon::GoCommon(Go* newGo, const GoCommon& other) : GoComponent(newGo) // attach to new Go
+{
+	m_auto_expiration_class = other.m_auto_expiration_class;
+	m_forced_expiration_class = other.m_forced_expiration_class;
+	m_screen_name = other.m_screen_name;
 }
 
 GoCommon :: GoCommon (Go * go, xmlNode * node) : GoComponent (go)
@@ -56,7 +64,14 @@ GoCommon::GoCommon(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	const string* f;
 	if (f = tmplComp->GetField("auto_expiration_class")) { try { m_auto_expiration_class = *f; } catch (...) { m_auto_expiration_class = ""; } }
 	if (f = tmplComp->GetField("forced_expiration_class")) { try { m_forced_expiration_class = *f; } catch (...) { m_forced_expiration_class = ""; } }
-	if (f = tmplComp->GetField("screen_name")) { try { m_screen_name = *f; } catch (...) { m_screen_name = ""; } }
+	if (f = tmplComp->GetField("screen_name")) { try { m_screen_name = StripQuotes(*f); } catch (...) { m_screen_name = ""; } }
+}
+
+void GoCommon::InheritFrom(const GoCommon& other)
+{
+	if (m_auto_expiration_class.empty())   m_auto_expiration_class = other.m_auto_expiration_class;
+	if (m_forced_expiration_class.empty()) m_forced_expiration_class = other.m_forced_expiration_class;
+	if (m_screen_name.empty())             m_screen_name = other.m_screen_name;
 }
 
 void GoCommon :: Save (xmlNode* commonNode) const

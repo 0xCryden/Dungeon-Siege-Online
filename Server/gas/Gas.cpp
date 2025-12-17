@@ -25,7 +25,7 @@ void TemplateManager::MergeComponent(TemplateComponent& target, const TemplateCo
 void TemplateManager::ResolveTemplateInheritance() {
     unordered_set<string> resolving;
 
-    size_t totalLoaded = 0;
+    //size_t totalLoaded = 0;
     function<void(TemplateData&)> resolve = [&](TemplateData& tpl) {
         if (tpl.specializes.empty())
             return;
@@ -48,7 +48,7 @@ void TemplateManager::ResolveTemplateInheritance() {
             //cout << "Merging component: " << compName << " from " << it->first << " into " << tpl.name << endl;
             auto& derivedComp = tpl.components[compName];
             MergeComponent(derivedComp, parentComp);
-            ++totalLoaded;
+            //++totalLoaded;
         }
 
         resolving.erase(tpl.name);
@@ -57,8 +57,14 @@ void TemplateManager::ResolveTemplateInheritance() {
     for (auto& [name, tpl] : templates) {
         resolve(tpl);
     }
-    Log::Write(Log::Level::INFO, "[INFO] Finished resolving Inheritances. Total components merged: " + to_string(totalLoaded), true);
+    //Log::Write(Log::Level::INFO, "[INFO] Finished resolving inheritances. Total components merged: " + to_string(totalLoaded), true);
 }
+
+void TemplateManager::MergeTemplates(TemplateData& child, const string& parent)
+{
+    MergeTemplates(child, *GetTemplate(parent));
+}
+
 // normal template = child, scid template = parent
 void TemplateManager::MergeTemplates(TemplateData& child, const TemplateData& parent)
 {
@@ -81,7 +87,7 @@ void TemplateManager::MergeTemplates(TemplateData& child, const TemplateData& pa
     }
 
     /*Log::Write(Log::Level::INFO,
-        "[INFO] MergeTemplates: Merged " + std::to_string(mergedCount) +
+        "[INFO] MergeTemplates: Merged " + to_string(mergedCount) +
         " components from parent '" + parent.name +
         "' into child '" + child.scid + "'",
         true);*/
@@ -643,8 +649,9 @@ bool Gas::ReadMapTemplatesFile(
     }
 
     if (outTemplates.empty()) {
-        cerr << "[WARN] No SCID templates found in file: " << fullPath << endl;
-        return false;
+        //cerr << "[WARN] No SCID templates found in file: " << fullPath << endl;
+        //return false;
+        return true;
     }
 
     return true;
@@ -669,84 +676,148 @@ void Gas::LogComponent(const string& name, const TemplateComponent& comp, const 
 
 void Gas::LoadTemplates()
 {
-    //unordered_map<string, TemplateData> templates;
     unordered_set<string> allowed = { "actor", "aspect", "mind" };
-
-    const string rootPath = "data/static/templates";
+    const fs::path tanksRoot = "resources";
 
     size_t totalLoaded = 0;
 
-    for (const auto& entry : fs::recursive_directory_iterator(rootPath)) {
-        if (entry.is_regular_file() && entry.path().extension() == ".gas") {
-            const string filePath = entry.path().string();
+    // Iterate all tank folders
+    for (const auto& tankEntry : fs::directory_iterator(tanksRoot))
+    {
+        if (!tankEntry.is_directory())
+            continue;
 
-            unordered_map<string, TemplateData> fileTemplates;
-            if (ReadTemplatesFile(filePath, fileTemplates, allowed)) {
-                for (auto& [name, tpl] : fileTemplates) {
-                    //cout << "Loaded Template: " << name << " from " << filePath << endl;
-                    manager.AddTemplate(move(tpl));
-                    ++totalLoaded;
+        const fs::path tankRoot = tankEntry.path();
+
+        vector<fs::path> orderedDirs;
+        fs::path coreDir;
+        fs::path interactiveDir;
+
+        // Collect first-level folders inside the tank
+        for (const auto& entry : fs::directory_iterator(tankRoot))
+        {
+            if (!entry.is_directory())
+                continue;
+
+            const string name = entry.path().filename().string();
+
+            if (name == "_core")
+                coreDir = entry.path();
+            else if (name == "interactive")
+                interactiveDir = entry.path();
+            else
+                orderedDirs.push_back(entry.path());
+        }
+
+        // Deterministic order for remaining folders
+        sort(orderedDirs.begin(), orderedDirs.end());
+
+        vector<fs::path> loadOrder;
+
+        if (!coreDir.empty())
+            loadOrder.push_back(coreDir);
+
+        if (!interactiveDir.empty())
+            loadOrder.push_back(interactiveDir);
+
+        loadOrder.insert(loadOrder.end(), orderedDirs.begin(), orderedDirs.end());
+
+        // Load templates in enforced order for this tank
+        for (const auto& dir : loadOrder)
+        {
+            for (const auto& entry : fs::recursive_directory_iterator(dir))
+            {
+                if (entry.is_regular_file() && entry.path().extension() == ".gas")
+                {
+                    unordered_map<string, TemplateData> fileTemplates;
+
+                    if (ReadTemplatesFile(entry.path().string(), fileTemplates, allowed))
+                    {
+                        for (auto& [name, tpl] : fileTemplates)
+                        {
+                            manager.AddTemplate(std::move(tpl));
+                            ++totalLoaded;
+                        }
+                    }
                 }
             }
         }
     }
+
     manager.ResolveTemplateInheritance();
 
-    Log::Write(Log::Level::INFO, "[INFO] Finished loading templates. Total loaded: " + to_string(totalLoaded), true);
+    Log::Write(
+        Log::Level::INFO,
+        to_string(totalLoaded) + " templates loaded",
+        true
+    );
 }
 
 void Gas::LoadMapTemplates()
 {
-    string basePath = "data/static/map/multiplayer_world/regions";
+    const fs::path mapsRoot = "maps";
     size_t totalLoaded = 0;
 
-    // Iterate through all region subfolders
-    for (const auto& entry : fs::recursive_directory_iterator(basePath))
+    if (!fs::exists(mapsRoot) || !fs::is_directory(mapsRoot))
     {
-        if (!entry.is_regular_file())
+        Log::Write(Log::Level::ERR, "Maps directory not found: maps/", true);
+        return;
+    }
+
+    // Iterate over maps/<mapName>/
+    for (const auto& mapEntry : fs::directory_iterator(mapsRoot))
+    {
+        if (!mapEntry.is_directory())
             continue;
 
-        const fs::path& path = entry.path();
+        fs::path regionsPath = mapEntry.path() / "regions";
+        if (!fs::exists(regionsPath) || !fs::is_directory(regionsPath))
+            continue;
 
-        // Accept ANY .gas inside objects/regular/
-        if (path.extension() == ".gas" && path.filename() == "actor.gas")
+        // Scan maps/<mapName>/regions/**/*
+        for (const auto& entry : fs::recursive_directory_iterator(regionsPath))
         {
+            if (!entry.is_regular_file())
+                continue;
+
+            const fs::path& path = entry.path();
+
+            if (path.extension() != ".gas" || path.filename() != "actor.gas")
+                continue;
+
             auto parent = path.parent_path();        // regular
-            auto grandparent = parent.parent_path();       // objects
-            auto regionFolder = grandparent.parent_path(); // .../<REGION>
+            auto grandparent = parent.parent_path();      // objects
+            auto regionFolder = grandparent.parent_path();// <REGION>
 
-            // Check folder structure: .../objects/regular/<file>.gas
-            if (parent.filename() == "regular" &&
-                grandparent.filename() == "objects")
+            // Enforce structure: <REGION>/objects/regular/actor.gas
+            if (parent.filename() != "regular" ||
+                grandparent.filename() != "objects")
+                continue;
+
+            string regionName = regionFolder.filename().string();
+            string fullPath = path.string();
+
+            unordered_map<string, TemplateData> fileTemplates;
+            unordered_set<string> allowedComponents;
+
+            if (!ReadMapTemplatesFile(fullPath, fileTemplates, allowedComponents))
             {
-                string regionName = regionFolder.filename().string();
-                string fullPath = path.string();
+                Log::Write(Log::Level::ERR,
+                    "Failed to load SCID templates from " + fullPath, true);
+                continue;
+            }
 
-                unordered_map<string, TemplateData> fileTemplates;
-                unordered_set<string> allowedComponents; // no filtering
-
-                // --- Load SCID templates from file ---
-                if (!ReadMapTemplatesFile(fullPath, fileTemplates, allowedComponents)) {
-                    Log::Write(Log::Level::ERR,
-                        "Failed to load SCID templates from " + fullPath, true);
-                    continue;
-                }
-
-                // --- Store SCID templates with region name ---
-                for (auto& [scid, tpl] : fileTemplates)
-                {
-                    tpl.region = regionName;
-
-                    manager.mapTemplates[scid] = tpl;
-                    ++totalLoaded;
-                }
+            for (auto& [scid, tpl] : fileTemplates)
+            {
+                tpl.region = regionName;
+                manager.mapTemplates[scid] = tpl;
+                ++totalLoaded;
             }
         }
     }
 
     Log::Write(Log::Level::INFO,
-        "[INFO] Finished loading SCID map templates. Total loaded: "
-        + std::to_string(totalLoaded), true);
+        to_string(totalLoaded) + " SCID templates loaded", true);
 
     // -----------------------------------------
     // Merge SCID templates → normal templates
@@ -764,60 +835,10 @@ void Gas::LoadMapTemplates()
             continue;
         }
 
-        // Merge SCID parent into normal child
         manager.MergeTemplates(scidTpl, *normalTpl);
         ++mergeCount;
     }
 
     Log::Write(Log::Level::INFO,
-        "[INFO] SCID template merge done. Templates updated: "
-        + std::to_string(mergeCount), true);
+        to_string(mergeCount) + " SCID templates updated", true);
 }
-
-
-/*void Gas::LoadMapTemplates() {
-    namespace fs = filesystem;
-
-    string basePath = "data/static/map/multiplayer_world/regions";
-    size_t totalLoaded = 0;
-
-    for (const auto& entry : fs::recursive_directory_iterator(basePath)) 
-    {
-        if (!entry.is_regular_file())
-            continue;
-
-        const fs::path& path = entry.path();
-
-        // We only want .../objects/regular/actor.gas
-        if (path.filename() == "actor.gas") {
-            auto parent = path.parent_path();                 // regular
-            auto grandparent = parent.parent_path();          // objects
-            auto regionFolder = grandparent.parent_path();    // .../<REGION>
-            string regionName = regionFolder.filename().string();
-
-            if (parent.filename() == "regular" && grandparent.filename() == "objects") {
-                
-                vector<PlacementData> placements;
-                string fullPath = path.string();
-
-                if (ReadActorPlacements(fullPath, placements)) {
-                    //cout << "Loaded " << placements.size() << " actor placements from " << fullPath << ":\n";
-
-                    for (auto& p : placements) {
-                        //cout << "Loaded: " << p.templateName << " at ("
-                        //          << p.position.X << ", " << p.position.Y << ", " << p.position.Z
-                        //         << "), facing (" << p.orientation.x << ", " << p.orientation.y << ", " << p.orientation.z << ")\n";
-                        p.regionName = regionName;
-                        placementManager.AddPlacement(move(p));
-                        ++totalLoaded;
-                    }
-                }
-                else {
-                    Log::Write(Log::Level::ERR, "Failed to load actor placements from " + fullPath, true);
-                }
-            }
-        }
-    }
-    Log::Write(Log::Level::INFO, "Total actor placements loaded: " + to_string(totalLoaded), true);
-}
-*/

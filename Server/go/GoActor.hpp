@@ -31,12 +31,12 @@ class GoActor : public GoComponent
 public:
 			
 	GoActor (Go * go);
-	GoActor(Go* go, GoActor* actor); // copy
+	GoActor(Go* go, const GoActor& actor); // copy
 	GoActor(Go* go, xmlNode* node); // should be GoActor (xmlNode * node);
 	GoActor (Go* go, const TemplateComponent* tmpl);
 	~GoActor ();
 	
-	void InheritFrom(GoActor* parent);
+	void InheritFrom(const GoActor& parent);
 
 	void Save(xmlNode* actorNode) const;
 	void SaveSkills(xmlNode* actorNode) const;

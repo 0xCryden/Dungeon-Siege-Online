@@ -23,11 +23,13 @@
 	class GoCommon : public GoComponent
 	{
 		public:
-			
-			GoCommon (Go * go);
+
+			GoCommon(Go* go);
+			GoCommon(Go* go, const GoCommon& other);
 			GoCommon (Go * go, xmlNode * node);
 			GoCommon(Go* go, const TemplateComponent* tmplComp);
 
+			void InheritFrom(const GoCommon& other);
 			void Save(xmlNode* commonNode) const;
 
 			string AutoExpirationClass () const;
