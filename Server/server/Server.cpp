@@ -342,7 +342,7 @@ void Server::InitTimers()
 	if (delay_hour == 0) delay_hour = HOUR;
 
 	// this one seems to use a custom delay
-	PostWorldMessage(we_frustum_active_state_changed, 0, 0, "", CALC_FRUSTUM_DELAY);
+	//PostWorldMessage(we_frustum_active_state_changed, 0, 0, "", CALC_FRUSTUM_DELAY);
 
 	// boundary-aligned timers
 	PostWorldMessage(we_timer_second, 0, 0, "", delay_second);

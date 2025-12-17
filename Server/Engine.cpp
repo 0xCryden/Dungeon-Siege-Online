@@ -644,8 +644,9 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 
 void Engine::TimerPerSecond()
 {
-
+	CalculateFrustums();
 }
+
 void Engine::TimerPerMinute()
 {
 	Log::Write(Log::Level::INFO, "[ENGINE] ####### [START] Timer Per Minute #######", true);
