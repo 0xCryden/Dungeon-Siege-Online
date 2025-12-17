@@ -1,0 +1,39 @@
+[t:template,n:portal_halfgiant]
+{
+	specializes	= halfgiant;
+	
+	[actor]
+	{
+		is_hero=true;
+		screen_class = "Farmer";
+		alignment = aa_good;
+	}
+	[inventory]
+	{
+	}
+	[common]
+	{
+		screen_name = "";
+	}
+	
+	[mind]
+	{
+		jat_move = world\ai\jobs\dsmmorpg\job_move.skrit;
+		jat_get = world\ai\jobs\dsmmorpg\job_get.skrit;
+		jat_drop = world\ai\jobs\dsmmorpg\job_drop.skrit;
+		jat_equip = world\ai\jobs\dsmmorpg\job_equip.skrit;
+		jat_use = world\ai\jobs\dsmmorpg\job_use.skrit;
+		jat_attack_object = world\ai\jobs\dsmmorpg\job_attack_object.skrit;
+		
+		jat_brain = world\ai\jobs\dsmmorpg\job_nothing.skrit;
+		jat_follow = world\ai\jobs\dsmmorpg\job_nothing.skrit;
+	}
+	
+	[portal]
+	{
+	}
+
+	[print_occupants_in_sphere] 
+	{
+	}
+}

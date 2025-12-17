@@ -1,0 +1,134 @@
+/*
+ *  This file is part of dsmmorpg.
+ *  
+ *  dsmmorpg is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  dsmmorpg is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with dsmmorpg.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+[shirts]
+{
+	[common]
+	{
+        * = b_c_pos_a1_shrt_004;
+        * = b_c_pos_a1_shrt_005;
+		* = b_c_pos_a1_shrt_008;
+		* = b_c_pos_a1_shrt_009;
+		* = b_c_pos_a1_shrt_010;
+		* = b_c_pos_a1_shrt_011;
+        * = b_c_pos_a1_shrt_012;
+       	* = b_c_pos_a1_shrt_013;
+		* = b_c_pos_a1_shrt_014;
+        * = b_c_pos_a1_shrt_015;
+        * = b_c_pos_a1_shrt_016;
+		* = b_c_pos_a1_shrt_017;
+		* = b_c_pos_a1_shrt_018; // total 14x
+	}
+
+	[farmboy]
+	{
+		* = include_common;
+		* = b_c_pos_a1_jondar;
+	}
+
+	[farmgirl]
+	{
+		* = include_common;
+		* = b_c_pos_a1_lyssa;
+	}
+
+	[dwarf]
+	{
+		* = include_common;
+	}
+
+	[skeleton_good]
+	{
+	}
+
+	[halfgiant]
+	{
+		* = include_common;
+		* = b_c_pos_a1_100;
+		* = b_c_pos_a1_200;
+		* = b_c_pos_a1_300;
+	}
+	
+	[utraean_boy]
+	{
+		* = include_common;
+		* = b_c_pos_a1_utraean-01; // full skin
+	}
+	[utraean_girl]
+	{
+		* = include_common;
+		* = b_c_pos_a1_utraean-01; // full skin
+		* = b_c_pos_a1_utraean-04; // full skin
+	}	
+	[dsx_mp_farmboy]
+	{
+		* = include_common;
+		* = b_c_pos_a1_jondar;
+	}
+
+	[dsx_mp_farmgirl]
+	{
+		* = include_common;
+		* = b_c_pos_a1_lyssa;
+	}
+
+	[dsx_mp_dwarf]
+	{
+		* = include_common;
+	}
+
+	[dsx_mp_skeleton_]
+	{
+	}
+
+	[portal_halfgiant]
+	{
+		* = include_common;
+		* = b_c_pos_a1_100; // full skin
+		* = b_c_pos_a1_200; // full skin
+		* = b_c_pos_a1_300; // full skin
+	}
+	[portal_utraean_boy]
+	{
+		* = include_common;
+		* = b_c_pos_a1_utraean-01; // full skin
+	}
+	[portal_utraean_girl]
+	{
+		* = include_common;
+		* = b_c_pos_a1_utraean-01; // full skin
+		* = b_c_pos_a1_utraean-04; // full skin
+	}	
+	[portal_farmboy]
+	{
+		* = include_common;
+		* = b_c_pos_a1_jondar; //
+	}
+	[portal_farmgirl]
+	{
+		* = include_common;
+		* = b_c_pos_a1_lyssa; // added
+	}
+	[portal_dwarf]
+	{
+		* = include_common;
+	}
+	[portal_skeleton]
+	{
+	}
+}
+

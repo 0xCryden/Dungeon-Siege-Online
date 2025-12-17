@@ -4,14 +4,15 @@
 # ---------------------------------------------------------
 
 # Build results
-Debug/data/dynamic/
+bin/Debug/data/
+bin/DebugLOA/data/
+bin/Release/data/
 Server/Debug/
 Server/Release/
 dsdll/Debug/
 dsdll/Release/
 dsdll/DebugLOA/
 dsdll/ReleaseLOA/
-bin/
 obj/
 out/
 build/
@@ -19,6 +20,8 @@ build-*/
 [Bb]uild/
 x64/
 x86/
+bin/x64/
+bin/x86/
 ARM/
 ARM64/
 
@@ -69,6 +72,8 @@ vcpkg_installed/
 *.log
 *.tmp
 *.temp
+
+log.txt
 
 # OS junk
 # Windows

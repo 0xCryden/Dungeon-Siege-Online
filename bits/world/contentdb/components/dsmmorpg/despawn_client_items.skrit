@@ -1,0 +1,53 @@
+/*
+ *  This file is part of dsmmorpg.
+ *  
+ *  dsmmorpg is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  dsmmorpg is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with dsmmorpg.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+owner = GoSkritComponent;
+
+#include "k_inc_rs_packet"
+
+			Go			go$;
+
+
+startup state startup$
+{
+	event OnGoHandleMessage$ (eWorldEvent event$, WorldMessage message$)
+	{
+		if (event$ == we_entered_world)
+		{
+			go$ = owner.Go;
+
+			if (go$.IsItem())
+			{
+				//report.screenf ("go with despawn_client_items is item");
+				if (go$.HasComponent("object"))
+				{
+					//report.screenf ("go with despawn_client_items HasComponent Object");
+					if (go$.GetComponentInt ("object", "id") == 0)
+					{
+						report.screenf ("go with despawn_client_items deleting  ...");
+						PostWorldMessage (we_req_delete, go$.Goid, go$.Goid, 0.0);
+					}
+				}
+				/*else
+				{
+					report.screenf ("go with despawn_client_items deleting  ...");
+					PostWorldMessage (we_req_delete, go$.Goid, go$.Goid, 0.0);
+				}*/
+			}
+		}
+	}
+}

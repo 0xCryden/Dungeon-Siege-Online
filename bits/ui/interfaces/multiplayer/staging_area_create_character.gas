@@ -1,0 +1,1872 @@
+/*
+ *  This file is part of dsmmorpg.
+ *  
+ *  dsmmorpg is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  dsmmorpg is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with dsmmorpg.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+[staging_area_create_character]
+{
+	interface = true;
+
+	skrit = [[
+
+		owner = UIWindow;
+		
+		#include "k_inc_ui"
+		#include "k_inc_rs_packet"
+		begin$()
+		{
+			UIShell.HideInterface( "dso_char_select" );
+			UIShell.DeactivateInterface( "dso_char_select" );
+		}
+
+		btn_prev_character$()
+		{
+			string selectSlot$;
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) );
+			uiText$.GetText( selectSlot$);
+
+			int max$ = 6;
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != 0) { current$ -= 1; } else { current$ = max$; }
+			report.screenf("New current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+
+		} btn_next_character$() {
+
+			string selectSlot$;
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) );
+			uiText$.GetText( selectSlot$);
+
+			int max$ = 6;
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != max$) { current$ += 1; } else { current$ = 0; }
+			report.screenf("New current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		}
+
+		btn_prev_hair$()
+		{	
+			report.screenf ("btn_prev_hair pressed");
+			string num$; 
+			int max$;
+			int min$ = 0;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			// heads 0- max 9
+			if (selectChar$ == "0") { 
+				num$ = "selected_hair_0"; 
+				max$ = 9; 
+				string selectHead$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_head_0", "staging_area_create_character" ) ); uiText$.GetText( selectHead$);
+				if (selectHead$ == "1" || selectHead$ == "2")
+				{
+					max$ = 5;
+					// if old selected num > 6  selected num = 0
+				}
+				else if (selectHead$ == "3" || selectHead$ == "4")
+				{
+					min$ = 6;
+					// if old selected num is out of bounds selected hair = 6
+				}
+			}
+			if (selectChar$ == "4") { 
+				num$ = "selected_hair_4"; 
+				max$ = 9; 
+				string selectHead$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_head_4", "staging_area_create_character" ) ); uiText$.GetText( selectHead$);
+				if (selectHead$ == "1" || selectHead$ == "2")
+				{
+					max$ = 5;
+					// if old selected num > 6  selected num = 0
+				}
+				else if (selectHead$ == "3" || selectHead$ == "4")
+				{
+					min$ = 6;
+					// if old selected num is out of bounds selected hair = 6
+				}
+			}
+			if (selectChar$ == "1") { num$ = "selected_hair_1"; max$ = 9; }
+			if (selectChar$ == "2") { num$ = "selected_hair_2"; max$ = 0; }
+			if (selectChar$ == "3") { num$ = "selected_hair_3"; max$ = 0; }
+			
+			if (selectChar$ == "5") { num$ = "selected_hair_5"; max$ = 10; }
+			if (selectChar$ == "6") { num$ = "selected_hair_6"; max$ = 10; }
+
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+
+			if (current$ > min$) { current$ -= 1; } else { current$ = max$; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		} btn_next_hair$() {
+			report.screenf ("btn_next_hair pressed");
+			string num$;
+			int max$;
+			int min$ = 0;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { 
+				num$ = "selected_hair_0"; 
+				max$ = 9; 
+				string selectHead$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_head_0", "staging_area_create_character" ) ); uiText$.GetText( selectHead$);
+				if (selectHead$ == "1" || selectHead$ == "2")
+				{
+					// if old selected num > 6  selected num = 0
+					max$ = 5;
+				}
+				else if (selectHead$ == "3" || selectHead$ == "4")
+				{
+					// if old selected num is out of bounds selected hair = 6
+					min$ = 6;
+				}
+			}
+			if (selectChar$ == "4") { 
+				num$ = "selected_hair_4"; 
+				max$ = 9; 
+				string selectHead$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_head_4", "staging_area_create_character" ) ); uiText$.GetText( selectHead$);
+				if (selectHead$ == "1" || selectHead$ == "2")
+				{
+					// if old selected num > 6  selected num = 0
+					max$ = 5;
+				}
+				else if (selectHead$ == "3" || selectHead$ == "4")
+				{
+					// if old selected num is out of bounds selected hair = 6
+					min$ = 6;
+				}
+			}
+			if (selectChar$ == "1") { num$ = "selected_hair_1"; max$ = 9; }
+			if (selectChar$ == "2") { num$ = "selected_hair_2"; max$ = 0; }
+			if (selectChar$ == "3") { num$ = "selected_hair_3"; max$ = 0; }
+			
+			if (selectChar$ == "5") { num$ = "selected_hair_5"; max$ = 10; }
+			if (selectChar$ == "6") { num$ = "selected_hair_6"; max$ = 10; }
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+
+			if (current$ < max$) { current$ += 1; } else { current$ = min$; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		}
+
+		btn_prev_head$()
+		{	
+			report.screenf ("btn_prev_head pressed");
+			string num$; 
+			string hairNum$;
+			int max$;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { hairNum$ = "selected_hair_0"; num$ = "selected_head_0"; max$ = 4; }
+			if (selectChar$ == "1") { num$ = "selected_head_1"; max$ = 4; }
+			if (selectChar$ == "2") { num$ = "selected_head_2"; max$ = 0; }
+			if (selectChar$ == "3") { num$ = "selected_head_3"; max$ = 0; }
+			if (selectChar$ == "4") { hairNum$ = "selected_hair_4"; num$ = "selected_head_4"; max$ = 4; }
+			if (selectChar$ == "5") { num$ = "selected_head_5"; max$ = 4; }
+			if (selectChar$ == "6") { num$ = "selected_head_6"; max$ = 0; }
+
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != 0) { current$ -= 1; } else { current$ = max$; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+			
+			// hairtohead adjustment
+			if (selectChar$ == "0")
+			{
+				if (current$ == 0)
+				{
+					report.screenf ("going from head 1 to 0");
+				}
+				else if (current$ == 2) // if going from 3 to 2
+				{
+					report.screenf ("going from head 3 to 2");
+					string selectHair$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+					int currentHair$ = MakeInt(selectHair$);
+
+					// reset hair select to 0 internal
+					
+					if (currentHair$ > 5)
+					{
+						while (currentHair$ > 0)
+						{
+							btn_prev_hair$();
+							currentHair$ -= 1;
+							report.screenf ("new current hair: %d", currentHair$);
+						}
+					}
+				}
+				else if (current$ == 4) // if going from 0 to 4
+				{
+					report.screenf ("going from head 0 to 4");
+					string selectHair$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+					int currentHair$ = MakeInt(selectHair$);
+
+					// if selected hair < min set selected hair to min (6)
+					while (currentHair$ < 6)
+					{
+						btn_next_hair$();
+						currentHair$ += 1;
+						report.screenf ("new current hair: %d", currentHair$);
+					}
+				}
+			}
+
+			if (selectChar$ == "4")
+			{
+				if (current$ == 0)
+				{
+					report.screenf ("going from head 1 to 0");
+				}
+				else if (current$ == 2) // if going from 3 to 2
+				{
+					report.screenf ("going from head 3 to 2");
+					string selectHair$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+					int currentHair$ = MakeInt(selectHair$);
+
+					// reset hair select to 0 internal
+					
+					if (currentHair$ > 5)
+					{
+						while (currentHair$ > 0)
+						{
+							btn_prev_hair$();
+							currentHair$ -= 1;
+							report.screenf ("new current hair: %d", currentHair$);
+						}
+					}
+				}
+				else if (current$ == 4) // if going from 0 to 4
+				{
+					report.screenf ("going from head 0 to 4");
+					string selectHair$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+					int currentHair$ = MakeInt(selectHair$);
+
+					// if selected hair < min set selected hair to min (6)
+					while (currentHair$ < 6)
+					{
+						btn_next_hair$();
+						currentHair$ += 1;
+						report.screenf ("new current hair: %d", currentHair$);
+					}
+				}
+			}
+		} btn_next_head$() {
+			report.screenf ("btn_next_head pressed");
+			string num$;
+			string hairNum$;
+			int max$;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { hairNum$ = "selected_hair_0"; num$ = "selected_head_0"; max$ = 4; }
+			if (selectChar$ == "1") { num$ = "selected_head_1"; max$ = 4; }
+			if (selectChar$ == "2") { num$ = "selected_head_2"; max$ = 0; }
+			if (selectChar$ == "3") { num$ = "selected_head_3"; max$ = 0; }
+			if (selectChar$ == "4") { hairNum$ = "selected_hair_4"; num$ = "selected_head_4"; max$ = 4; }
+			if (selectChar$ == "5") { num$ = "selected_head_5"; max$ = 4; }
+			if (selectChar$ == "6") { num$ = "selected_head_6"; max$ = 0; }
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != max$) { current$ += 1; } else { current$ = 0; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+
+			// hairtohead adjustment
+			if (selectChar$ == "0")
+			{
+				if (current$ == 0) // if going from 4 to 0
+				{
+					report.screenf ("going from head 4 to 0");
+				}
+				else if (current$ == 1) // if going from 0 to 1
+				{
+					report.screenf ("going from head 0 to 1");
+					string selectHair$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+					int currentHair$ = MakeInt(selectHair$);
+
+					// if selected hair > 5 reset hair select to 0 internal
+					if (currentHair$ > 5)
+					{
+						while (currentHair$ > 0)
+						{
+							btn_prev_hair$();
+							currentHair$ -= 1;
+							report.screenf ("new current hair: %d", currentHair$);
+						}
+					}
+				}
+				else if (current$ == 3) // if going from 2 to 3
+				{
+					report.screenf ("going from head 2 to 3");
+					string selectHair$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+					int currentHair$ = MakeInt(selectHair$);
+
+					//report.screenf ("currentHair: %d", currentHair$);
+					while (currentHair$ < 6)
+					{
+						btn_next_hair$();
+						currentHair$ += 1;
+						report.screenf ("new current hair: %d", currentHair$);
+					}
+					// if selected hair < min set selected hair to min
+				}
+			}
+			if (selectChar$ == "4")
+			{
+				if (current$ == 0) // if going from 4 to 0
+				{
+					report.screenf ("going from head 4 to 0");
+				}
+				else if (current$ == 1) // if going from 0 to 1
+				{
+					report.screenf ("going from head 0 to 1");
+					string selectHair$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+					int currentHair$ = MakeInt(selectHair$);
+
+					// if selected hair > 5 reset hair select to 0 internal
+					
+					if (currentHair$ > 5)
+					{
+						while (currentHair$ > 0)
+						{
+							btn_prev_hair$();
+							currentHair$ -= 1;
+							report.screenf ("new current hair: %d", currentHair$);
+						}
+					}
+				}
+				else if (current$ == 3) // if going from 2 to 3
+				{
+					report.screenf ("going from head 2 to 3");
+					string selectHair$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+					int currentHair$ = MakeInt(selectHair$);
+
+					//report.screenf ("currentHair: %d", currentHair$);
+					while (currentHair$ < 6)
+					{
+						btn_next_hair$();
+						currentHair$ += 1;
+						report.screenf ("new current hair: %d", currentHair$);
+					}
+					// if selected hair < min set selected hair to min
+				}
+			}
+		}
+
+		btn_prev_face$() // "skin"
+		{	
+			report.screenf ("btn_prev_face pressed");
+			string num$; 
+			int max$;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { num$ = "selected_face_0"; max$ = 10; } // first is extra full body skin
+			if (selectChar$ == "1") { num$ = "selected_face_1"; max$ = 10; } // first is extra full body skin
+			if (selectChar$ == "2") { num$ = "selected_face_2"; max$ = 5; } //
+			if (selectChar$ == "3") { num$ = "selected_face_3"; max$ = 2; } // 
+			if (selectChar$ == "4") { num$ = "selected_face_4"; max$ = 2; } 
+			if (selectChar$ == "5") { num$ = "selected_face_5"; max$ = 1; }
+			if (selectChar$ == "6") { num$ = "selected_face_6"; max$ = 6; }
+
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != 0) { current$ -= 1; } else { current$ = max$; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		} btn_next_face$() {
+			report.screenf ("btn_next_face pressed");
+			string num$;
+			int max$;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { num$ = "selected_face_0"; max$ = 10; } // first is extra full body skin
+			if (selectChar$ == "1") { num$ = "selected_face_1"; max$ = 10; } // first is extra full body skin
+			if (selectChar$ == "2") { num$ = "selected_face_2"; max$ = 5; } //
+			if (selectChar$ == "3") { num$ = "selected_face_3"; max$ = 2; } //
+			if (selectChar$ == "4") { num$ = "selected_face_4"; max$ = 2; } 
+			if (selectChar$ == "5") { num$ = "selected_face_5"; max$ = 1; }
+			if (selectChar$ == "6") { num$ = "selected_face_6"; max$ = 6; }
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != max$) { current$ += 1; } else { current$ = 0; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		}
+
+		btn_prev_shirt$()
+		{	
+			report.screenf ("btn_prev_shirt pressed");
+			string num$; 
+			int max$;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { num$ = "selected_shirt_0"; max$ = 13; }
+			if (selectChar$ == "1") { num$ = "selected_shirt_1"; max$ = 13; }
+			if (selectChar$ == "2") { num$ = "selected_shirt_2"; max$ = 12; }
+			if (selectChar$ == "3") { num$ = "selected_shirt_3"; max$ = 0; }
+			if (selectChar$ == "4") { num$ = "selected_shirt_4"; max$ = 13; }
+			if (selectChar$ == "5") { num$ = "selected_shirt_5"; max$ = 14; }
+			if (selectChar$ == "6") { num$ = "selected_shirt_6"; max$ = 15; }
+
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != 0) { current$ -= 1; } else { current$ = max$; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		} btn_next_shirt$() {
+			report.screenf ("btn_next_shirt pressed");
+			string num$;
+			int max$;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { num$ = "selected_shirt_0"; max$ = 13; }
+			if (selectChar$ == "1") { num$ = "selected_shirt_1"; max$ = 13; }
+			if (selectChar$ == "2") { num$ = "selected_shirt_2"; max$ = 12; }
+			if (selectChar$ == "3") { num$ = "selected_shirt_3"; max$ = 0; }
+			if (selectChar$ == "4") { num$ = "selected_shirt_4"; max$ = 13; }
+			if (selectChar$ == "5") { num$ = "selected_shirt_5"; max$ = 14; }
+			if (selectChar$ == "6") { num$ = "selected_shirt_6"; max$ = 15; }
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != max$) { current$ += 1; } else { current$ = 0; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		}
+
+		btn_prev_pants$()
+		{	
+			report.screenf ("btn_prev_pants pressed");
+			string num$; 
+			int max$;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { num$ = "selected_pants_0"; max$ = 11; }
+			if (selectChar$ == "1") { num$ = "selected_pants_1"; max$ = 11; }
+			if (selectChar$ == "2") { num$ = "selected_pants_2"; max$ = 11; }
+			if (selectChar$ == "3") { num$ = "selected_pants_3"; max$ = 0; }
+			if (selectChar$ == "4") { num$ = "selected_pants_4"; max$ = 11; }
+			if (selectChar$ == "5") { num$ = "selected_pants_5"; max$ = 11; }
+			if (selectChar$ == "6") { num$ = "selected_pants_6"; max$ = 11; }
+
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != 0) { current$ -= 1; } else { current$ = max$; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		} btn_next_pants$() {
+			report.screenf ("btn_next_pants pressed");
+			string num$;
+			int max$;
+			string selectChar$; UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) ); uiText$.GetText( selectChar$);
+
+			if (selectChar$ == "0") { num$ = "selected_pants_0"; max$ = 11; }
+			if (selectChar$ == "1") { num$ = "selected_pants_1"; max$ = 11; }
+			if (selectChar$ == "2") { num$ = "selected_pants_2"; max$ = 11; }
+			if (selectChar$ == "3") { num$ = "selected_pants_3"; max$ = 0; }
+			if (selectChar$ == "4") { num$ = "selected_pants_4"; max$ = 11; }
+			if (selectChar$ == "5") { num$ = "selected_pants_5"; max$ = 11; }
+			if (selectChar$ == "6") { num$ = "selected_pants_6"; max$ = 11; }
+			string selectSlot$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( num$, "staging_area_create_character" ) ); uiText$.GetText( selectSlot$);
+
+			int current$ = MakeInt(selectSlot$);
+			report.screenf("current: %d", current$);
+			if (current$ != max$) { current$ += 1; } else { current$ = 0; }
+			report.screenf("new current: %d", current$);
+			uiText$.SetText( MakeString(current$), true);
+		}
+
+		resetSelChar$()
+		{
+			string selectChar$;
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) );
+			uiText$.GetText( selectChar$);
+			int currentChar$ = MakeInt(selectChar$);
+
+			report.screenf ("resetSelChar");
+
+			while ((currentChar$) > 0)
+			{
+				btn_prev_character$();
+				Messenger.Notify ( "previous_character", UIShell.FindUIWindow( "button_prev_character", "staging_area_create_character" ));
+				currentChar$ -= 1;
+			}
+		}
+		resetSelCharSettings$()
+		{
+			string selectChar$;
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) );
+			uiText$.GetText( selectChar$);
+			int currentChar$ = MakeInt(selectChar$);
+
+			report.screenf ("resetSelCharSettings");
+			
+			string headNum$;
+			string faceNum$;
+			string hairNum$;
+			string shirtNum$;
+			string pantsNum$;
+			if (selectChar$ == "0") { headNum$ = "selected_head_0"; faceNum$ = "selected_face_0"; hairNum$ = "selected_hair_0"; shirtNum$ = "selected_shirt_0"; pantsNum$ = "selected_pants_0"; }
+			if (selectChar$ == "1") { headNum$ = "selected_head_1"; faceNum$ = "selected_face_1"; hairNum$ = "selected_hair_1"; shirtNum$ = "selected_shirt_1"; pantsNum$ = "selected_pants_1"; }
+			if (selectChar$ == "2") { headNum$ = "selected_head_2"; faceNum$ = "selected_face_2"; hairNum$ = "selected_hair_2"; shirtNum$ = "selected_shirt_2"; pantsNum$ = "selected_pants_2"; }
+			if (selectChar$ == "3") { headNum$ = "selected_head_3"; faceNum$ = "selected_face_3"; hairNum$ = "selected_hair_3"; shirtNum$ = "selected_shirt_3"; pantsNum$ = "selected_pants_3"; }
+			if (selectChar$ == "4") { headNum$ = "selected_head_4"; faceNum$ = "selected_face_4"; hairNum$ = "selected_hair_4"; shirtNum$ = "selected_shirt_4"; pantsNum$ = "selected_pants_4"; }
+			if (selectChar$ == "5") { headNum$ = "selected_head_5"; faceNum$ = "selected_face_5"; hairNum$ = "selected_hair_5"; shirtNum$ = "selected_shirt_5"; pantsNum$ = "selected_pants_5"; }
+			if (selectChar$ == "6") { headNum$ = "selected_head_6"; faceNum$ = "selected_face_6"; hairNum$ = "selected_hair_6"; shirtNum$ = "selected_shirt_6"; pantsNum$ = "selected_pants_6"; }
+
+			string selectHead$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( headNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHead$);
+			int currentHead$ = MakeInt(selectHead$);
+			report.screenf("initial head: %d", currentHead$);
+			/*if (selectChar$ == "0")
+			{
+				string selectHair$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+				int currentHair$ = MakeInt(selectHair$);
+
+				if (currentHead$ == 1 || currentHead$ == 2)
+				{
+					if (currentHair$ > 5)
+					{
+						currentHair$ = 0;
+					}
+				}
+				else if (currentHead$ == 3 || currentHead$ == 4)
+				{
+					if (currentHair$ < 6)
+					{
+						currentHair$ = 6;
+					}
+				}
+
+				uiText$.SetText( MakeString(currentHair$), true );
+			}*/
+
+			while (currentHead$  > 0) { btn_prev_head$(); Messenger.Notify("char_prev_head",  UIShell.FindUIWindow("button_prev_head",  "staging_area_create_character")); currentHead$ -= 1; }
+			
+			string selectFace$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( faceNum$, "staging_area_create_character" ) ); uiText$.GetText( selectFace$);
+			int currentFace$ = MakeInt(selectFace$);
+			report.screenf("initial face: %d", currentFace$);
+			while (currentFace$  > 0) { btn_prev_face$(); Messenger.Notify("char_prev_face",  UIShell.FindUIWindow("button_prev_face",  "staging_area_create_character")); currentFace$ -= 1; }
+			
+			string selectHair$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+			int currentHair$ = MakeInt(selectHair$);
+			report.screenf("initial hair: %d", currentHair$);
+			while (currentHair$  > 0) { btn_prev_hair$(); Messenger.Notify("char_prev_hair",  UIShell.FindUIWindow("button_prev_hair",  "staging_area_create_character")); currentHair$ -= 1; }
+			
+			string selectShirt$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( shirtNum$, "staging_area_create_character" ) ); uiText$.GetText( selectShirt$);
+			int currentShirt$ = MakeInt(selectShirt$);
+			report.screenf("initial shirt: %d", currentShirt$);
+			while (currentShirt$ > 0) { btn_prev_shirt$(); Messenger.Notify("char_prev_shirt", UIShell.FindUIWindow("button_prev_shirt", "staging_area_create_character")); currentShirt$ -= 1; }
+			
+			string selectPants$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( pantsNum$, "staging_area_create_character" ) ); uiText$.GetText( selectPants$);
+			int currentPants$ = MakeInt(selectPants$);
+			report.screenf("initial pants: %d", currentPants$);
+			while (currentPants$ > 0) { btn_prev_pants$(); Messenger.Notify("char_prev_pants", UIShell.FindUIWindow("button_prev_pants", "staging_area_create_character")); currentPants$ -= 1; }
+			// TODO need to also call btn_prev_head
+		}
+
+		resetSettings$()
+		{
+			resetSelCharSettings$();
+
+			resetSelChar$();
+
+			/*resetSelChar$();
+			int counter$ = 0;
+			int max$ = 7;
+			while (counter$ < max$)
+			{
+				// reset current
+				resetSelCharSettings$();
+				Messenger.Notify ( "previous_character", UIShell.FindUIWindow( "button_prev_character", "staging_area_create_character" ));
+				report.screenf ("current num: %d", counter$ );
+				counter$ += 1;
+			}*/
+			
+			/*string selectChar$;
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) );
+			uiText$.GetText( selectChar$);
+			int currentChar$ = MakeInt(selectChar$);
+			
+			report.screenf ("resetting settings: sel char: %d", currentChar$);
+			
+			string headNum$  = "selected_head_" + selectChar$;
+			string faceNum$  = "selected_face_" + selectChar$;
+			string hairNum$  = "selected_hair_" + selectChar$;
+			string shirtNum$ = "selected_shirt_" + selectChar$;
+			string pantsNum$ = "selected_pants_" + selectChar$;
+
+			string s$;
+			uiText$ = QueryDerivedText(UIShell.FindUIWindow(headNum$, "staging_area_create_character")); uiText$.GetText(s$); int currentHead$ = MakeInt(s$);
+			report.screenf("initial head: %d", currentHead$);
+
+			uiText$ = QueryDerivedText(UIShell.FindUIWindow(faceNum$, "staging_area_create_character")); uiText$.GetText(s$); int currentFace$ = MakeInt(s$);
+			report.screenf("initial face: %d", currentFace$);
+
+			uiText$ = QueryDerivedText(UIShell.FindUIWindow(hairNum$, "staging_area_create_character")); uiText$.GetText(s$); int currentHair$ = MakeInt(s$);
+			report.screenf("initial hair: %d", currentHair$);
+
+			uiText$ = QueryDerivedText(UIShell.FindUIWindow(shirtNum$, "staging_area_create_character")); uiText$.GetText(s$); int currentShirt$ = MakeInt(s$);
+			report.screenf("initial shirt: %d", currentShirt$);
+
+			uiText$ = QueryDerivedText(UIShell.FindUIWindow(pantsNum$, "staging_area_create_character")); uiText$.GetText(s$); int currentPants$ = MakeInt(s$);
+			report.screenf("initial pants: %d", currentPants$);
+
+			while (currentHead$  > 0) { Messenger.Notify("char_prev_head",  UIShell.FindUIWindow("button_prev_head",  "staging_area_create_character")); currentHead$ -= 1; }
+			while (currentFace$  > 0) { Messenger.Notify("char_prev_face",  UIShell.FindUIWindow("button_prev_face",  "staging_area_create_character")); currentFace$ -= 1; }
+			while (currentHair$  > 0) { Messenger.Notify("char_prev_hair",  UIShell.FindUIWindow("button_prev_hair",  "staging_area_create_character")); currentHair$ -= 1; }
+			while (currentShirt$ > 0) { Messenger.Notify("char_prev_shirt", UIShell.FindUIWindow("button_prev_shirt", "staging_area_create_character")); currentShirt$ -= 1; }
+			while (currentPants$ > 0) { Messenger.Notify("char_prev_pants", UIShell.FindUIWindow("button_prev_pants", "staging_area_create_character")); currentPants$ -= 1; }
+
+			while ((currentChar$) > 0)
+			{
+				Messenger.Notify ( "previous_character", UIShell.FindUIWindow( "button_prev_character", "staging_area_create_character" ));
+				currentChar$ -= 1;
+			}*/
+		}
+
+		accept$()
+		{
+			string name$; QueryDerivedEditBox (UIShell.FindUIWindow ("staging_char_name_edit_box_new", "staging_area_create_character")).GetText (name$);
+			
+			string selectChar$;
+			UIText uiText$ = QueryDerivedText( UIShell.FindUIWindow( "selected_char", "staging_area_create_character" ) );
+			uiText$.GetText( selectChar$);
+			int currentChar$ = MakeInt(selectChar$);
+			
+			string headNum$;
+			string faceNum$;
+			string hairNum$;
+			string shirtNum$;
+			string pantsNum$;
+			if (selectChar$ == "0") { headNum$ = "selected_head_0"; faceNum$ = "selected_face_0"; hairNum$ = "selected_hair_0"; shirtNum$ = "selected_shirt_0"; pantsNum$ = "selected_pants_0"; }
+			if (selectChar$ == "1") { headNum$ = "selected_head_1"; faceNum$ = "selected_face_1"; hairNum$ = "selected_hair_1"; shirtNum$ = "selected_shirt_1"; pantsNum$ = "selected_pants_1"; }
+			if (selectChar$ == "2") { headNum$ = "selected_head_2"; faceNum$ = "selected_face_2"; hairNum$ = "selected_hair_2"; shirtNum$ = "selected_shirt_2"; pantsNum$ = "selected_pants_2"; }
+			if (selectChar$ == "3") { headNum$ = "selected_head_3"; faceNum$ = "selected_face_3"; hairNum$ = "selected_hair_3"; shirtNum$ = "selected_shirt_3"; pantsNum$ = "selected_pants_3"; }
+			if (selectChar$ == "4") { headNum$ = "selected_head_4"; faceNum$ = "selected_face_4"; hairNum$ = "selected_hair_4"; shirtNum$ = "selected_shirt_4"; pantsNum$ = "selected_pants_4"; }
+			if (selectChar$ == "5") { headNum$ = "selected_head_5"; faceNum$ = "selected_face_5"; hairNum$ = "selected_hair_5"; shirtNum$ = "selected_shirt_5"; pantsNum$ = "selected_pants_5"; }
+			if (selectChar$ == "6") { headNum$ = "selected_head_6"; faceNum$ = "selected_face_6"; hairNum$ = "selected_hair_6"; shirtNum$ = "selected_shirt_6"; pantsNum$ = "selected_pants_6"; }
+			
+			string selectHead$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( headNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHead$);
+			int currentHead$ = MakeInt(selectHead$);
+
+			string selectFace$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( faceNum$, "staging_area_create_character" ) ); uiText$.GetText( selectFace$);
+			int currentFace$ = MakeInt(selectFace$);
+			
+			string selectHair$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( hairNum$, "staging_area_create_character" ) ); uiText$.GetText( selectHair$);
+			int currentHair$ = MakeInt(selectHair$);
+
+			string selectShirt$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( shirtNum$, "staging_area_create_character" ) ); uiText$.GetText( selectShirt$);
+			int currentShirt$ = MakeInt(selectShirt$);
+
+			string selectPants$; uiText$ = QueryDerivedText( UIShell.FindUIWindow( pantsNum$, "staging_area_create_character" ) ); uiText$.GetText( selectPants$);
+			int currentPants$ = MakeInt(selectPants$);
+			
+			report.screenf ("Selection: %s, %d,  %d,  %d,  %d,  %d,  %d", name$, currentChar$, currentHead$, currentFace$, currentHair$, currentShirt$, currentPants$);
+			
+			if (name$ == "")
+			{
+				DisplayMessage$ ("Please choose a character name");
+				return;
+			}
+
+			RSCreateChar$(name$, currentChar$, currentHead$, currentFace$, currentHair$, currentShirt$, currentPants$);
+		}
+
+		backtosel$()
+		{
+			resetSettings$();
+
+			UIShell.ActivateInterface( "ui:interfaces:multiplayer:dso_char_select", true);
+		}
+
+		poll$()
+		{
+			bool transition$ = false;
+			
+			if (NetworkManager.IsConnected())
+			{
+				int received$ = NetworkManager.Receive();
+				if (received$ > 0)
+				{
+					Packet packet$ = NetworkManager.NextPacket();
+					
+					int type$ = packet$.ReadUInt8();
+					if (type$ == 42)
+					{
+						int success$ = packet$.ReadUInt8();
+						if (success$ == 1)
+						{
+							//SetUIWindowState$ ("login_ok", "staging_area_create_character", true, true);
+							//SetUIWindowState$ ("account_name_edit_box", "staging_area_create_character", true, true);
+							//SetUIWindowState$ ("password_edit_box", "staging_area_create_character", true, true);
+							
+							DisplayMessage$ ("All slots already in use");
+						}
+						else if (success$ == 2)
+						{
+							//SetUIWindowState$ ("login_ok", "staging_area_create_character", true, true);
+							//SetUIWindowState$ ("account_name_edit_box", "staging_area_create_character", true, true);
+							//SetUIWindowState$ ("password_edit_box", "staging_area_create_character", true, true);
+							
+							DisplayMessage$ ("Please choose a character name");
+						}
+						else
+						{
+							transition$ = true;
+						}
+					}
+					NetworkManager.DiscardPacket (packet$);
+				}
+			}
+			
+			if (transition$ == true)
+			{
+				resetSettings$();
+
+				UIShell.ActivateInterface( "ui:interfaces:multiplayer:dso_char_select", true);
+			}
+			else
+			{
+				// keep polling
+				UIWindow window$ = UIShell.FindUIWindow ("timer02", "staging_area_create_character");
+				window$.ProcessAction (action_alphaanimation, "1,0,0");
+			}
+		}
+	]];
+
+	[t:window,n:timer01]
+	{
+		[messages]
+		{
+			onshow = alphaanimation(0.01,0.0,0.0);
+			onanimcomplete = call (begin$);
+		}
+	}
+
+	[t:window,n:timer02]
+	{
+		[messages]
+		{
+			onshow = alphaanimation(1.0,0.0,0.0);
+			onanimcomplete = call (poll$);
+		}
+	}
+
+	[t:text,n:selected_char]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_head_0]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_hair_0]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_face_0]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_shirt_0]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_pants_0]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_head_1]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_hair_1]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_face_1]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_shirt_1]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_pants_1]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	
+	[t:text,n:selected_head_2]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_hair_2]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_face_2]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_shirt_2]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_pants_2]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	
+	[t:text,n:selected_head_3]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_hair_3]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_face_3]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_shirt_3]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_pants_3]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	
+	[t:text,n:selected_head_4]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_hair_4]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_face_4]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_shirt_4]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_pants_4]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	
+	[t:text,n:selected_head_5]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_hair_5]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_face_5]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_shirt_5]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_pants_5]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	
+	[t:text,n:selected_head_6]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_hair_6]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_face_6]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_shirt_6]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:selected_pants_6]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 10004,10326,10200,10342;
+		text = "0";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:text,n:title]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_14p_copperplate-light;
+		justify = left;
+		rect = 44,76,200,92;
+		text = "Create New Character";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	
+	[t:text,n:create_new_character_warning]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = 0x00FF0000;
+		font_size = 14;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = center;
+		rect = 220,76,350,92;
+		text = "";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	[t:text,n:character_name_text]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = center;
+		rect = 60,168,234,184;
+		text = "Enter Hero Name";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:dialog_box,n:name_background]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = cpbox;
+		draw_order = 2;
+		rect = 60,188,234,212;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:edit_box,n:staging_char_name_edit_box_new]
+	{
+		alpha = 1.000000;
+		clear_select = false;
+		common_control = false;
+		common_template = ;
+		draw_order = 6;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		max_string_size = 14;
+		permanent_focus = false;
+		rect = 64,192,230,208;
+		text = ;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		excluded_chars = [["<>:/\|?*.%;]];
+		max_pixels = 155;
+		has_pixel_limit = true;
+		[prompt] { texture=b_gui_fe_m_single_prompt; width=1; }
+		[messages]
+		{
+			oneditselect = notify(staging_create_character_ok_new);
+		}
+	}
+
+	[t:dialog_box,n:character_background]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = cpbox;
+		draw_order = 2;
+		rect = 300,80,500,290;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:listener,n:listener]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 15;
+		font_type = ;
+		rect = 270,110,530,290;
+		text = ;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	[t:dialog_box,n:appearance_background]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = cpbox;
+		draw_order = 2;
+		rect = 566,110,740,290;
+		texture = none;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+
+	[t:text,n:character_text]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = center;
+		rect = 602,128,704,144;
+		text = "Character";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:button,n:button_prev_character]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = left;		
+		draw_order = 18;
+		rect = 586,128,602,144;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] 
+		{ 
+			onbuttonpress=call(resetSelCharSettings$) & notify(previous_character) & call(btn_prev_character$); 
+		}
+	}
+	[t:button,n:button_next_character]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = right;		
+		draw_order = 18;
+		rect = 704,128,720,144;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] 
+		{ 
+			onbuttonpress=call(resetSelCharSettings$) & notify(next_character) & call(btn_next_character$); 
+			//onshow = notify(next_character);
+		}
+	}
+	[t:text,n:head_text]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = center;
+		rect = 602,154,704,170;
+		text = "Head";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:button,n:button_prev_head]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = left;		
+		draw_order = 18;
+		rect = 586,154,602,170;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_prev_head) & call(btn_prev_head$); }
+	}
+	[t:button,n:button_next_head]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = right;		
+		draw_order = 18;
+		rect = 704,154,720,170;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_next_head) & call(btn_next_head$); }
+	}
+	[t:text,n:face_text]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = center;
+		rect = 602,180,704,196;
+		text = "Skin";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:button,n:button_prev_face]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = left;		
+		draw_order = 18;
+		rect = 586,180,602,196;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_prev_face) & call(btn_prev_face$); }
+	}
+	[t:button,n:button_next_face]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = right;		
+		draw_order = 18;
+		rect = 704,180,720,196;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_next_face) & call(btn_next_face$);  }
+	}
+	[t:text,n:hair_text]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = center;
+		rect = 602,206,704,222;
+		text = "Hair";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:button,n:button_prev_hair]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = left;		
+		draw_order = 18;
+		rect = 586,206,602,222;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_prev_hair) & call(btn_prev_hair$); }
+	}
+	[t:button,n:button_next_hair]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = right;		
+		draw_order = 18;
+		rect = 704,206,720,222;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_next_hair) & call(btn_next_hair$);  }
+	}
+	[t:text,n:shirt_text]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = center;
+		rect = 602,232,704,248;
+		text = "Shirt";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+	}
+	[t:button,n:button_prev_shirt]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = left;		
+		draw_order = 18;
+		rect = 586,232,602,248;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_prev_shirt) & call(btn_prev_shirt$);  }
+	}
+	[t:button,n:button_next_shirt]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = right;		
+		draw_order = 18;
+		rect = 704,232,720,248;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] { onbuttonpress=notify(char_next_shirt) & call(btn_next_shirt$);  }
+	}
+	[t:text,n:pants_text]
+	{
+		alpha = 1.000000;
+		common_control = false;
+		common_template = ;
+		draw_order = 68;
+		font_color = -1;
+		font_size = 12;
+		font_type = b_gui_fnt_12p_copperplate-light;
+		justify = center;
+		rect = 602,258,704,274;
+		text = "Pants";
+		texture = none;
+		type = text;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		disable_color = 0x99555555;
+		wrap_mode = clamp;
+	}
+	[t:button,n:button_prev_pants]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = left;		
+		draw_order = 18;
+		rect = 586,258,602,274;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_prev_pants) & call(btn_prev_pants$);  }
+	}
+	[t:button,n:button_next_pants]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = right;		
+		draw_order = 18;
+		rect = 704,258,720,274;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=notify(char_next_pants) & call(btn_next_pants$);  }
+	}
+
+	[t:button,n:staging_create_character_ok_new]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = button_4;		
+		draw_order = 18;
+		rect = 252,308,392,324;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		disable_color = 0x99555555;
+		[messages] { onbuttonpress=call(accept$) & playsound(s_e_frontend_tiny_button); }
+		[t:text,n:ok_text]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 68;
+			font_color = -1;
+			font_size = 12;
+			font_type = b_gui_fnt_12p_copperplate-light;
+			justify = center;
+			rect = 527,8,621,21;
+			text = "Accept";
+			texture = none;
+			type = text;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+		}
+	}
+	[t:button,n:staging_create_character_cancel]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = button_4;		
+		draw_order = 18;
+		rect = 408,308,548,324;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] { onbuttonpress=call(backtosel$) & playsound(s_e_frontend_tiny_button); }
+		[t:text,n:cancel_text]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 68;
+			font_color = -1;
+			font_size = 12;
+			font_type = b_gui_fnt_12p_copperplate-light;
+			justify = center;
+			rect = 527,8,621,21;
+			text = "Cancel";
+			texture = none;
+			type = text;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+		}
+	}
+
+	/*[t:button,n:staging_import_character]
+	{
+		alpha = 1.000000;
+		common_control = true;
+		common_template = button_4;		
+		draw_order = 18;
+		rect = 500,76,740,92;
+		uvcoords = 0.000000,0.000000,1.000000,1.000000;
+		wrap_mode = clamp;
+		[messages] { onbuttonpress=notify(staging_import_character); }
+		[t:text,n:staging_import_character_text]
+		{
+			alpha = 1.000000;
+			common_control = false;
+			common_template = ;
+			draw_order = 68;
+			font_color = -1;
+			font_size = 12;
+			font_type = b_gui_fnt_12p_copperplate-light;
+			justify = center;
+			rect = 527,8,621,21;
+			text = "Send character to other account";
+			texture = none;
+			type = text;
+			uvcoords = 0.000000,0.000000,1.000000,1.000000;
+			wrap_mode = clamp;
+		}
+	}*/
+
+}

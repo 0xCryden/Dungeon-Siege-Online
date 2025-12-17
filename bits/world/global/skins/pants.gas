@@ -1,0 +1,107 @@
+/*
+ *  This file is part of dsmmorpg.
+ *  
+ *  dsmmorpg is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  dsmmorpg is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with dsmmorpg.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+[pants]
+{
+
+	[common]
+	{
+		* = b_c_pos_a1_pant_004;
+		* = b_c_pos_a1_pant_005;
+		* = b_c_pos_a1_pant_006;
+		* = b_c_pos_a1_pant_008;
+			* = b_c_pos_a1_pant_009;
+		* = b_c_pos_a1_pant_010;
+			* = b_c_pos_a1_pant_011;
+	    * = b_c_pos_a1_pant_012;
+		* = b_c_pos_a1_pant_013;
+			* = b_c_pos_a1_pant_014;
+		* = b_c_pos_a1_pant_015;
+		* = b_c_pos_a1_pant_016; // total 12x
+	}
+
+	[farmboy]
+	{
+		* = include_common;
+	}
+	[farmgirl]
+	{
+		* = include_common;
+	}
+	[dwarf]
+	{
+		* = include_common;
+	}
+	[skeleton_good]
+	{
+	}
+	[halfgiant]
+	{
+		* = include_common;
+	}
+	[utraean_boy]
+	{
+		* = include_common;
+	}
+	[utraean_girl]
+	{
+		* = include_common;
+	}
+	[dsx_mp_farmboy]
+	{
+		* = include_common;
+	}
+	[dsx_mp_farmgirl]
+	{
+		* = include_common;
+	}
+	[dsx_mp_dwarf]
+	{
+		* = include_common;
+	}
+	[dsx_mp_skeleton]
+	{
+	}
+
+	[portal_halfgiant]
+	{
+		* = include_common;
+	}
+	[portal_utraean_boy]
+	{
+		* = include_common;
+	}
+	[portal_utraean_girl]
+	{
+		* = include_common;
+	}
+	[portal_farmboy]
+	{
+		* = include_common;
+	}
+	[portal_farmgirl]
+	{
+		* = include_common;
+	}
+	[portal_dwarf]
+	{
+		* = include_common;
+	}
+	[portal_skeleton]
+	{
+	}
+}

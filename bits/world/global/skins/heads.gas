@@ -1,0 +1,137 @@
+/*
+ *  This file is part of dsmmorpg.
+ *  
+ *  dsmmorpg is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  dsmmorpg is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with dsmmorpg.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+[heads]
+{
+	[farmgirl]
+	{
+		* = default;
+		* = m_c_gah_fg_hlmt_head-02;
+		* = m_c_gah_fg_hlmt_head-03;
+		* = m_c_gah_fg_hlmt_head-04;
+		* = m_c_gah_fg_hlmt_head-05;
+	}
+	[farmboy]
+	{
+		* = default;
+		* = m_c_gah_fb_hlmt_head-02;
+		* = m_c_gah_fb_hlmt_head-03;
+		* = m_c_gah_fb_hlmt_head-04;
+		* = m_c_gah_fb_hlmt_head-05;
+	}
+	[dwarf]
+	{
+		* = default;
+	}
+	[skeleton_good]
+	{
+		* = default;
+	}
+	[halfgiant]
+	{
+		* = default;
+	}
+	
+	[utraean_boy]
+	{
+		* = default;
+		* = m_c_gah_fb_hlmt_head-02;
+		* = m_c_gah_fb_hlmt_head-03;
+		* = m_c_gah_fb_hlmt_head-04;
+		* = m_c_gah_fb_hlmt_head-05;	
+	}
+	
+	[utraean_girl]
+	{
+		* = default;
+		* = m_c_gah_fg_hlmt_head-02;
+		* = m_c_gah_fg_hlmt_head-03;
+		* = m_c_gah_fg_hlmt_head-04;
+		* = m_c_gah_fg_hlmt_head-05;
+	}	
+	[dsx_mp_farmgirl]
+	{
+		* = default;
+		* = m_c_gah_fg_hlmt_head-02;
+		* = m_c_gah_fg_hlmt_head-03;
+		* = m_c_gah_fg_hlmt_head-04;
+		* = m_c_gah_fg_hlmt_head-05;
+	}
+	[dsx_mp_farmboy]
+	{
+		* = default;
+		* = m_c_gah_fb_hlmt_head-02;
+		* = m_c_gah_fb_hlmt_head-03;
+		* = m_c_gah_fb_hlmt_head-04;
+		* = m_c_gah_fb_hlmt_head-05;
+	}
+	[dsx_mp_dwarf]
+	{
+		* = default;
+	}
+	[dsx_mp_skeleton]
+	{
+		* = default;
+	}
+
+	[portal_halfgiant]
+	{
+		* = default;
+	}
+	
+	[portal_utraean_boy]
+	{
+		* = default;
+		* = m_c_gah_fb_hlmt_head-02;
+		* = m_c_gah_fb_hlmt_head-03;
+		* = m_c_gah_fb_hlmt_head-04;
+		* = m_c_gah_fb_hlmt_head-05;
+	}
+	
+	[portal_utraean_girl]
+	{
+		* = default;
+		* = m_c_gah_fg_hlmt_head-02;
+		* = m_c_gah_fg_hlmt_head-03;
+		* = m_c_gah_fg_hlmt_head-04;
+		* = m_c_gah_fg_hlmt_head-05;
+	}	
+	[portal_farmgirl]
+	{
+		* = default;
+		* = m_c_gah_fg_hlmt_head-02;
+		* = m_c_gah_fg_hlmt_head-03;
+		* = m_c_gah_fg_hlmt_head-04;
+		* = m_c_gah_fg_hlmt_head-05;
+	}
+	[portal_farmboy]
+	{
+		* = default;
+		* = m_c_gah_fb_hlmt_head-02;
+		* = m_c_gah_fb_hlmt_head-03;
+		* = m_c_gah_fb_hlmt_head-04;
+		* = m_c_gah_fb_hlmt_head-05;
+	}
+	[portal_dwarf]
+	{
+		* = default;
+	}
+	[portal_skeleton]
+	{
+		* = default;
+	}	
+}

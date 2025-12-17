@@ -1,0 +1,104 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File     :  k_inc_pcontent_utils.skrit
+// Author(s):  Starfall
+//
+//----------------------------------------------------------------------------
+//  Revision: 1.0              Date: 2022-07-09
+//----------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////
+
+/*	Collection of methods for creating objects from pcontent using skrit
+
+	Method Reference:
+		RollType$(float,float,float,float):						Randomly select the base item type for a pcontent query
+		RollRarity$(float,float,float,float):					Randomly select the type and number of rarity modifiers for a pcontent query
+		BuildQuery$(string,string,string,string,int,int):		Programatically construct a pcontent query
+		AddObject$(string,SiegePos):							Creates a new item from pcontent at the specified position
+		AddInventoryObject$(string,GoInventory):				Creates a new item from pcontent and inserts it into an actor's Inventory
+		CalcGoldValue$(int,int):								Calculates actual gold value from minimum and maximum values
+		AddGold$(int,int,SiegePos):								Creates gold of minimum and maximum value at the specified position
+		AddInventoryGold$(int,int,GoInventory):					Adds gold of minimum and maximum value to an actor's Inventory
+*/
+
+// Skrit restriction: Methods with a return type of string must return a global scoped string
+string type$;
+string rarity$;
+string query$;
+
+string rollType$( float armor$, float weapon$, float amulet$, float ring$ )
+{
+	type$ = "";
+	float rarityChance$ = Math.RandomFloat(1);
+	if		( rarityChance$ < armor$ )		{ type$ = "armor"; }
+	else if ( rarityChance$ < weapon$ )		{ type$ = "weapon"; }
+	else if ( rarityChance$ < amulet$ )		{ type$ = "amulet"; }
+	else if ( rarityChance$ < ring$ )		{ type$ = "ring"; }
+	else									{ type$ = "*"; }
+	return type$;
+}
+
+string rollRarity$( float normal$, float rare1$, float rare2$, float unique1$ )
+{
+	rarity$ = "";
+	float rarityChance$ = Math.RandomFloat(1);
+	if		( rarityChance$ < normal$ )		{ rarity$ = ""; }
+	else if ( rarityChance$ < rare1$ )		{ rarity$ = "rare(1)"; }
+	else if ( rarityChance$ < rare2$ )		{ rarity$ = "rare(2)"; }
+	else if ( rarityChance$ < unique1$ )	{ rarity$ = "unique(1)"; }
+	else									{ rarity$ = "unique(2)"; }
+	return rarity$;
+}
+
+// #[itemType],[itemClass]:[itemVariant]/-[modifierType]([modifierCount])/[minPower]-[maxPower]
+string BuildQuery$ ( string itemType$, string itemClass$, string itemVariant$, string modifier$, int minPower$, int maxPower$ )
+{
+	if ( itemType$ == "armor" )
+	{
+		minPower$ = Math.ToInt(2.2 * minPower$);
+		maxPower$ = Math.ToInt(2.2 * maxPower$);
+	}
+	query$ = "#" + itemType$;
+	if ( itemClass$ != "" )		{ StringTool.AppendF( query$, ",%s", itemClass$ ); }
+	if ( itemVariant$ != "" )	{ StringTool.AppendF( query$, ":%s", itemVariant$ ); }
+	StringTool.Append( query$, "/" );
+	if ( modifier$ != "" )		{ StringTool.AppendF( query$, "-%s/", modifier$ ); }
+	StringTool.Appendf( query$, "%d-%d", minPower$, maxPower$ );
+	
+	return query$;
+}
+
+Goid AddObject$ ( string pContentQuery$, SiegePos position$ )
+{
+	GoCloneReq cloneReq$ = MakeGoCloneReq();
+	cloneReq$.StartingPos = position$;
+	cloneReq$.SnapToTerrain = true;
+	
+	return GoDb.SCloneGo( cloneReq$, pContentQuery$ );
+}
+
+void AddInventoryObject$ ( string pContentQuery$, GoInventory inv$ )
+{
+	inv$.RSCreateAddItem( IL_MAIN, pContentQuery$ );
+}
+
+int CalcGoldValue$ ( int minValue$, int maxValue$ )
+{
+	if ( minValue$ < 1 )			{ minValue$ = 1; }
+	if ( maxValue$ < 1 )			{ maxValue$ = 1; }
+	if ( maxValue$ < minValue$ )	{ maxValue$ = minValue$; }
+	return Math.RandomInt( minValue$, maxValue$ );
+}
+
+Goid AddGold$ ( int minValue$, int maxValue$, SiegePos position$ )
+{
+	Goid newGold$ = addObject$( "gold", position$ );
+	newGold$.Go.Aspect.SetGoldValue( CalcGoldValue$( minValue$, maxValue$ ) );
+	
+	return newGold$;
+}
+
+void AddInventoryGold$ ( int minValue$, int maxValue$, GoInventory inv$ )
+{
+	inv$.RSAddGold( CalcGoldValue$( minValue$, maxValue$ ) );
+}
