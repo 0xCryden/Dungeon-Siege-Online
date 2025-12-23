@@ -2,7 +2,7 @@
 <objects>
 	<go id="10009">
 		<aspect>
-			 <model value="dso_minigun_dragon"/>
+			 <model value="minigun_dragon"/>
 		</aspect>
 		<attack>
 			<attack_range value="11"/>
@@ -18,6 +18,6 @@
 			<forced_expiration_class value="auto"/>
 			<screen_name value="Dragon Minigun"/>
 		</common>
-		<placement region="town_center"><position node="1323345966" x="0" y="0" z="0"/></placement>
+		<placement region="town_center"><position node="1323345966" x="-3.8575" y="0" z="1.82526"/></placement>
 	</go>
 </objects>

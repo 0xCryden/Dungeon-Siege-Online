@@ -20,7 +20,7 @@
 #include "Go.hpp"
 
 // for GoDb template creation
-Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_gui(NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL)
+Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_gui(NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL), m_conversation (NULL)
 {
 	if (node != NULL)
 	{
@@ -120,7 +120,7 @@ Go::Go(const TemplateData& tmpl)
 	: m_template_name(tmpl.name), m_specializes(tmpl.specializes),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
-	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
+	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
 {
 	//m_goid = godb.NextId();
 	//m_scid = 0;
@@ -146,9 +146,10 @@ Go::Go(const TemplateData& tmpl)
 	// TODO Physics
 
 	if ((comp = tmpl.GetComponent("placement"))) { m_placement = new GoPlacement(this, comp); }
+	if ((comp = tmpl.GetComponent("conversation"))) { m_conversation = new GoConversation(this, comp); }
 }
 
-Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL), m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL), m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
+Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL), m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL), m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
 {
 	m_goid = id;
 	m_admin = 0;
@@ -166,14 +167,15 @@ Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_parent(NULL), m_act
 	if (go->m_inventory != NULL) m_inventory = new GoInventory (this);
 	if (go->m_magic != NULL) m_magic = new GoMagic (this);
 	if (go->m_mind != NULL) m_mind = new GoMind (this);
-	if (go->m_placement != NULL) m_placement = new GoPlacement (this);
+	if (go->m_placement != NULL) m_placement = new GoPlacement(this);
+	if (go->m_conversation != NULL) m_conversation = new GoConversation(this);
 }
 
 Go::Go(const TemplateData& tmpl, const PlacementData& placement)
 	: m_template_name(tmpl.name), m_specializes(tmpl.specializes),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
-	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
+	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
 {
 	m_goid = godb.NextId();
 	m_scid = 0;
@@ -197,6 +199,7 @@ Go::Go(const TemplateData& tmpl, const PlacementData& placement)
 	// TODO Pcontent
 	if ((comp = tmpl.GetComponent("gui"))) { m_gui = new GoGui(this, comp); }
 	// TODO Physics
+	if ((comp = tmpl.GetComponent("conversation"))) { m_conversation = new GoConversation(this, comp); }
 
 	m_placement = new GoPlacement(this, placement);
 
@@ -207,7 +210,7 @@ Go::Go(const TemplateData& tmpl, const GoPlacement& placement)
 	: m_template_name(tmpl.name), m_specializes(""),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
-	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL)
+	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
 {
 	m_goid = godb.NextId();
 	m_admin = 0;
@@ -227,6 +230,7 @@ Go::Go(const TemplateData& tmpl, const GoPlacement& placement)
 	// TODO Pcontent
 	if ((comp = tmpl.GetComponent("gui"))) { m_gui = new GoGui(this, comp); }
 	// TODO Physics
+	if ((comp = tmpl.GetComponent("conversation"))) { m_conversation = new GoConversation(this, comp); }
 
 	m_placement = new GoPlacement(this, placement);
 }
@@ -235,7 +239,7 @@ Go::Go(const Go* tmpl, const GoPlacement& placement)
 	: m_template_name(tmpl->TemplateName()), m_specializes(""),
 	m_parent(nullptr), m_actor(nullptr), m_aspect(nullptr), m_attack(nullptr),
 	m_body(nullptr), m_common(nullptr), m_defend(nullptr), m_gui(nullptr),
-	m_inventory(nullptr), m_magic(nullptr), m_mind(nullptr), m_placement(nullptr)
+	m_inventory(nullptr), m_magic(nullptr), m_mind(nullptr), m_placement(nullptr), m_conversation(nullptr)
 {
 	m_goid = godb.NextId();
 	m_admin = 0;
@@ -320,6 +324,7 @@ Go :: ~Go ()
 	if (m_magic) delete m_magic;
 	if (m_mind) delete m_mind;
 	if (m_placement) delete m_placement;
+	if (m_conversation) delete m_conversation;
 	
 	map<string, GoScriptComponent *>::iterator iterator = m_scripts.begin();
 	while (iterator != m_scripts.end())
@@ -784,7 +789,7 @@ bool Go :: HasComponent (const string & component) const
 
 bool Go :: HasConversation () const
 {
-	return false;
+	return m_conversation != NULL;
 }
 
 bool Go :: HasDefend () const

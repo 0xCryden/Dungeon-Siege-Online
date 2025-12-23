@@ -10,6 +10,6 @@
 			<screen_name value="sword of a thousand GPG pwnage"/>
 		</common>
 		<inventory/>
-		<placement region="town_center"><position node="1323345966" x="0" y="0" z="0"/></placement>
+		<placement region="town_center"><position node="1482942462" x="-0.11673" y="0" z="0.191849"/></placement>
 	</go>
 </objects>

@@ -295,17 +295,6 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteFloat (from->Actor()->GetSkillLevel("nature magic"));
 				packet.WriteFloat (from->Actor()->GetSkillLevel("combat magic"));
 
-				{
-					packet.WriteFloat ((float)from->Actor()->GetSkillExp("uber"));
-					packet.WriteFloat ((float)from->Actor()->GetSkillExp("strength"));
-					packet.WriteFloat ((float)from->Actor()->GetSkillExp("intelligence"));
-					packet.WriteFloat ((float)from->Actor()->GetSkillExp("dexterity"));
-					packet.WriteFloat ((float)from->Actor()->GetSkillExp("melee"));
-					packet.WriteFloat ((float)from->Actor()->GetSkillExp("ranged"));
-					packet.WriteFloat ((float)from->Actor()->GetSkillExp("nature magic"));
-					packet.WriteFloat ((float)from->Actor()->GetSkillExp("combat magic"));
-				}
-
 				for (int i = 0; i < 12; i++)
 				{
 					Go * equipment = from->Inventory()->GetEquipped ((eEquipSlot) i);
@@ -375,15 +364,6 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteFloat (to->Actor()->GetSkillLevel("ranged"));
 				packet.WriteFloat (to->Actor()->GetSkillLevel("nature magic"));
 				packet.WriteFloat (to->Actor()->GetSkillLevel("combat magic"));
-
-				packet.WriteFloat ((float)to->Actor()->GetSkillExp("uber"));
-				packet.WriteFloat ((float)to->Actor()->GetSkillExp("strength"));
-				packet.WriteFloat ((float)to->Actor()->GetSkillExp("intelligence"));
-				packet.WriteFloat ((float)to->Actor()->GetSkillExp("dexterity"));
-				packet.WriteFloat ((float)to->Actor()->GetSkillExp("melee"));
-				packet.WriteFloat ((float)to->Actor()->GetSkillExp("ranged"));
-				packet.WriteFloat ((float)to->Actor()->GetSkillExp("nature magic"));
-				packet.WriteFloat ((float)to->Actor()->GetSkillExp("combat magic"));
 
 				// Get top-level inventory items
 				const GopSet& inventory = to->Inventory()->ListItems();

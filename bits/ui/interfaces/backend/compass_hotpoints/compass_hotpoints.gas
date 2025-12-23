@@ -30,9 +30,7 @@
 			//PlayerId myId$ = Server.ScreenHero.PlayerId;
 			//Game.STeleportPlayer(myId$, "castle_town", true);
 			
-			//SiegeEngine.Camera.SetFieldOfViewDeg(80.0);
-			
-			//Server.ScreenHero.Actor.DebugPrintSkills();
+			Server.ScreenHero.Actor.DebugPrintSkills();
 
 			/*int count$ = MapMaker.ReadNodesDotGasFrom ("C:\\Users\\Cryden\\Desktop\\dsmmorpg-code-r428-trunk\\bits\\world\\maps\\multiplayer_world\\regions\\town_center\\terrain_nodes\\nodes.gas");
 			

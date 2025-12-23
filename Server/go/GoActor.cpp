@@ -399,79 +399,127 @@ void GoActor :: SetSkillExp (const string & skill, float value)
 	}
 }
 
-void GoActor :: AddSkillExp (const string & skill, float value)
+void GoActor::AddSkillExp(const string& skill, float value)
 {
-	map<string, Skill *>::iterator iterator = m_skills.find (skill);
-	if (iterator == m_skills.end())
+	auto it = m_skills.find(skill);
+	if (it == m_skills.end())
 		return;
 
-	if ((skill == "melee") && (GetGo()->Inventory()->IsMeleeWeaponEquipped() == false))
+	// Special melee weapon check (unchanged logic)
+	if (skill == "melee" && !GetGo()->Inventory()->IsMeleeWeaponEquipped())
 	{
 		AddSkillExp("uber", value);
 		return;
 	}
 
-	Skill* skillPtr = iterator->second;
+	Skill* skillPtr = it->second;
+
+	/* ------------------------------------------------------------
+	   1. AWARD SKILL XP (NORMAL SKILL BEHAVIOR)
+	   ------------------------------------------------------------ */
+
+	float oldXP = skillPtr->experience;
+	float oldLevel = skillPtr->level;
+
 	skillPtr->experience += value;
 
-	// Prevent overflow beyond table
-	if (skillPtr->experience > experience_table.back()) {
+	if (skillPtr->experience > experience_table.back())
 		skillPtr->experience = experience_table.back();
-	}
 
-	// Get new level based on XP
-	float newLevel = GetLevelFromXP(skillPtr->experience);
-	float oldLevel = skillPtr->level;
-	cout << "Adding XP to:" << skill << " amount: " << value << " level before: " << oldLevel << " level after: " << newLevel << endl;
-	// Store new level
-	skillPtr->level = newLevel;
+	skillPtr->level = GetLevelFromXP(skillPtr->experience);
 
-	// Trigger level-up behavior (only if whole level increased)
-	if (std::floor(newLevel) > std::floor(oldLevel)) {
-		if (skill != "uber") {
+	if (std::floor(skillPtr->level) > std::floor(oldLevel))
+	{
+		if (skill != "uber")
+		{
 			g_engine.UpdateGoLvlup(GetGo(), skill);
 			GetGo()->CalculateStatus();
 		}
 	}
 
-	// Attribute influence logic
-	int str_influence = 0;
-	int dex_influence = 0;
-	int int_influence = 0;
+	/* ------------------------------------------------------------
+	   2. PRIMARY SKILLS DRIVE ATTRIBUTES + UBER XP
+	   ------------------------------------------------------------ */
+
+	bool isPrimary =
+		skill == "melee" ||
+		skill == "ranged" ||
+		skill == "nature magic" ||
+		skill == "combat magic";
+
+	if (!isPrimary)
+		return;
+
+	/* ------------------------------------------------------------
+	   3. AWARD UBER XP (ONCE, NO RECURSION)
+	   ------------------------------------------------------------ */
+
+	Skill* uber = m_skills["uber"];
+
+	float uberOldXP = uber->experience;
+	float uberOldLevel = uber->level;
+
+	uber->experience += value;
+
+	if (uber->experience > experience_table.back())
+		uber->experience = experience_table.back();
+
+	uber->level = GetLevelFromXP(uber->experience);
+
+	/* ------------------------------------------------------------
+	   4. COMPUTE UBER FACTOR (FRACTION OF ONE ATTRIBUTE POINT)
+	   ------------------------------------------------------------ */
+
+	float uberFloor = std::floor(uberOldLevel);
+
+	float xpCurrent = GetXPFromLevel(uberFloor);
+	float xpNext = GetXPFromLevel(uberFloor + 1.0f);
+
+	float xpToNextUber = xpNext - xpCurrent;
+
+	if (xpToNextUber <= 0.0f)
+		return;
+
+	float uber_factor = value / xpToNextUber;
+
+	/* ------------------------------------------------------------
+	   5. ATTRIBUTE INFLUENCE WEIGHTS (DS1 TABLE)
+	   ------------------------------------------------------------ */
+
+	float strInf = 0.f, dexInf = 0.f, intInf = 0.f;
 
 	if (skill == "melee") {
-		str_influence = 64;
-		dex_influence = 27;
-		int_influence = 9;
-		AddSkillExp("uber", value);
+		strInf = 0.64f; dexInf = 0.27f; intInf = 0.09f;
 	}
 	else if (skill == "ranged") {
-		str_influence = 25;
-		dex_influence = 62;
-		int_influence = 13;
-		AddSkillExp("uber", value);
+		strInf = 0.25f; dexInf = 0.62f; intInf = 0.13f;
 	}
 	else if (skill == "nature magic") {
-		str_influence = 9;
-		dex_influence = 18;
-		int_influence = 73;
-		AddSkillExp("uber", value);
+		strInf = 0.09f; dexInf = 0.18f; intInf = 0.73f;
 	}
 	else if (skill == "combat magic") {
-		str_influence = 13;
-		dex_influence = 17;
-		int_influence = 70;
-		AddSkillExp("uber", value);
-	}
-	else if (skill == "strength" || skill == "dexterity" || skill == "intelligence") {
-		// Pull attribute influences from "uber" level instead
-		// No redistribution
-		return;
+		strInf = 0.13f; dexInf = 0.17f; intInf = 0.70f;
 	}
 
-	if (str_influence + dex_influence + int_influence > 0) {
-		AddSkillExp("strength",     (value * str_influence) / 100.0f);
-		AddSkillExp("dexterity",    (value * dex_influence) / 100.0f);
-		AddSkillExp("intelligence", (value * int_influence) / 100.0f);
-	}
+	/* ------------------------------------------------------------
+	   6. APPLY ATTRIBUTE GROWTH (FLOAT LEVELS, NO XP)
+	   ------------------------------------------------------------ */
+
+	auto applyAttribute = [&](const string& attr, float delta)
+		{
+			Skill* a = m_skills[attr];
+			float old = a->level;
+			a->level += delta;
+			a->experience = GetXPFromLevel(a->level);
+
+			if (std::floor(old) != std::floor(a->level))
+			{
+				g_engine.UpdateGoLvlup(GetGo(), attr);
+				GetGo()->CalculateStatus();
+			}
+		};
+
+	applyAttribute("strength", uber_factor * strInf);
+	applyAttribute("dexterity", uber_factor * dexInf);
+	applyAttribute("intelligence", uber_factor * intInf);
 }

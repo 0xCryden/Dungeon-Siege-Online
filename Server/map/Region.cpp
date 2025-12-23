@@ -156,7 +156,7 @@ double Region::GetSiegeDistance(const SiegePos& position, const SiegePos& destin
 	catch (exception& e)
 	{
 		Log::WriteF(Log::Level::ERR, "caught an exception while calling GetSiegeDistance : %s", e.what());
-		return 0.0;
+		return 999.0;
 	}
 
 	double x = p.x - d.x;

@@ -1,0 +1,37 @@
+// exactly the same as the farmboy, I just need this for multiplayer
+[t:template,n:utraean_boy]
+{
+	doc = "Utraean boy";
+	specializes = base_farmboy;
+	[actor]
+	{
+		screen_class = "Novice";
+	}
+	[aspect]
+	{
+		megamap_override = true; // RAID#7185: MP: Teammates in MP should be non-Line of Sight on map.  -MM 02.03.2002
+	}
+	[inventory]
+	{
+	}
+	[water_effects] {}
+}
+
+// exactly the same as the farmgirl, I just need this for multiplayer
+[t:template,n:utraean_girl]
+{
+	doc = "Utraean girl";
+	specializes = base_farmgirl;
+	[actor]
+	{
+		screen_class = "Novice";
+	}
+	[aspect]
+	{
+		megamap_override = true; // RAID#7185: MP: Teammates in MP should be non-Line of Sight on map.  -MM 02.03.2002
+	}
+	[inventory]
+	{
+	}
+	[water_effects] {}
+}

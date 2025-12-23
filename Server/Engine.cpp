@@ -774,6 +774,12 @@ void Engine::AddGoToRegion(Go *go, const std::string &data)
 		return;
 	}
 
+	if (go->HasConversation() == true)
+	{
+		Log::Write(Log::Level::ERR, " [AddGoToRegion] Has Conversation true.", true);
+		return;
+	}
+
 	Region *region = nullptr;
 	try
 	{

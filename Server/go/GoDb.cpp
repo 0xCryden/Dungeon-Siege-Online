@@ -44,32 +44,6 @@ GoDb :: ~GoDb ()
 	}}
 }
 
-/*void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
-{
-    Go* tmpl = godb.FindTemplateByName(templateName);
-    if (tmpl == NULL) {
-        Log::Write(Log::Level::ERR,
-            "Unknown template: " + templateName, true);
-        return;
-    }
-
-    try
-    {
-        Go* t = new Go(tmpl, *summonerGo->Placement());
-        m_godb[t->Goid()] = t;
-
-        string region = t->Placement()->GetRegion();
-        if (!region.empty())
-        {
-            SendWorldMessage(we_entered_world, t, t, region);
-            cout << "[GODB] Spawned Go " << NextId() << " using template: " << templateName << " in region: " << region << " at: " << summonerGo->Placement()->Position().X << " | " << summonerGo->Placement()->Position().Y << " | " << summonerGo->Placement()->Position().Z << " in node: " << summonerGo->Placement()->Position().Node << endl;
-        }
-    }
-    catch (exception& e)
-    {
-        Log::WriteF(Log::Level::ERR, "go %u was not loaded because: %s", NextId(), e.what());
-    }
-}*/
 void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
 {
     const TemplateData* tmpl = manager.GetTemplate(templateName);

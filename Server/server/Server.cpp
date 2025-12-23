@@ -308,7 +308,7 @@ void Server::LoadResources(const string& dataDir)
 	//godb.LoadContentDb(dataDir + "\\static\\actors.xml");
 
 	Log::Write(Log::Level::INFO, "Loading accounts...");
-	LoadAccounts(dataDir + "\\dynamic\\accounts.xml");
+	LoadAccounts(dataDir + "\\accounts.xml");
 
 	Log::Write(Log::Level::INFO, "Instantiating map templates...");
 	godb.InstantiateMapTemplates();

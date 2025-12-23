@@ -126,6 +126,9 @@
     <ClCompile Include="go\GoGui.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="go\GoConversation.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.hpp">
@@ -303,6 +306,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Globals.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="go\GoConversation.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

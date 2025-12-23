@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="go\GoConversation.cpp" />
     <ClCompile Include="go\GoGui.cpp" />
     <ClCompile Include="utils\AIQuery.cpp" />
     <ClCompile Include="helper\CurrentTime.cpp" />
@@ -191,6 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="go\GoConversation.h" />
     <ClInclude Include="go\GoGui.h" />
     <ClInclude Include="utils\AIQuery.h" />
     <ClInclude Include="enum\eActorAlignment.hpp" />

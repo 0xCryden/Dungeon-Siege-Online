@@ -32,6 +32,7 @@
 #include "GoMind.h"
 #include "GoPlacement.hpp"
 #include "GoScriptComponent.hpp"
+#include "GoConversation.h"
 
 #include "../helper/vector_3.h"
 #include "../Gas/Gas.hpp"
@@ -99,7 +100,7 @@ class Go
 		bool HasChild (Go * child) const;
 		bool HasCommon () const;
 		bool HasComponent (const string & component) const;
-		bool HasConversation () const; // code me
+		bool HasConversation () const;
 		bool HasDefend () const;
 		bool HasGui () const; // code me
 		bool HasInventory () const;
@@ -195,6 +196,7 @@ class Go
 		GoMagic * m_magic;
 		GoMind * m_mind;
 		GoPlacement * m_placement;
+		GoConversation* m_conversation;
 			
 		eInventoryLocation m_inventoryLocation = il_main;
 		int m_inventoryOwnerId = 0;

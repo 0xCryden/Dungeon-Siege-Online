@@ -5,7 +5,7 @@
 
 # Installation
 
-Use Dungeon Siege 1 Base game without LoA or it will not work. 
+Use Dungeon Siege 1 Base game with LoA or it will not work. 
 
 Download the [bin](https://github.com/0xCryden/Dungeon-Siege-Online/tree/master/bin) folder.
 
@@ -24,13 +24,13 @@ ip:0 = 127.0.0.1
 
 # Current State
 
-Can create new account & characters (settings are WIP)
+Can create new account & characters
 
 Can join UP, walk around, fight with other players, level up, use & equip weapons & armor & spellbooks
 
 All relevant data gets saved for server restarts
 
-Server reads given .gas files but conversion to Gos is WIP
+Server reads given .gas files, merges templates and spawns Gos using that data
 
 Server generates missing map information when needed during runtime
 
@@ -50,7 +50,7 @@ Again make sure accept any new Firewall prompts
 
 # Current Challenges
 
-Missing: spells, mobs, quests, shops, items/pcontent
+Missing: spells, mob ai, quests, shops, pcontent
 
 If you unequip your unselected weapon and relog without overwriting the old empty slot you will have the weapon reequipped upon login
 
@@ -59,6 +59,6 @@ PvP toggle
 
 # Other TODOs
 
-Make server convert the read .gas files to Gos
+
 
 Implement serversided network rate limit

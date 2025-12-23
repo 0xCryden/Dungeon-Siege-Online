@@ -1,0 +1,4057 @@
+//DSX
+[t:template,n:spell_summon_braak_desert]
+{
+	category_name = "magic";
+	doc = "spell summon braak_desert";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 209852;
+	}
+	[common]
+	{
+		description = "Summons a Desert Braak to guard the Caster.";
+		screen_name = "Summon Desert Braak";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_175;
+		inventory_icon = b_gui_ig_i_ic_sp_175_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//89;
+		required_level = 69;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*16-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.56)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.85)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.79)-#int);
+			}
+			[*]
+			{
+				alteration = alter_combat_magic;
+				duration = #infinite;
+				value = ((#magic-19)-#combat_magic_level);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.85)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.3)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.3));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.2)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.2)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.9)-194)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.9)-194)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = braak_desert_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_cave_giant]
+{
+	category_name = "magic";
+	doc = "spell Summon Cave Giant";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 11671;
+	}
+	[common]
+	{
+		description = "Summons a Cave Giant to guard the Caster.";
+		screen_name = "Summon Cave Giant";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_033;
+		inventory_icon = b_gui_ig_i_ic_sp_033_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 6*120;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		max_level = 180;//50;
+		required_level = 30;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*1.09)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.82)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.55)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-11)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.51)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*3.64)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*3.64));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.06)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.06)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.06)-90)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.06)-90)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = cave_giant_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_darkling]
+{
+	category_name = "magic";
+	doc = "spell summon darkling";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 3443;
+	}
+	[common]
+	{
+		description = "Summons a Darkling to guard the Caster.";
+		screen_name = "Summon Darkling";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_112;
+		inventory_icon = b_gui_ig_i_ic_sp_112_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//41;
+		required_level = 21;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*17-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.93)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*1.08)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.8)-#int);
+			}
+			[*]
+			{
+				alteration = alter_combat_magic;
+				duration = #infinite;
+				value = ((#magic)-#combat_magic_level);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.47)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*2.2)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*2.2));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.3)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.3)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.9)-22)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.9)-22)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = darkling_summon;
+		description = "Summoned Creature";
+		caster_description = "Caster Control";
+	}
+}
+[t:template,n:spell_summon_drake_black]
+{
+	category_name = "magic";
+	doc = "spell summon drake black";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 644957;
+	}
+	[common]
+	{
+		description = "Summons a Black Drake to guard the Caster.";
+		screen_name = "Summon Black Drake";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_173;
+		inventory_icon = b_gui_ig_i_ic_sp_173_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		max_level = 180;//112;
+		required_level = 94;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*17-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*1.22)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*2.16)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*1.74)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-6)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_combat_magic;
+				duration = #infinite;
+				value = ((#magic-6)-#combat_magic_level);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.08)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.8)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.8));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.4)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.4)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-205)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-205)*1.1);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-205)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-205)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = drake_black_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_drake_green]
+{
+	category_name = "magic";
+	doc = "spell Summon drake green";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 489555;
+	}
+	[common]
+	{
+		description = "Summons a Green Drake to guard the Caster.";
+		screen_name = "Summon Green Drake";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_072;
+		inventory_icon = b_gui_ig_i_ic_sp_072_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*17-.7);
+		max_level = 180;//106;
+		required_level = 86;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.72)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.82)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*1.21)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-16)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_combat_magic;
+				duration = #infinite;
+				value = ((#magic-16)-#combat_magic_level);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.22)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.6)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.6));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.5)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.5)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.09)-210)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.09)-210)*1.1);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.09)-210)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.09)-210)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = drake_green_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_fire_elemental]
+{
+	category_name = "magic";
+	doc = "spell_summon_fire_elemental";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 955916;
+	}
+	[common]
+	{
+		description = "Summons a Fire Elemental to guard the Caster.";
+		screen_name = "Summon Fire Elemental";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_178;
+		inventory_icon = b_gui_ig_i_ic_sp_178_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		max_level = 180;//112;
+		required_level = 105;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.9)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*1.2)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*1)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-8)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.75)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.5)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.5));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.2)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.2)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.03)-255)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.03)-255)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = fire_elemental;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_forest_klaw]
+{
+	category_name = "magic";
+	doc = "spell Summon Forest Klaw";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 19909;
+	}
+	[common]
+	{
+		description = "Summons a Forest Klaw to guard the Caster.";
+		screen_name = "Summon Forest Klaw";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_040;
+		inventory_icon = b_gui_ig_i_ic_sp_040_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*16-.7);
+		max_level = 180;//55;
+		required_level = 35;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.91)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*1)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.82)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-5)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.78)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.5)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.5));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.08)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.08)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.03)-88)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.03)-88)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = forest_klaw_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_furok]
+{
+	category_name = "magic";
+	doc = "spell Summon Furok";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 4864;
+	}
+	[common]
+	{
+		description = "Summons a Furok to guard the Caster.";
+		screen_name = "Summon Furok";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_028;
+		inventory_icon = b_gui_ig_i_ic_sp_028_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		max_level = 180;//42;
+		required_level = 22;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.94)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.83)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.8)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-2)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.78)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*2)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*2));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.02)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.02)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.2)-64)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.2)-64)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = furok_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_gargoyle]
+{
+	category_name = "magic";
+	doc = "spell Summon Gargoyle";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 65;
+	}
+	[common]
+	{
+		screen_name = "Summon Jade Gargoyle";
+	}
+	[common]
+	{
+		description = "Summons a Jade Gargoyle to guard the Caster.";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_084;
+		inventory_icon = b_gui_ig_i_ic_sp_084_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*360;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*14-.7);
+		max_level = 180;//26;
+		required_level = 5;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.63)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*1.2)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.5)-#int);
+			}
+			[*]
+			{
+				alteration = alter_combat_magic;
+				duration = #infinite;
+				value = ((#magic-1)-#combat_magic_level);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.4)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.93)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.93));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.25)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.25)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.7)-9)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.7)-9)*1.1);
+			}
+        }
+	}
+	[spell_summon]
+	{
+		effect_script = "gargoyle_summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = gargoyle_ranged_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_golem_frost]
+{
+	category_name = "magic";
+	doc = "spell Summon Frost Golem";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 669671;
+	}
+	[common]
+	{
+		description = "Summons a Frost Golem to guard the Caster.";
+		screen_name = "Summon Frost Golem";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_076;
+		inventory_icon = b_gui_ig_i_ic_sp_076_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		max_level = 180;//112;
+		required_level = 95;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*1.06)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.9)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.45)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-7)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.78)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.5)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.5));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.1)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.1)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.9)-53)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.9)-53)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = golem_frost_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_hell_boar]
+{
+	category_name = "magic";
+	doc = "spell Summon Hell Boar";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 29018;
+	}
+	[common]
+	{
+		description = "Summons a Hell Boar to guard the Caster.";
+		screen_name = "Summon Hell Boar";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_127;
+		inventory_icon = b_gui_ig_i_ic_sp_127_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*360;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		max_level = 180;//59;
+		required_level = 39;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.74)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.8)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.55)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-13)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.88)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.5)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.5));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.04)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.04)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-61)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-61)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = hell_boar_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_helper]
+{
+	category_name = "magic";
+	doc = "spell Summon Helper";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 2295;
+	}
+	[common]
+	{
+		screen_name = "Summon Helper";
+		description = "Summons a companion to gather treasure from the battlefield.";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_020;
+		inventory_icon = b_gui_ig_i_ic_sp_020_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_experience = (#magic/3);
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*(#magic*14.2865);
+		required_level = 21;
+		max_level = 180;//44;
+		is_one_shot = true;
+		mana_cost = 79;
+		mana_cost_modifier = (#magic);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+	}
+	[spell_summon]
+	{
+		template_name = clay_golem;
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(0.5)]";
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+		delete_inv = false;
+	}
+}
+[t:template,n:scroll_summon_helper]
+{
+	category_name = "magic";
+	doc = "Scroll Summon Helper";
+	specializes = base_scroll_good;
+	[aspect]
+	{
+		gold_value = 50;
+	}
+	[common]
+	{
+		screen_name = "Summon Helper Scroll";
+	}
+	[common]
+	{
+		description = "Summons a companion to gather treasure from the battlefield.";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sc_002;
+		inventory_icon = b_gui_ig_i_ic_sc_002_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		one_use = true;
+		pcontent_level = 4;
+		cast_experience = 1;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		mana_cost = 60;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+	}
+	[spell_summon]
+	{
+		template_name = clay_golem;
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(0.5)]";
+		description = "Summoned Creature";
+		caster_description = "Caster Control";
+	}
+}
+[t:template,n:spell_summon_impaler]
+{
+	category_name = "magic";
+	doc = "spell summon impaler";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 289493;
+	}
+	[common]
+	{
+		description = "Summons an Impaler to guard the Caster.";
+		screen_name = "Summon Impaler";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_176;
+		inventory_icon = b_gui_ig_i_ic_sp_176_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		max_level = 180;//95;
+		required_level = 75;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*16-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.68)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.85)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.38)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-23)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.05)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.7)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.7));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.07)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.07)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.15)-250)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.15)-250)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = impaler_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_killer_gremal]
+{
+	category_name = "magic";
+	doc = "spell summon killer gremal";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 108;
+	}
+	[common]
+	{
+		screen_name = "Summon Killer Gremal";
+		description = "Summons a Killer Gremal to guard the Caster.";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_008;
+		inventory_icon = b_gui_ig_i_ic_sp_008_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*360;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*14-.7);
+		max_level = 180;//37;
+		required_level = 7;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.46)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*1)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.2)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-1)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.3)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.2)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.2));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.09)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.09)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.83)-22)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.83)-22)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(2.75)]";
+		template_name = gremal_killer_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_krug_dog_skeleton]
+{
+	category_name = "magic";
+	doc = "spell summon krug dog skeleton";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 139456;
+	}
+	[common]
+	{
+		description = "Summons a Skeleton Krug Dog to guard the Caster.";
+		screen_name = "Summon Skeleton Krug Dog";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_141;
+		inventory_icon = b_gui_ig_i_ic_sp_141_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*360;
+		is_one_shot = true;
+		max_level = 180;//81;
+		required_level = 61;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*13-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.5)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.7)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.3)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-21)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.75)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.63)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.63));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.01)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.01)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.83)-132)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.83)-132)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = krug_dog_skeleton_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_larch]
+{
+	category_name = "magic";
+	doc = "spell Summon Larch";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 115232;
+	}
+	[common]
+	{
+		description = "Summons a Larch to guard the Caster.";
+		screen_name = "Summon Larch";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_066;
+		inventory_icon = b_gui_ig_i_ic_sp_066_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		max_level = 180;//80;
+		required_level = 60;
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.81)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.82)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.38)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-27)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.4)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.82)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.82));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.12)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.12)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1)-180)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1)-180)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = larch_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_lava_spirit]
+{
+	category_name = "magic";
+	doc = "spell summon lava spirit";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 439552;
+	}
+	[common]
+	{
+		description = "Summons a Lava Spirit to guard the Caster.";
+		screen_name = "Summon Lava Spirit";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_172;
+		inventory_icon = b_gui_ig_i_ic_sp_172_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//106;
+		required_level = 86;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*16-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*1.11)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*1.08)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*1.14)-#int);
+			}
+			[*]
+			{
+				alteration = alter_combat_magic;
+				duration = #infinite;
+				value = ((#magic-1)-#combat_magic_level);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.20)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.9)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.9));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.33)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.33)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.95)-220)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.95)-220)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = lava_spirit_magic_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+
+[t:template,n:spell_summon_molten_golem]
+{
+	category_name = "magic";
+	doc = "spell Summon Molten Golem";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 826541;
+	}
+	[common]
+	{
+		description = "Summons a Molten Golem to guard the Caster.";
+		screen_name = "Summon Slag";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_174;
+		inventory_icon = b_gui_ig_i_ic_sp_174_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//112;
+		required_level = 100;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*1.15)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.95)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.6)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-15)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.74)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.77)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.77));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.13)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.13)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.85)-175)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.85)-175)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = molten_golem;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_mucosa]
+{
+	category_name = "magic";
+	doc = "spell summon mucosa";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 1384;
+	}
+	[common]
+	{
+		description = "Summons a Mucosa to guard the Caster.";
+		screen_name = "Summon Mucosa";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_103;
+		inventory_icon = b_gui_ig_i_ic_sp_103_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		max_level = 180;//36;
+		required_level = 16;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*16-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.77)+10)*1)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*1)+10)*.3)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.5)+10)*.1)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-1)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.57)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*3)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*3));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.06)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.06)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-20)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-20)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = mucosa_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_mucosa_predator]
+{
+	category_name = "magic";
+	doc = "spell summon mucosa predator";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 326512;
+	}
+	[common]
+	{
+		description = "Summons a Mucosa Predator to guard the Caster.";
+		screen_name = "Summon Mucosa Predator";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_171;
+		inventory_icon = b_gui_ig_i_ic_sp_171_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		max_level = 180;//100;
+		required_level = 80;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*17-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.83)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.9)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.93)-#int);
+			}
+			[*]
+			{
+				alteration = alter_combat_magic;
+				duration = #infinite;
+				value = ((#magic-26)-#combat_magic_level);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.12)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.35)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.35));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.09)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.09)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.08)-200)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.08)-200)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = mucosa_predator_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_picker]
+{
+	category_name = "magic";
+	doc = "spell summon picker";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 60002;
+	}
+	[common]
+	{
+		description = "Summons a Picker to guard the Caster.";
+		screen_name = "Summon Picker";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_133;
+		inventory_icon = b_gui_ig_i_ic_sp_133_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//68;
+		required_level = 48;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.41)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.85)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.54)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-16)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.89)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.15)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.15));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.03)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.03)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.93)-122)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.93)-122)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = picker_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_rock_golem]
+{
+	category_name = "magic";
+	doc = "spell Summon Rock Golem";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 803618;
+	}
+	[common]
+	{
+		description = "Summons a Rock Golem to guard the Caster.";
+		screen_name = "Summon Rock Golem";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_169;
+		inventory_icon = b_gui_ig_i_ic_sp_169_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//112;
+		required_level = 100;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*1.15)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.82)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.3)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-8)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.2)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.95)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.95));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.08)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.08)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.03)-215)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.03)-215)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = rock_golem;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_rock_beast]
+{
+	category_name = "magic";
+	doc = "spell Summon Rock Beast";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 1110550;
+	}
+	[common]
+	{
+		description = "Summons a Rock Beast to guard the Caster.";
+		screen_name = "Summon Rock Beast";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_170;
+		inventory_icon = b_gui_ig_i_ic_sp_170_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		max_level = 180;//112;
+		required_level = 105;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*17-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*1.38)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.82)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.5)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-5)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.42)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.22)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.22));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.14)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.14)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.15)-67)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.15)-67)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = rock_beast_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_scorpion]
+{
+	category_name = "magic";
+	doc = "spell summon scorpion";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 1119;
+	}
+	[common]
+	{
+		description = "Summons a Scorpion to guard the Caster.";
+		screen_name = "Summon Scorpion";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_018;
+		inventory_icon = b_gui_ig_i_ic_sp_018_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		max_level = 180;//35;
+		required_level = 15;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.87)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.75)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.3)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-4)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.25)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.54)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.54));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.04)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.04)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.98)-41)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.98)-41)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = scorpion_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_skeleton]
+{
+	category_name = "magic";
+	doc = "spell summon skeleton";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 278;
+	}
+	[common]
+	{
+		description = "Summons a Skeleton to guard the Caster.";
+		screen_name = "Summon Skeleton";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_091;
+		inventory_icon = b_gui_ig_i_ic_sp_091_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//30;
+		required_level = 10;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*1)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.5)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.1)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-2)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.25)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.9)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.9));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.02)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.02)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.95)-17)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.95)-17)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = skeleton_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_skick]
+{
+	category_name = "magic";
+	doc = "spell summon skick";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 11288;
+	}
+	[common]
+	{
+		description = "Summons a Skick to guard the Caster.";
+		screen_name = "Summon Skick";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_118;
+		inventory_icon = b_gui_ig_i_ic_sp_118_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*120;
+		is_one_shot = true;
+		max_level = 180;//48;
+		required_level = 28;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*17-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.64)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.87)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.72)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-8)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.86)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.75)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.75));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.03)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.03)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.8)-80)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.8)-80)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = skick_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_spiked_dweller]
+{
+	category_name = "magic";
+	doc = "spell Summon Spiked Dweller";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 61235;
+	}
+	[common]
+	{
+		description = "Summons a Spiked Dweller to guard the Caster.";
+		screen_name = "Summon Spiked Dweller";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_055;
+		inventory_icon = b_gui_ig_i_ic_sp_055_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*360;
+		is_one_shot = true;
+		max_level = 180;//68;
+		required_level = 48;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*14-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.42)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.6)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.38)-#int);
+			}
+			[*]
+			{
+				alteration = alter_combat_magic;
+				duration = #infinite;
+				value = ((#magic-18)-#combat_magic_level);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.9)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.51)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.51));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.09)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.09)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-167)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_cmagic_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1.1)-167)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = spiked_dweller_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_troll_forest]
+{
+	category_name = "magic";
+	doc = "spell summon troll forest";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 14569;
+	}
+	[common]
+	{
+		description = "Summons a Forest Troll to guard the Caster.";
+		screen_name = "Summon Forest Troll";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_124;
+		inventory_icon = b_gui_ig_i_ic_sp_124_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//53;
+		required_level = 33;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.65)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*1)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.91)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-5)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.57)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.6)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.6));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.09)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.09)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1)-62)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1)-62)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = troll_forest_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_wolf_black]
+{
+	category_name = "magic";
+	doc = "spell Summon Black Wolf";
+	specializes = base_summon_good;
+	[aspect]
+	{
+		gold_value = 35124;
+	}
+	[common]
+	{
+		description = "Summons a Black Wolf to guard the Caster.";
+		screen_name = "Summon Black Wolf";
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "nature_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_046;
+		inventory_icon = b_gui_ig_i_ic_sp_046_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*360;
+		is_one_shot = true;
+		max_level = 180;//60;
+		required_level = 40;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*14-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.67)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.88)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.67)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-12)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.71)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.7)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.7));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.01)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.01)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.75)-72)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.75)-72)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		script_params = "[scale(1.75)]";
+		template_name = wolf_black_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_wraith]
+{
+	category_name = "magic";
+	doc = "spell summon wraith";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 84987;
+	}
+	[common]
+	{
+		description = "Summons a Wraith to guard the Caster.";
+		screen_name = "Summon Wraith";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_136;
+		inventory_icon = b_gui_ig_i_ic_sp_136_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*240;
+		is_one_shot = true;
+		max_level = 180;//73;
+		required_level = 53;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*15-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.49)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.45)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.69)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-7)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.94)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.05)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.05));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.04)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.04)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1)-126)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*1)-126)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = wraith_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_wraith_archer]
+{
+	category_name = "magic";
+	doc = "spell summon wraith_archer";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 109797;
+	}
+	[common]
+	{
+		description = "Summons a Wraith Archer to guard the Caster.";
+		screen_name = "Summon Wraith Archer";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_139;
+		inventory_icon = b_gui_ig_i_ic_sp_139_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*360;
+		is_one_shot = true;
+		max_level = 180;//77;
+		required_level = 57;
+		mana_cost = 0;
+		mana_cost_modifier =  0.5*((#magic+1)*14-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.47)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.57)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.78)-#int);
+			}
+			[*]
+			{
+				alteration = alter_ranged;
+				duration = #infinite;
+				value = ((#magic-8)-#ranged);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*1.08)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*0.44)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*0.44));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.03)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.03)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_ranged_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.7)-120)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_ranged_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.7)-120)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = wraith_archer_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}
+[t:template,n:spell_summon_zombie_headless]
+{
+	category_name = "magic";
+	doc = "spell summon zombie_headless";
+	specializes = base_summon_dark;
+	[aspect]
+	{
+		gold_value = 40812;
+	}
+	[common]
+	{
+		description = "Summons a Zombie to guard the Caster.";
+		screen_name = "Summon Zombie";
+	}
+	[common]
+	{
+		[template_triggers]
+		{
+			[*]
+			{
+				action* = call_sfx_script( "combat_spell_sparkle" );
+				condition* = receive_world_message("we_dropped");
+			}
+		}
+	}
+	[gui]
+	{
+		active_icon = b_gui_ig_i_ic_sp_130;
+		inventory_icon = b_gui_ig_i_ic_sp_130_inv;
+	}
+	[magic]
+	{
+		apply_enchantments = false;
+		cast_range = 10;
+		cast_reload_delay = 1;
+		caster_state_name = "Controlling";
+		effect_duration = 4*300;
+		is_one_shot = true;
+		max_level = 180;//63;
+		required_level = 43;
+		mana_cost = 0;
+		mana_cost_modifier = 0.5*((#magic+1)*14-.7);
+		requires_line_of_sight = true;
+		speed_bias = 1;
+		target_type_flags = tt_terrain | tt_not_actor;//target_type_flags = tt_terrain;
+		usage_context_flags = uc_passive;
+
+		[enchantments]
+		{
+			[*]
+			{
+				alteration = alter_strength;
+				duration = #infinite;
+				value = ((((#magic*0.64)+10)*.44)-#str);
+			}
+			[*]
+			{
+				alteration = alter_dexterity;
+				duration = #infinite;
+				value = ((((#magic*0.27)+10)*.6)-#dex);
+			}
+			[*]
+			{
+				alteration = alter_intelligence;
+				duration = #infinite;
+				value = ((((#magic*0.09)+10)*.33)-#int);
+			}
+			[*]
+			{
+				alteration = alter_melee;
+				duration = #infinite;
+				value = ((#magic-18)-#melee);
+			}
+			[*]
+			{
+				alteration = alter_armor;
+				duration = #infinite;
+				value = (((#magic*9)*.46)-#base_defense);
+			}
+			[*]
+			{
+				alteration = alter_max_life;
+				duration = #infinite;
+				value = (((#magic*24)*1.3)-#maxlife);
+			}
+			[*]
+			{
+				alteration = alter_life;
+				duration = 1.0;
+				value = (((#magic*24)*1.3));
+			}
+			[*]
+			{
+				alteration = alter_max_mana;
+				duration = #infinite;
+				value = (((#magic*19)*0.01)-#maxmana);
+			}
+			[*]
+			{
+				alteration = alter_mana;
+				duration = 1.0;
+				value = (((#magic*19)*0.01)-#mana);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_min;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.7)-79)*0.9);
+			}
+			[*]
+			{
+				alteration = alter_melee_damage_max;
+				duration = #infinite;
+				value = ((((#magic*4.2)*.7)-79)*1.1);
+			}
+		}
+
+	}
+	[spell_summon]
+	{
+		effect_script = "summon";
+		end_script = "un_summon";
+		template_name = zombie_headless_summon;
+		description = "Summoned Creature";
+		caster_description = "Controlling Summoned";
+	}
+}

@@ -19,6 +19,6 @@
 			<screen_name value="Long Crossbow"/>
 		</common>
 		<magic/>
-		<placement region="town_center"><position node="1323345966" x="0" y="0" z="0"/></placement>
+		<placement region=""><position node="1323345966" x="0" y="0" z="0"/></placement>
 	</go>
 </objects>

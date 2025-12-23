@@ -16,5 +16,5 @@
 		<go id="6"/>
 	</account>
 	<account username="cryden" password="c" id="6">
-	<go id="8"/></account>
+	<go id="8"/><go id="14"/><go id="15"/><go id="16"/></account>
 </server>
