@@ -392,11 +392,11 @@ void GoAspect::RecoverLife()
 	if (m_life_state > ls_alive_unconscious)
 		return;
 
+
 	if (m_current_life < m_max_life)
 	{
 		m_current_life = min(m_current_life + m_life_recovery_unit, m_max_life);
 	}
-
 	if ((m_current_life >= m_max_life) &&
 		(m_life_state == ls_alive_unconscious))
 	{

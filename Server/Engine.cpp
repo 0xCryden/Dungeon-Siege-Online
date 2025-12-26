@@ -24,7 +24,6 @@ Engine :: ~Engine ()
 
 void Engine::RegisterPlayer(Go* playerGo) {
     if (playerGo) m_players.insert(playerGo);
-    playerGo->CalculateStatus();
 }
 void Engine::UnregisterPlayer(Go* playerGo) {
     m_players.erase(playerGo);
@@ -95,6 +94,15 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 					AddGoToRegion (from, message.Data());
 				}
 			}
+			if (from->HasActor() && from->Actor()->CanLevelUp())
+			{
+				from->CalculateStatus();
+			}
+			if (from->HasAspect() && from->Aspect()->CurrentLife() < from->Aspect()->MaxLife())
+			{
+				int64_t lifePeriodMs = (int64_t)(from->Aspect()->LifeRecoveryPeriod() * 1000.0f);
+				PostWorldMessage(we_player_data_changed, to, to, "life", lifePeriodMs);
+			}
 		}
 		break;
 		
@@ -158,7 +166,6 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			{
 				if (from->HasAspect())
 				{
-					from->CalculateStatus();
 					from->Aspect()->RecoverLife();
 					UpdateGo(from, we_goupdate_lifestate);
 				}
@@ -167,7 +174,6 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			{
 				if (from->HasAspect())
 				{
-					from->CalculateStatus();
 					from->Aspect()->RecoverMana();
 					UpdateGo(from, we_goupdate_lifestate);
 				}
@@ -246,6 +252,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 		{
 			from->Aspect()->SetLifeState(ls_alive_conscious);
 			from->Aspect()->SetCurrentLife(from->Aspect()->MaxLife());
+			from->Aspect()->SetCurrentMana(from->Aspect()->MaxMana());
 			from->Aspect()->SetLastDied(0);
 
 			//MessageKnown(from, WorldMessage(we_go_status_updated, from, to, ""));
@@ -655,17 +662,12 @@ void Engine::TimerPerMinute()
 	for (GopSet::iterator iterator = m_players.begin(); iterator != m_players.end(); iterator++)
 	{
 		(*iterator)->SaveToXml("actors");
-		//Log::Write("[ENGINE] Saving Character ", true);
 	}
-	//Log::Write(Log::Level::INFO, "[ENGINE] Players saved", true);
 
 	for (GopSet::iterator iterator = m_items.begin(); iterator != m_items.end(); iterator++)
 	{
 		(*iterator)->SaveToXml("items");
-		//Log::Write("[ENGINE] Saving Item ", true);
 	}
-	//Log::Write(Log::Level::INFO, "[ENGINE] Items saved", true);
-	//Log::Write("[ENGINE] ####### [END] 60 Second Timer #######", true);
 }
 
 void Engine::TimerPerHour()
@@ -743,6 +745,10 @@ void Engine :: UpdateGoLvlup(Go* go, const string & data)
 	{
 		(*iterator)->Send (WorldMessage(we_leveled_up, go, (*iterator), data));
 	}
+
+	go->CalculateStatus();
+	go->Aspect()->SetCurrentLife(go->Aspect()->MaxLife());
+	go->Aspect()->SetCurrentMana(go->Aspect()->MaxMana());
 }
 
 

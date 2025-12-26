@@ -437,7 +437,6 @@ void GoActor::AddSkillExp(const string& skill, float value)
 		if (skill != "uber")
 		{
 			g_engine.UpdateGoLvlup(GetGo(), skill);
-			GetGo()->CalculateStatus();
 		}
 	}
 
@@ -519,7 +518,6 @@ void GoActor::AddSkillExp(const string& skill, float value)
 			if (std::floor(old) != std::floor(a->level))
 			{
 				g_engine.UpdateGoLvlup(GetGo(), attr);
-				GetGo()->CalculateStatus();
 			}
 		};
 

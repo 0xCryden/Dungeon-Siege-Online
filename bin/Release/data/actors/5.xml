@@ -6,7 +6,7 @@
 			<can_level_up value="1"/>
 			<skills>
 				<skill name="uber" level="0.0" experience="0"/>
-				<skill name="strength" level="0.0" experience="0"/>
+				<skill name="strength" level="35.0" experience="0"/>
 				<skill name="intelligence" level="0.0" experience="0"/>
 				<skill name="dexterity" level="0.0" experience="0"/>
 				<skill name="melee" level="0.0" experience="0"/>

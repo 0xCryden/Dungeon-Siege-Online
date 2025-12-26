@@ -447,7 +447,7 @@ void Go :: HandleCommand (const string& command)
             {
             	float levels = stof(levelAmount);
 
-            	Actor()->SetSkillLevel("uber", levels);
+            	Actor()->SetSkillLevel("uber", levels * 3);
 
             	Actor()->SetSkillLevel("strength", levels);
             	Actor()->SetSkillLevel("dexterity", levels);
@@ -463,9 +463,31 @@ void Go :: HandleCommand (const string& command)
             	if (!Actor()->HasSkill(skillName))
             		return;
 
+				if (skillName == "uber")
+				{
+					cout << "Cant level uber level. Please level up attribute instead" << endl;
+					return;
+				}
+
             	float levels = stof(levelAmount);
             	Actor()->SetSkillLevel(skillName, levels);
+
+				if (skillName == "strength")
+				{
+					Actor()->SetSkillLevel("uber", levels + Actor()->GetSkillLevel("intelligence") + Actor()->GetSkillLevel("dexterity"));
+				}
+				else if (skillName == "intelligence")
+				{
+					Actor()->SetSkillLevel("uber", levels + Actor()->GetSkillLevel("strength") + Actor()->GetSkillLevel("dexterity"));
+				}
+				else if (skillName == "dexterity")
+				{
+					Actor()->SetSkillLevel("uber", levels + Actor()->GetSkillLevel("strength") + Actor()->GetSkillLevel("intelligence"));
+				}
             }
+			CalculateStatus();
+			Aspect()->SetCurrentLife(Aspect()->MaxLife());
+			Aspect()->SetCurrentMana(Aspect()->MaxMana());
 
 			g_engine.UpdateGo(this, we_goupdate_lifestate);
 			g_engine.UpdateGo(this, we_goupdate_skills);
@@ -1083,7 +1105,7 @@ void Go::SaveToXml(const string& folderName)
     const string idStr = to_string(Goid());
     const string path = "data/" + folderName + "/" + idStr + ".xml";
 
-	//cout << "Saving GoID: " << idStr << endl;
+	cout << "Saving GoID: " << idStr << endl;
     xmlDoc* doc = xml::LoadFile(path);
     if (!doc) {
 		cout << "Failed to open " << path << ". Creating new xml" << endl;
@@ -1217,7 +1239,7 @@ void Go::CreateXml(const string& folderName)
 
 void Go :: CalculateStatus()
 {
-	cout << "Entering Calc Status" << endl;
+	cout << "Entering Calc Status for " << to_string(Goid()) << endl;
 	float hpAmount = 0;
 	float mpAmount = 0;
 	if (Actor()->CanLevelUp())

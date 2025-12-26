@@ -239,6 +239,7 @@ class MainMenu : public WorldState
 
 						go->AddComponent(new Player(m_connection, go));
 						m_connection->SetWorldState(new InGame(*m_connection, go));
+
 						g_engine.RegisterPlayer(go);
 
 						cout << "[DEBUG] Player object created and registered for ID: " << go->Goid() << endl;
