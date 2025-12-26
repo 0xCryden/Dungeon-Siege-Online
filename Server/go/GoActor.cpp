@@ -387,6 +387,8 @@ void GoActor :: SetSkillLevel (const string & skill, float value)
 	if (iterator != m_skills.end())
 	{
 		iterator->second->level = value;
+		float exp = GetXPFromLevel(value);
+		iterator->second->experience = exp;
 	}
 }
 
@@ -396,6 +398,8 @@ void GoActor :: SetSkillExp (const string & skill, float value)
 	if (iterator != m_skills.end())
 	{
 		iterator->second->experience = value;
+		float level = GetLevelFromXP(value);
+		iterator->second->level = level;
 	}
 }
 

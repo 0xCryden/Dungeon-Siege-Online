@@ -158,16 +158,18 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			{
 				if (from->HasAspect())
 				{
+					from->CalculateStatus();
 					from->Aspect()->RecoverLife();
-					UpdateGo(from);
+					UpdateGo(from, we_goupdate_lifestate);
 				}
 			}
 			else if (dataType == "mana")
 			{
 				if (from->HasAspect())
 				{
+					from->CalculateStatus();
 					from->Aspect()->RecoverMana();
-					UpdateGo(from);
+					UpdateGo(from, we_goupdate_lifestate);
 				}
 			}
 
@@ -247,7 +249,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			from->Aspect()->SetLastDied(0);
 
 			//MessageKnown(from, WorldMessage(we_go_status_updated, from, to, ""));
-			UpdateGo(from);
+			UpdateGo(from, we_goupdate_lifestate);
 
 			//to->Send (message); // scripting event
 			//from->Send (message);
@@ -480,7 +482,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			}
 
 			toAspect->SetCurrentLife(hp);
-			UpdateGo(to);
+			UpdateGo(to, we_goupdate_lifestate);
 
 			// Add exp
 			if (!from->Actor()->CanLevelUp())
@@ -574,7 +576,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 				PostWorldMessage(we_player_data_changed, to, to, "life", lifePeriodMs);
 			}
 			toAspect->SetCurrentLife(hp);
-			UpdateGo(to);
+			UpdateGo(to, we_goupdate_lifestate);
 
 			// Add exp
 			if (!from->Actor()->CanLevelUp())
@@ -695,35 +697,19 @@ void Engine :: MessageAllPlayers (const WorldMessage & message)
 	}
 }
 
-void Engine :: UpdateGo(Go* go)
+void Engine :: UpdateGo(Go* go, eWorldEvent type, const string& data)
 {
 	if (go == nullptr)
 		return;
 
 	// Always send to self first
-	go->Send(WorldMessage(we_go_status_updated, go, go, ""));
+	go->Send(WorldMessage(type, go, go, data));
 
 	// Then send to nearby objects
 	const GopSet & frustum = go->Frustum();
 	for (GopSet::const_iterator iterator = frustum.begin(); iterator != frustum.end(); iterator++)
 	{
-		(*iterator)->Send (WorldMessage(we_go_status_updated, go, (*iterator), ""));
-	}
-}
-
-void Engine :: UpdateGoHpMp(Go* go, float hp, float mp)
-{
-	if (go == nullptr)
-		return;
-
-	// Always send to self first
-	go->Send(WorldMessage(we_go_life_updated, go, go, ""));
-
-	// Then send to nearby objects
-	const GopSet & frustum = go->Frustum();
-	for (GopSet::const_iterator iterator = frustum.begin(); iterator != frustum.end(); iterator++)
-	{
-		(*iterator)->Send (WorldMessage(we_go_life_updated, go, (*iterator), ""));
+		(*iterator)->Send (WorldMessage(type, go, (*iterator), data));
 	}
 }
 
@@ -749,7 +735,7 @@ void Engine :: UpdateGoLvlup(Go* go, const string & data)
 		return;
 
 	// Always send to self first
-	go->Send(WorldMessage(we_leveled_up, go, go, ""));
+	go->Send(WorldMessage(we_leveled_up, go, go, data));
 
 	// Then send to nearby objects
 	const GopSet & frustum = go->Frustum();

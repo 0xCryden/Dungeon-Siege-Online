@@ -84,6 +84,10 @@
 		we_weapon_swung = 82,
 		we_projectile_hit,
 
+		we_goupdate_lifestate,
+		we_goupdate_skills,
+		we_goupdate_addexp,
+
 		we_timer_second,
 		we_timer_minute,
 		we_timer_hour,

@@ -42,7 +42,7 @@ class GoDb
 		void GasToGoDb();
 		void InstantiateMapTemplates();
 		void LoadSpawns();
-		void SpawnGo(const string& templateName, const Go* go);
+		void SpawnGo(const string& templateName, const Go* go, const string& pContent);
 
 		Go* FindGoById(uint32_t id);
 		Go* FindTemplateByName(const string& template_name);

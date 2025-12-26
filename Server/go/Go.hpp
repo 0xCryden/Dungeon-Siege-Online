@@ -60,23 +60,18 @@ class Go
 
 		Go(xmlNode* node); // ONLY USED FOR CREATING NEW TEMPLATES
 		Go(const TemplateData& tmpl); // ONLY USED FOR CREATING NEW TEMPLATES
-		void LoadFromXml(xmlNode* node);
-		Go (sqlResult * query); // only used for loading a 'save game'
 		Go (uint32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
 		Go(const TemplateData& tmpl, const PlacementData& placement);
-		Go(const TemplateData& tmpl, const GoPlacement& placement);
+		Go(const TemplateData& tmpl, const GoPlacement& placement, const string& pContent);
 
-		Go(const Go* tmpl, const GoPlacement& placement);
 		~Go ();
 
-		void InheritFrom(const string& parentName); // used for creating a new go from either [an existing go, or a template]
-
 		GoActor * Actor () const;
-
 		eEquipSlot IntendedSlot ();
 		eInventoryLocation IntendedLoc ();
 		void HandleCommand (const string& command);
 		void SaveToXml(const std::string& folderName);
+		void CreateXml(const std::string& folderName);
 		string GetTitle();
 		void AddChild (Go * child);
 		GoAspect * Aspect () const;
@@ -134,9 +129,9 @@ class Go
 		void Send (const WorldMessage & message);
 		void SetParent (Go * parent);
 		// void SetPlayer( const PlayerId * ) ??????
-		string TemplateName () const;
-			
-			
+		string TemplateName() const;
+		string pContentQuery();
+
 		// depreciate please
 		void AddComponent (GoScriptComponent * component);
 		void RemoveComponent (const string & component);
@@ -178,6 +173,7 @@ class Go
 		uint32_t m_goid;
 		uint32_t m_scid;
 		string m_template_name;
+		string m_pcontent_query;
 		string m_specializes;
 			
 		GopSet m_objects;

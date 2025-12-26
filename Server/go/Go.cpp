@@ -27,7 +27,9 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 		m_goid = xml::ReadAttribute<uint32_t> (node, "id", 0);
 		m_scid = 0;
 		m_admin = xml::ReadAttribute<uint8_t> (node, "admin", 0);
-		m_template_name = xml::ReadAttribute<string> (node, "template_name", "");
+		m_template_name = xml::ReadAttribute<string>(node, "template_name", "");
+		m_pcontent_query = "";
+		m_pcontent_query = xml::ReadAttribute<string>(node, "pcontent_query", "");
 		m_specializes = "";
 
 		xmlNode * current = NULL;
@@ -117,7 +119,7 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 
 // for GoDb template creation
 Go::Go(const TemplateData& tmpl)
-	: m_template_name(tmpl.name), m_specializes(tmpl.specializes),
+	: m_template_name(tmpl.name), m_pcontent_query(""), m_specializes(tmpl.specializes),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
 	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
@@ -149,12 +151,13 @@ Go::Go(const TemplateData& tmpl)
 	if ((comp = tmpl.GetComponent("conversation"))) { m_conversation = new GoConversation(this, comp); }
 }
 
-Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL), m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL), m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
+Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_pcontent_query(""), m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL), m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL), m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
 {
 	m_goid = id;
 	m_admin = 0;
 	m_scid = 0;
 	m_template_name = go->m_template_name;
+	m_pcontent_query = go->m_pcontent_query;
 	m_specializes = go->m_specializes;
 	
 	if (go->m_actor != NULL) m_actor = new GoActor (this);
@@ -172,7 +175,7 @@ Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_parent(NULL), m_act
 }
 
 Go::Go(const TemplateData& tmpl, const PlacementData& placement)
-	: m_template_name(tmpl.name), m_specializes(tmpl.specializes),
+	: m_template_name(tmpl.name), m_specializes(tmpl.specializes), m_pcontent_query(""),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
 	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
@@ -184,6 +187,7 @@ Go::Go(const TemplateData& tmpl, const PlacementData& placement)
 
 	m_admin = 0;
 	m_template_name = tmpl.name;
+	//m_pcontent_query = go->m_pcontent_query;
 
 	const TemplateComponent* comp;
 	if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
@@ -206,8 +210,8 @@ Go::Go(const TemplateData& tmpl, const PlacementData& placement)
 	m_conversations = placement.conversations;
 }
 
-Go::Go(const TemplateData& tmpl, const GoPlacement& placement)
-	: m_template_name(tmpl.name), m_specializes(""),
+Go::Go(const TemplateData& tmpl, const GoPlacement& placement, const string& pcontent)
+	: m_template_name(tmpl.name), m_specializes(""), m_pcontent_query(pcontent),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
 	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
@@ -233,75 +237,6 @@ Go::Go(const TemplateData& tmpl, const GoPlacement& placement)
 	if ((comp = tmpl.GetComponent("conversation"))) { m_conversation = new GoConversation(this, comp); }
 
 	m_placement = new GoPlacement(this, placement);
-}
-
-Go::Go(const Go* tmpl, const GoPlacement& placement)
-	: m_template_name(tmpl->TemplateName()), m_specializes(""),
-	m_parent(nullptr), m_actor(nullptr), m_aspect(nullptr), m_attack(nullptr),
-	m_body(nullptr), m_common(nullptr), m_defend(nullptr), m_gui(nullptr),
-	m_inventory(nullptr), m_magic(nullptr), m_mind(nullptr), m_placement(nullptr), m_conversation(nullptr)
-{
-	m_goid = godb.NextId();
-	m_admin = 0;
-
-	// Copy the placement first
-	m_placement = new GoPlacement(this, placement);
-
-	// Use the template to fill components
-	if (tmpl->m_specializes != "")
-	{
-		// Recursively inherit from parent template if needed
-		m_specializes = tmpl->m_specializes;
-		InheritFrom(tmpl->m_specializes);
-	}
-
-	if (tmpl->m_actor)
-	{
-		m_actor = new GoActor(this, *tmpl->m_actor);
-	}
-	if (tmpl->m_aspect)
-	{
-		m_aspect = new GoAspect(this, *tmpl->m_aspect);
-	}
-	if (tmpl->m_attack)
-	{
-		m_attack = new GoAttack(this, *tmpl->m_attack);
-	}
-	if (tmpl->m_body)
-	{
-		m_body = new GoBody(this, *tmpl->m_body);
-	}
-	if (tmpl->m_common)
-	{
-		m_common = new GoCommon(this, *tmpl->m_common);
-	}
-	if (tmpl->m_defend)
-	{
-		m_defend = new GoDefend(this, *tmpl->m_defend);
-	}
-	if (tmpl->m_gui)
-	{
-		m_gui = new GoGui(this, *tmpl->m_gui);
-	}
-	if (tmpl->m_inventory)
-	{
-		m_inventory = new GoInventory(this, *tmpl->m_inventory);
-	}
-	if (tmpl->m_magic)
-	{
-		m_magic = new GoMagic(this, *tmpl->m_magic);
-	}
-	if (tmpl->m_mind)
-	{
-		m_mind = new GoMind(this, *tmpl->m_mind);
-	}
-
-	// The placement is already provided, do not override
-	// If tmpl has a placement but you want to merge, you could call:
-	// if (tmpl->m_placement)
-	//     m_placement->InheritFrom(*tmpl->m_placement);
-
-	// TODO: Implement mob drops, pcontent, physics, scripts if needed
 }
 
 
@@ -333,7 +268,7 @@ Go :: ~Go ()
 	}
 }
 
-void Go::InheritFrom(const string& parentName)
+/*void Go::InheritFrom(const string& parentName)
 {
 	Go* parent = godb.FindTemplateByName(parentName);
 	if (parent == NULL)
@@ -402,23 +337,10 @@ void Go::InheritFrom(const string& parentName)
 		if (!m_placement) m_placement = new GoPlacement(this, *parent->m_placement);
 		else              m_placement->InheritFrom(*parent->m_placement);
 	}
-	/*for (const auto& [name, script] : parent->m_scripts)
-	{
-		if (m_scripts.count(name) == 0)
-		{
-			m_scripts[name] = script->CloneFor(this);
-		}
-		else
-		{
-			m_scripts[name]->InheritFrom(script);
-		}
-	}*/
-}
+}*/
 
 double Go :: GetDistanceTo(Go * target)
 {
-	//cout << "IsInRange begin" << endl;
-
 	if (target == NULL)
 	{
 		return -1;
@@ -463,6 +385,29 @@ void Go :: HandleCommand (const string& command)
             return;
         }
 
+		bool isPcontentQuery = false;
+		string pContent;
+		if (templateName[0] == '#')
+		{
+			size_t colonPos = templateName.find(':');
+
+			if (colonPos != string::npos && colonPos > 1 && colonPos < templateName.size() - 1)
+			{
+				pContent = templateName; // pContent = templateName.substr(colonPos + 1);
+				templateName = templateName.substr(1, colonPos - 1); // skip '#'
+				isPcontentQuery = true;
+			}
+			else
+			{
+				cout << "[error] Invalid format. Expected #<template>:<value>\n";
+				return;
+			}
+		}
+		else
+		{
+			pContent = "#" + templateName;
+		}
+		
 		if (TemplateData* tpl = manager.GetTemplate(templateName))
 		{
 			cout << "[info] template: " << tpl->name << "\n";
@@ -472,18 +417,10 @@ void Go :: HandleCommand (const string& command)
 			for (const auto& [compname, comp] : tpl->components) {
 				gas.LogComponent(compname, comp, "  ");
 			}
-			// access fields
-			/*auto* comp = tpl->getcomponent("aspect");
-			if (comp) {
-				auto experience_value = comp->getfield("experience_value");
-				if (experience_value) {
-					std::cout << "experience_value: " << *experience_value << "\n";
-				}
-			}*/
 		}
 
         // Try to spawn or add using the template name
-		godb.SpawnGo(templateName, this);
+		godb.SpawnGo(templateName, this, pContent);
     }
     else if (cmd == "/setlvl")
     {
@@ -520,22 +457,6 @@ void Go :: HandleCommand (const string& command)
             	Actor()->SetSkillLevel("ranged", levels);
             	Actor()->SetSkillLevel("nature magic", levels);
             	Actor()->SetSkillLevel("combat magic", levels);
-
-            	float exp = Actor()->GetXPFromLevel(levels);
-
-            	Actor()->SetSkillExp("uber", exp);
-
-            	Actor()->SetSkillExp("strength", exp);
-            	Actor()->SetSkillExp("dexterity", exp);
-            	Actor()->SetSkillExp("intelligence", exp);
-
-            	Actor()->SetSkillExp("melee", exp);
-            	Actor()->SetSkillExp("ranged", exp);
-            	Actor()->SetSkillExp("nature magic", exp);
-            	Actor()->SetSkillExp("combat magic", exp);
-
-            	g_engine.UpdateGo(this);
-
             }
             else // specific skill
             {
@@ -543,15 +464,11 @@ void Go :: HandleCommand (const string& command)
             		return;
 
             	float levels = stof(levelAmount);
-
             	Actor()->SetSkillLevel(skillName, levels);
-
-            	float exp = Actor()->GetXPFromLevel(levels);
-
-            	Actor()->SetSkillExp(skillName, exp);
-
-            	g_engine.UpdateGo(this);
             }
+
+			g_engine.UpdateGo(this, we_goupdate_lifestate);
+			g_engine.UpdateGo(this, we_goupdate_skills);
         }
     }
     else
@@ -762,7 +679,7 @@ bool Go :: HasAspect () const
 
 bool Go :: HasAttack () const
 {
-	return m_aspect != NULL;
+	return m_attack != NULL;
 }
 
 bool Go :: HasBody () const
@@ -1109,7 +1026,7 @@ GoPlacement * Go :: Placement () const
 	throw logic_error ("null pointer referenced");
 }
 
-string Go :: TemplateName () const
+string Go::TemplateName() const
 {
 	if (m_template_name.empty())
 	{
@@ -1120,6 +1037,16 @@ string Go :: TemplateName () const
 	}
 
 	return m_template_name;
+}
+
+string Go::pContentQuery()
+{
+	if (m_pcontent_query.empty())
+	{
+		return "";
+	}
+
+	return m_pcontent_query;
 }
 
 const GopSet & Go :: Frustum ()
@@ -1156,26 +1083,20 @@ void Go::SaveToXml(const string& folderName)
     const string idStr = to_string(Goid());
     const string path = "data/" + folderName + "/" + idStr + ".xml";
 
+	//cout << "Saving GoID: " << idStr << endl;
     xmlDoc* doc = xml::LoadFile(path);
     if (!doc) {
-        cerr << "Failed to open " << path << ". Creating new xml" << endl;
+		cout << "Failed to open " << path << ". Creating new xml" << endl;
 
-		// Create the XML file for the region
-		ofstream file(path);
-		if (!file.is_open())
-		{
-			cerr << "Failed to create item XML file: " << path << endl;
-			return;
-		}
-		file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-		file << "<objects>\n";
-		file << "<go id=\"" << idStr << "\">\n";
-		file << "</go>\n";
-		//file << "<go id=\"" << (size_t)10000 + g_engine.GetItems().size() << "\">\n";
-		file << "</objects>\n";
-		file.close();
-        //return;
+		// Create document
+		CreateXml(folderName);
+		doc = xml::LoadFile(path);
     }
+
+	if (!doc) {
+		cout << "Failed to open " << path << endl;
+		return;
+	}
 
     xmlNodePtr root = xmlDocGetRootElement(doc);
     if (!root || !xmlStrEqual(root->name, BAD_CAST "objects")) {
@@ -1200,18 +1121,25 @@ void Go::SaveToXml(const string& folderName)
         return;
     }
 
-    auto FindOrCreateChild = [](xmlNode* parent, const char* name) -> xmlNode* {
-        for (xmlNode* child = parent->children; child; child = child->next)
-            if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST name))
-                return child;
-        return nullptr;
-    };
+	auto FindOrCreateChild = [](xmlNode* parent, const char* name) -> xmlNode* 
+	{
+		for (xmlNode* child = parent->children; child; child = child->next)
+		{
+			if (child->type == XML_ELEMENT_NODE &&
+				xmlStrEqual(child->name, BAD_CAST name))
+				return child;
+		}
+
+		// CREATE if missing
+		return xmlNewChild(parent, nullptr, BAD_CAST name, nullptr);
+	};
+
 
     if (HasActor())
         if (xmlNode* n = FindOrCreateChild(goNode, "actor"))
             Actor()->Save(n);
 
-    if (HasAspect() && (folderName == "actors"))
+    if (HasAspect()/* && (folderName == "actors")*/)
         if (xmlNode* n = FindOrCreateChild(goNode, "aspect"))
             Aspect()->Save(n);
 
@@ -1237,9 +1165,59 @@ void Go::SaveToXml(const string& folderName)
     xmlFreeDoc(doc);
 }
 
+void Go::CreateXml(const string& folderName)
+{
+	const string idStr = to_string(Goid());
+	const string path = "data/" + folderName + "/" + idStr + ".xml";
+
+	// Create document
+	xmlDoc* doc = xmlNewDoc(BAD_CAST "1.0");
+	if (!doc)
+	{
+		cerr << "Failed to create xml document" << endl;
+		return;
+	}
+
+	// <objects>
+	xmlNode* root = xmlNewNode(nullptr, BAD_CAST "objects");
+	xmlDocSetRootElement(doc, root);
+
+	// <go>
+	xmlNode* goNode = xmlNewChild(root, nullptr, BAD_CAST "go", nullptr);
+	xmlNewProp(goNode, BAD_CAST "id", BAD_CAST idStr.c_str());
+	xmlNewProp(goNode, BAD_CAST "template_name", BAD_CAST m_template_name.c_str());
+	xmlNewProp(goNode, BAD_CAST "pcontent_query", BAD_CAST m_pcontent_query.c_str());
+
+	// Component containers
+	if (HasActor())
+		xmlNewChild(goNode, nullptr, BAD_CAST "actor", nullptr);
+
+	if (HasAspect())
+		xmlNewChild(goNode, nullptr, BAD_CAST "aspect", nullptr);
+
+	if (HasAttack())
+		xmlNewChild(goNode, nullptr, BAD_CAST "attack", nullptr);
+
+	if (HasCommon())
+		xmlNewChild(goNode, nullptr, BAD_CAST "common", nullptr);
+
+	if (HasInventory())
+		xmlNewChild(goNode, nullptr, BAD_CAST "inventory", nullptr);
+
+	if (HasPlacement())
+		xmlNewChild(goNode, nullptr, BAD_CAST "placement", nullptr);
+
+	// Save immediately so the file exists on disk
+	if (!xml::SaveFile(doc, path))
+		cerr << "Failed to save new xml file: " << path << endl;
+
+	xmlFreeDoc(doc); 
+	cout << "[TRACE] Saving to path: " << path << endl;
+}
+
 void Go :: CalculateStatus()
 {
-	//cout << "Entering Calc Status" << endl;
+	cout << "Entering Calc Status" << endl;
 	float hpAmount = 0;
 	float mpAmount = 0;
 	if (Actor()->CanLevelUp())

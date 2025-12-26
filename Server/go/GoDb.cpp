@@ -44,7 +44,7 @@ GoDb :: ~GoDb ()
 	}}
 }
 
-void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
+void GoDb::SpawnGo(const string& templateName, const Go* summonerGo, const string& pContent)
 {
     const TemplateData* tmpl = manager.GetTemplate(templateName);
     if (!tmpl) {
@@ -55,14 +55,19 @@ void GoDb::SpawnGo(const string& templateName, const Go* summonerGo)
 
     try
     {
-        Go* t = new Go(*tmpl, *summonerGo->Placement());
+        Go* t = new Go(*tmpl, *summonerGo->Placement(), pContent);
         m_godb[NextId()] = t;
 
         string region = t->Placement()->GetRegion();
         if (!region.empty())
         {
             SendWorldMessage(we_entered_world, t, t, region);
-            cout << "[GODB] Spawned Go " << t->Goid() << " using template: " << templateName << " in region: " << region << " at: " << summonerGo->Placement()->Position().X << " | " << summonerGo->Placement()->Position().Y << " | " << summonerGo->Placement()->Position().Z << " in node: " << summonerGo->Placement()->Position().Node << endl;
+            cout << "[GODB] Spawned Go " << t->Goid() << " using template: " << templateName << " in region: " << region << " at: " << t->Placement()->Position().X << " | " << t->Placement()->Position().Y << " | " << t->Placement()->Position().Z << " in node: " << t->Placement()->Position().Node << endl;
+            if (t->IsItem())
+            {
+                g_engine.RegisterItem(t);
+                t->SaveToXml("items");
+            }
         }
     }
     catch (exception& e)

@@ -21,6 +21,7 @@
 #include "../events/SendWorldMessageEvent.hpp"
 #include <cmath>
 #include "../helper/Helper.h"
+#include "../Engine.hpp"
 
 GoAspect :: GoAspect (Go * go) : GoComponent (go)
 {
@@ -90,11 +91,11 @@ GoAspect::GoAspect(Go* go, xmlNode* node) : GoComponent(go)
 			}
 			else if (xmlStrEqual(current->name, (const xmlChar*)"life_recovery_period") != 0)
 			{
-				m_life_recovery_period = xml::ReadAttribute<int16_t>(current, "value", 0);
+				m_life_recovery_period = xml::ReadAttribute<int16_t>(current, "value", 4);
 			}
 			else if (xmlStrEqual(current->name, (const xmlChar*)"life_recovery_unit") != 0)
 			{
-				m_life_recovery_unit = xml::ReadAttribute<float>(current, "value", 0.0);
+				m_life_recovery_unit = xml::ReadAttribute<float>(current, "value", 1.0);
 			}
 			else if (xmlStrEqual(current->name, (const xmlChar*)"life_state") != 0)
 			{
@@ -114,11 +115,11 @@ GoAspect::GoAspect(Go* go, xmlNode* node) : GoComponent(go)
 			}
 			else if (xmlStrEqual(current->name, (const xmlChar*)"mana_recovery_period") != 0)
 			{
-				m_mana_recovery_period = xml::ReadAttribute<int16_t>(current, "value", 0);
+				m_mana_recovery_period = xml::ReadAttribute<int16_t>(current, "value", 3);
 			}
 			else if (xmlStrEqual(current->name, (const xmlChar*)"mana_recovery_unit") != 0)
 			{
-				m_mana_recovery_unit = xml::ReadAttribute<float>(current, "value", 0.0);
+				m_mana_recovery_unit = xml::ReadAttribute<float>(current, "value", 1.0);
 			}
 			else if (xmlStrEqual(current->name, (const xmlChar*)"max_life") != 0)
 			{
@@ -362,6 +363,8 @@ void GoAspect :: SetLifeState (eLifeState state)
 		// TODO add auto respawn 60 second timer
 		//PostWorldMessage(we_resurrected, GetGo(), GetGo(), "", 60000);
 	}
+
+	//g_engine.UpdateGo(GetGo(), we_goupdate_lifestate);
 }
 
 void GoAspect :: SetMaxLife (float life)

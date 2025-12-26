@@ -4,8 +4,14 @@
 # ---------------------------------------------------------
 
 # Build results
+Server/Debug/
 bin/Debug/data/
+bin/Debug/maps/
+bin/Debug/resources/
 bin/DebugLOA/data/
+bin/Release/data/
+bin/Release/maps/
+bin/Release/resources/
 #bin/Release/data/
 Server/Debug/
 Server/Release/

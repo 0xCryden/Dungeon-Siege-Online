@@ -18,7 +18,11 @@
 		<aspect>
 			 <bounding_sphere_radius value="1.0"/>
 			 <current_life value="1000.0"/>
+			 <life_recovery_period value="4.0"/>
+			 <life_recovery_unit value="1.0"/>
 			 <current_mana value="100.0"/>
+			 <mana_recovery_period value="3.0"/>
+			 <mana_recovery_unit value="1.0"/>
 			 <flesh value="b_c_gah_fg_skin_01"/>
 			 <cloth value="b_c_pos_a1_pant_005,b_c_pos_a1_shrt_008"/>
 			 <life_state value="ls_alive_conscious"/>

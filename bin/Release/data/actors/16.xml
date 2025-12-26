@@ -5,11 +5,11 @@
 			<alignment value="aa_good"/>
 			<can_level_up value="1"/>
 			<skills>
-				<skill name="uber" level="1.44549" experience="328.382"/>
-				<skill name="strength" level="0.91975" experience="64.3825"/>
-				<skill name="intelligence" level="0.12934" experience="9.05378"/>
-				<skill name="dexterity" level="0.38802" experience="27.1614"/>
-				<skill name="melee" level="1.43711" experience="323.525"/>
+				<skill name="uber" level="1.69549" experience="473.382"/>
+				<skill name="strength" level="1.07975" experience="116.255"/>
+				<skill name="intelligence" level="0.15184" experience="10.6288"/>
+				<skill name="dexterity" level="0.45552" experience="31.8864"/>
+				<skill name="melee" level="1.68711" experience="468.525"/>
 				<skill name="ranged" level="0" experience="0"/>
 				<skill name="nature magic" level="0" experience="0"/>
 				<skill name="combat magic" level="0" experience="0"/>
@@ -29,14 +29,14 @@
 			<mana_recovery_unit value="1.0"/>
 			<life_state value="ls_alive_conscious"/>
 			<last_died value="0"/>
-			<max_life value="49"/>
-			<max_mana value="30"/>
+			<max_life value="78.4"/>
+			<max_mana value="31"/>
 			<model value="dso_utraean_boy"/>
 			<render_scale value="1"/>
 		</aspect>
 		<attack>
-			<damage_max value="4"/>
-			<damage_min value="2"/>
+			<damage_max value="5.6"/>
+			<damage_min value="3.4"/>
 			<attack_range value="0"/>
 			<critical_hit_chance value="0"/>
 			<is_two_handed value="0"/>
@@ -58,7 +58,7 @@
 			<custom_head value="default"/>
 		<item id="50" equip_slot="es_weapon_hand" inven_loc="il_active_melee_weapon"/></inventory>
 		<placement region="town_center">
-			<position node="1323345966" x="-1.96983" y="0" z="0.315898"/>
+			<position node="1323345966" x="-2.11549" y="0" z="0.591222"/>
 		</placement>
 	</go>
 </objects>

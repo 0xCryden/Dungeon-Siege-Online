@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects>
-	<go id="10009">
+	<go id="10009" pcontent_query="#minigun_dragon">
 		<aspect>
 			 <model value="minigun_dragon"/>
-		</aspect>
+		<bounding_sphere_radius value="0"/><current_life value="0"/><current_mana value="0"/><flesh value=""/><cloth value=""/><life_state value="ls_ignore"/><last_died value="0"/><max_life value="0"/><max_mana value="0"/></aspect>
 		<attack>
 			<attack_range value="11"/>
 			<critical_hit_chance value="30"/>
@@ -18,6 +18,6 @@
 			<forced_expiration_class value="auto"/>
 			<screen_name value="Dragon Minigun"/>
 		</common>
-		<placement region="town_center"><position node="1323345966" x="-3.8575" y="0" z="1.82526"/></placement>
+		<placement region="town_center"><position node="1482942462" x="0.324456" y="0" z="0.440495"/></placement>
 	</go>
 </objects>

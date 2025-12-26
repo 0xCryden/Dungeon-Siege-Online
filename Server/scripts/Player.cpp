@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <vector>
+#include "../Engine.hpp"
 using namespace std;
 
 Player :: Player (Connection * connection, Go * go) : GoScriptComponent (go), m_connection (connection)
@@ -75,7 +76,8 @@ void WriteItemRecursive(Go* item, Packet& packet)
     packet.WriteUInt8(slot);
     packet.WriteUInt8(loc);
     packet.WriteUInt32(containerId);
-    packet.WriteString(item->TemplateName());
+	packet.WriteString(item->TemplateName());
+	packet.WriteString(item->pContentQuery());
 
     //GoInventory* inv = item->Inventory();
     if (item->HasInventory() && !item->Inventory()->ListItems().empty())
@@ -106,11 +108,13 @@ void SendRCCreateItemRecursive(Go* item, Connection* conn)
 	packet.WriteUInt32(item->Goid());
 	packet.WriteString(item->Common()->ScreenName());
 	packet.WriteString(item->TemplateName());
+	packet.WriteString(item->pContentQuery());
 	packet.WriteUInt32(item->Placement()->Position().Node);
 	packet.WriteFloat(item->Placement()->Position().X);
 	packet.WriteFloat(item->Placement()->Position().Y);
 	packet.WriteFloat(item->Placement()->Position().Z);
 
+	cout << "RCCREATEITEM pContentQuery: " << item->pContentQuery() << endl;
 	// Write nested inventory
 	/*if (item->HasInventory() && !item->Inventory()->ListItems().empty())
 	{
@@ -146,23 +150,49 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 
 	switch (event)
 	{
-		case we_go_status_updated:
+		case we_goupdate_lifestate:
 		{
 			if (from->HasCommon())
 			{
 				cout << "Sending go update for " << from->Common()->ScreenName() << endl;
 
 				Packet packet;
-				packet.WriteUInt8 (RCUPDATEGO);
-				packet.WriteUInt32 (from->Goid());
+				packet.WriteUInt8(RCUPDATEGO);
+				packet.WriteUInt8(we_goupdate_lifestate);
+				packet.WriteUInt32(from->Goid());
 
-				packet.WriteFloat (from->Aspect()->MaxLife());
-				packet.WriteFloat (from->Aspect()->CurrentLife());
-				packet.WriteFloat (from->Aspect()->MaxMana());
-				packet.WriteFloat (from->Aspect()->CurrentMana());
+				packet.WriteFloat(from->Aspect()->CurrentLife());
+				packet.WriteFloat(from->Aspect()->MaxLife());
+				packet.WriteFloat(from->Aspect()->CurrentMana());
+				packet.WriteFloat(from->Aspect()->MaxMana());
 				packet.WriteUInt8 (from->Aspect()->LifeState());
 
-				m_connection->Send (packet.Data(), packet.Size());
+				m_connection->Send(packet.Data(), packet.Size());
+			}
+		}
+		break;
+
+		case we_goupdate_skills:
+		{
+			if (from->HasCommon())
+			{
+				cout << "Sending go update for " << from->Common()->ScreenName() << endl;
+
+				Packet packet;
+				packet.WriteUInt8(RCUPDATEGO);
+				packet.WriteUInt8(we_goupdate_skills);
+				packet.WriteUInt32(from->Goid());
+
+				packet.WriteFloat(from->Actor()->GetSkillLevel("uber"));
+				packet.WriteFloat(from->Actor()->GetSkillLevel("strength"));
+				packet.WriteFloat(from->Actor()->GetSkillLevel("intelligence"));
+				packet.WriteFloat(from->Actor()->GetSkillLevel("dexterity"));
+				packet.WriteFloat(from->Actor()->GetSkillLevel("melee"));
+				packet.WriteFloat(from->Actor()->GetSkillLevel("ranged"));
+				packet.WriteFloat(from->Actor()->GetSkillLevel("nature magic"));
+				packet.WriteFloat(from->Actor()->GetSkillLevel("combat magic"));
+
+				m_connection->Send(packet.Data(), packet.Size());
 			}
 		}
 		break;
@@ -302,20 +332,19 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 					if (equipment != NULL)
 					{
 						packet.WriteUInt32 (equipment->Goid());
-						//packet.WriteString(equipment->Aspect()->Model());
 						packet.WriteString(equipment->TemplateName());
+						packet.WriteString(equipment->pContentQuery());
 					}
 					else
 					{
 						packet.WriteUInt32 (0);
-						packet.WriteUInt8 (0);
+						packet.WriteString("");
+						packet.WriteString("");
 					}
 				}
 
-			    //std::cout << "From->IsActor()" << std::endl;
-
 				m_connection->Send (packet.Data(), packet.Size());
-				
+
 				return;
 			}
 			
@@ -410,6 +439,7 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				packet.WriteUInt32 (to->Goid());
 				packet.WriteString (to->Common()->ScreenName());
 				packet.WriteString (to->TemplateName());
+				packet.WriteString(to->pContentQuery());
 
 				if (to->HasInventory() && !to->Inventory()->ListItems().empty())
 			    {
@@ -435,6 +465,7 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 					    packet.WriteUInt8(slot);
 					    packet.WriteUInt8(loc);
 					    packet.WriteString(child->TemplateName());
+						packet.WriteString(child->pContentQuery());
 			        }
 			    }
 			    else
@@ -570,7 +601,8 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 					packet.WriteUInt32 (from->Goid());
 					packet.WriteUInt8 (slot);
 					packet.WriteUInt32 (to->Goid());
-					packet.WriteString (to->TemplateName());
+					packet.WriteString(to->TemplateName());
+					packet.WriteString(to->pContentQuery());
 					
 					m_connection->Send (packet.Data(), packet.Size());
 				}

@@ -25,8 +25,7 @@ class Engine
 		GopSet GetPlayerCharacters() { return m_playerChars; };
 		GopSet GetItems() { return m_items; };
 
-		void UpdateGo(Go* go);
-		void UpdateGoHpMp(Go* go, float hp, float mp);
+		void UpdateGo(Go* go, eWorldEvent type, const string& data = "");
 		void UpdateGoExp(Go* go, float value);
 		void UpdateGoLvlup(Go* go, const string & data);
 
