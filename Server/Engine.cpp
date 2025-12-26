@@ -760,15 +760,15 @@ void Engine::AddGoToRegion(Go *go, const std::string &data)
 		return;
 	}
 
-	if (data.empty())
+	if (go->HasConversation() == true)
 	{
-		Log::Write(Log::Level::ERR, " [AddGoToRegion] Data is empty, returning.", true);
+		//Log::Write(Log::Level::ERR, " [AddGoToRegion] Has Conversation true.", true);
 		return;
 	}
 
-	if (go->HasConversation() == true)
+	if (data.empty())
 	{
-		Log::Write(Log::Level::ERR, " [AddGoToRegion] Has Conversation true.", true);
+		Log::Write(Log::Level::ERR, " [AddGoToRegion] Data is empty, returning.", true);
 		return;
 	}
 

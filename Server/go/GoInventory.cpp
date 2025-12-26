@@ -129,8 +129,25 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 			it != equipComponent->fields.end(); ++it)
 		{
 			const string& equipSlot = it->first;
-			const string& itemTemplateName = it->second;
+			const string& originString = it->second;
+			string itemTemplateName = it->second;
+			string pContent = "";
 
+			if (originString[0] == '#')
+			{
+				size_t colonPos = originString.find(':');
+
+				if (colonPos != string::npos && colonPos > 1 && colonPos < originString.size() - 1)
+				{
+					pContent = originString; // pContent = templateName.substr(colonPos + 1);
+					itemTemplateName = originString.substr(1, colonPos - 1); // skip '#'
+				}
+				else
+				{
+					cout << "[error] Invalid format. Expected #<template>:<value>\n";
+					continue;
+				}
+			}
 			TemplateData* itemTmpl = nullptr;
 			itemTmpl = manager.GetTemplate(itemTemplateName);
 			if (!itemTmpl) // error template not found
@@ -141,7 +158,7 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 
 			Go* item = nullptr;
 			//item = godb.CloneGo(itemTemplateName);
-			item = new Go(*itemTmpl);
+			item = new Go(*itemTmpl, pContent);
 			if (!item) // error template not found
 			{
 				cout << "ERROR item template not found for inventory of go" << endl;

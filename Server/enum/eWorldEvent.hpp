@@ -86,7 +86,6 @@
 
 		we_goupdate_lifestate,
 		we_goupdate_skills,
-		we_goupdate_addexp,
 
 		we_timer_second,
 		we_timer_minute,

@@ -438,7 +438,7 @@ void GoDb :: LoadGoDbSingleChar (uint32_t id)
     Log::WriteF(Log::Level::ERR, "No matching <go> node with ID %u found in file %s", id, filePath.c_str());
 }
 
-void GoDb::LoadContentDb()
+/*void GoDb::LoadContentDb()
 {
     //unordered_map<string, TemplateData> templates;
     unordered_set<string> allowed = { "actor", "aspect", "mind" };
@@ -484,7 +484,7 @@ void GoDb::LoadContentDb()
     manager.ResolveTemplateInheritance();
 
     Log::Write(Log::Level::INFO, "[INFO] Finished loading templates. Total loaded: " + to_string(totalLoaded), true);
-}
+}*/
 
 void GoDb :: LoadContentDbOld (const string & filename)
 {

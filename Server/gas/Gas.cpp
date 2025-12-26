@@ -525,7 +525,7 @@ bool Gas::ReadTemplatesFile(const string& fullPath, unordered_map<string, Templa
     }
 
     if (outTemplates.empty()) {
-        cerr << "[WARN] No templates found in file: " << fullPath << endl;
+        //cerr << "[WARN] No templates found in file: " << fullPath << endl;
         return false;
     }
 

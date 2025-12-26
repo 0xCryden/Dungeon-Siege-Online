@@ -59,7 +59,7 @@ class Go
 	public:
 
 		Go(xmlNode* node); // ONLY USED FOR CREATING NEW TEMPLATES
-		Go(const TemplateData& tmpl); // ONLY USED FOR CREATING NEW TEMPLATES
+		Go(const TemplateData& tmpl, const string& pcontent); // ONLY USED FOR CREATING NEW TEMPLATES
 		Go (uint32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
 		Go(const TemplateData& tmpl, const PlacementData& placement);
 		Go(const TemplateData& tmpl, const GoPlacement& placement, const string& pContent);

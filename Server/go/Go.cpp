@@ -118,8 +118,8 @@ Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_
 }
 
 // for GoDb template creation
-Go::Go(const TemplateData& tmpl)
-	: m_template_name(tmpl.name), m_pcontent_query(""), m_specializes(tmpl.specializes),
+Go::Go(const TemplateData& tmpl, const string& pcontent)
+	: m_template_name(tmpl.name), m_pcontent_query(pcontent), m_specializes(tmpl.specializes),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
 	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
