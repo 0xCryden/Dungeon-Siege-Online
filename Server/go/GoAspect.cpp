@@ -25,124 +25,8 @@
 
 GoAspect :: GoAspect (Go * go) : GoComponent (go)
 {
-}
-
-GoAspect::GoAspect(Go* go, const GoAspect& other) : GoComponent(go)
-{
-	// Copy all primitive members
-	m_bounding_sphere_radius = other.m_bounding_sphere_radius;
-	m_current_life = other.m_current_life;
-	m_current_mana = other.m_current_mana;
-	m_invincible = other.m_invincible;
-	m_visible = other.m_visible;
-	m_life_recovery_period = other.m_life_recovery_period;
-	m_life_recovery_unit = other.m_life_recovery_unit;
-	m_life_state = other.m_life_state;
-	m_last_died = other.m_last_died;
-	m_mana_recovery_period = other.m_mana_recovery_period;
-	m_mana_recovery_unit = other.m_mana_recovery_unit;
-	m_max_life = other.m_max_life;
-	m_max_mana = other.m_max_mana;
-	m_model = other.m_model; // string copies automatically
-	m_render_scale = other.m_render_scale;
-	m_experience_value = other.m_experience_value;
-
-	// Copy the texture array
-	for (int i = 0; i < 2; ++i)
-		m_textures[i] = other.m_textures[i];
-}
-
-GoAspect::GoAspect(Go* go, xmlNode* node) : GoComponent(go)
-{
-	if (node != NULL)
-	{
-		xmlNode* current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-
-			if (xmlStrEqual(current->name, (const xmlChar*)"bounding_sphere_radius") != 0)
-			{
-				m_bounding_sphere_radius = xml::ReadAttribute<float>(current, "value", 0.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"current_life") != 0)
-			{
-				m_current_life = xml::ReadAttribute<float>(current, "value", 0.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"current_mana") != 0)
-			{
-				m_current_mana = xml::ReadAttribute<float>(current, "value", 0.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"flesh") != 0)
-			{
-				m_textures[0] = xml::XReadString(current, "value", "");
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"cloth") != 0)
-			{
-				m_textures[1] = xml::XReadString(current, "value", "");
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"is_invincible") != 0)
-			{
-				m_invincible = xml::ReadAttribute<bool>(current, "value", false);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"is_visible") != 0)
-			{
-				m_visible = xml::ReadAttribute<float>(current, "value", true);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"life_recovery_period") != 0)
-			{
-				m_life_recovery_period = xml::ReadAttribute<int16_t>(current, "value", 4);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"life_recovery_unit") != 0)
-			{
-				m_life_recovery_unit = xml::ReadAttribute<float>(current, "value", 1.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"life_state") != 0)
-			{
-				string life_state = xml::XReadString(current, "value", "");
-				if (FromString(life_state, m_life_state) != true)
-				{
-					m_life_state = ls_alive_conscious;
-				}
-				else
-				{
-					m_life_state = ToState(life_state);
-				}
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"last_died") != 0)
-			{
-				m_last_died = xml::ReadAttribute<int64_t>(current, "value", 0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"mana_recovery_period") != 0)
-			{
-				m_mana_recovery_period = xml::ReadAttribute<int16_t>(current, "value", 3);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"mana_recovery_unit") != 0)
-			{
-				m_mana_recovery_unit = xml::ReadAttribute<float>(current, "value", 1.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"max_life") != 0)
-			{
-				m_max_life = xml::ReadAttribute<float>(current, "value", 0.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"max_mana") != 0)
-			{
-				m_max_mana = xml::ReadAttribute<float>(current, "value", 0.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"model") != 0)
-			{
-				m_model = xml::XReadString(current, "value", "");
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"render_scale") != 0)
-			{
-				m_render_scale = xml::ReadAttribute<float>(current, "value", 1.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"experience_value") != 0)
-			{
-				m_experience_value = xml::ReadAttribute<float>(current, "value", 1.0);
-			}
-		}
-	}
+	//if (!m_render_scale.has_value())
+	m_render_scale = 1.0f;
 }
 
 GoAspect::GoAspect(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
@@ -186,58 +70,60 @@ GoAspect::GoAspect(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("experience_value")) { try { m_experience_value = std::stof(*f); } catch (...) { m_experience_value = 1.0f; } }
 }
 
-void GoAspect::InheritFrom(const GoAspect& other)
+GoAspect::GoAspect(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
 {
-	// Numeric members: inherit if still default
-	if (m_render_scale == 1.0f) m_render_scale = other.m_render_scale;
-	if (m_life_recovery_period == 4) m_life_recovery_period = other.m_life_recovery_period;
-	if (m_mana_recovery_period == 4) m_mana_recovery_period = other.m_mana_recovery_period;
+	m_bounding_sphere_radius = std::stof(r.at("bounding_sphere_radius"));
+	m_current_life = std::stof(r.at("current_life"));
+	m_max_life = std::stof(r.at("max_life"));
+	m_current_mana = std::stof(r.at("current_mana"));
+	m_max_mana = std::stof(r.at("max_mana"));
 
-	if (m_bounding_sphere_radius == 0.0f) m_bounding_sphere_radius = other.m_bounding_sphere_radius;
-	if (m_max_life == 0.0f) m_max_life = other.m_max_life;
-	if (m_max_mana == 0.0f) m_max_mana = other.m_max_mana;
-	if (m_current_life == m_max_life) m_current_life = other.m_current_life;
-	if (m_current_mana == m_max_mana) m_current_mana = other.m_current_mana;
+	m_textures[0] = r.at("flesh");
+	m_textures[1] = r.at("cloth");
 
-	// Textures
-	if (m_textures[0].empty()) m_textures[0] = other.m_textures[0];
-	if (m_textures[1].empty()) m_textures[1] = other.m_textures[1];
+	m_invincible = r.at("is_invincible") == "1";
+	m_visible = r.at("is_visible") == "1";
+	string lsStr = r.at("life_state");
+	if (FromString(lsStr, m_life_state) != true) { m_life_state = ls_alive_conscious; }
 
-	// Bool members
-	if (!m_invincible) m_invincible = other.m_invincible;
-	if (m_visible == true) m_visible = other.m_visible;
-
-	// Recovery units
-	if (m_life_recovery_unit == 0.0f) m_life_recovery_unit = other.m_life_recovery_unit;
-	if (m_mana_recovery_unit == 0.0f) m_mana_recovery_unit = other.m_mana_recovery_unit;
-
-	// Life state
-	if (m_life_state == ls_alive_conscious) m_life_state = other.m_life_state;
-
-	// Last died
-	if (m_last_died == 0) m_last_died = other.m_last_died;
-
-	// Model
-	if (m_model.empty()) m_model = other.m_model;
-
-	// Experience
-	if (m_experience_value == 1.0f) m_experience_value = other.m_experience_value;
+	m_last_died = std::stoi(r.at("last_died"));
+	m_model = r.at("model");
+	m_render_scale = std::stof(r.at("render_scale"));
+	m_experience_value = std::stof(r.at("experience_value"));
 }
 
-
-void GoAspect::Save(xmlNode* aspectNode) const
+void GoAspect::Save(MySQL& db)
 {
-	xml::SetOrUpdateChildValue(aspectNode, "bounding_sphere_radius", m_bounding_sphere_radius);
-	xml::SetOrUpdateChildValue(aspectNode, "current_life", m_current_life);
-	xml::SetOrUpdateChildValue(aspectNode, "current_mana", m_current_mana);
-	xml::SetOrUpdateChildValue(aspectNode, "flesh", m_textures[0]);
-	xml::SetOrUpdateChildValue(aspectNode, "cloth", m_textures[1]);
-	xml::SetOrUpdateChildValue(aspectNode, "life_state", ToString(m_life_state));
-	xml::SetOrUpdateChildValue(aspectNode, "last_died", m_last_died);
-	xml::SetOrUpdateChildValue(aspectNode, "max_life", m_max_life);
-	xml::SetOrUpdateChildValue(aspectNode, "max_mana", m_max_mana);
-	xml::SetOrUpdateChildValue(aspectNode, "model", m_model);
-	xml::SetOrUpdateChildValue(aspectNode, "render_scale", m_render_scale);
+	std::string q =
+		"INSERT INTO t_go_aspect (go_id, bounding_sphere_radius, current_life, max_life, "
+		"current_mana, max_mana, flesh, cloth, is_invincible, is_visible, "
+		"life_state, last_died, model, render_scale, experience_value) VALUES (" +
+		std::to_string(GetGo()->Goid()) + ", " +
+		std::to_string(m_bounding_sphere_radius) + ", " +
+		std::to_string(m_current_life) + ", " +
+		std::to_string(m_max_life) + ", " +
+		std::to_string(m_current_mana) + ", " +
+		std::to_string(m_max_mana) + ", '" +
+		m_textures[0] + "', '" +
+		m_textures[1] + "', " +
+		std::to_string(m_invincible ? 1 : 0) + ", " +
+		std::to_string(m_visible ? 1 : 0) + ", '" +
+		ToString(m_life_state) + "', " +
+		std::to_string(m_last_died) + ", '" +
+		m_model + "', " +
+		std::to_string(m_render_scale.value()) + ", " +
+		std::to_string(m_experience_value) + ") "
+		"ON DUPLICATE KEY UPDATE "
+		"bounding_sphere_radius=VALUES(bounding_sphere_radius), "
+		"current_life=VALUES(current_life), max_life=VALUES(max_life), "
+		"current_mana=VALUES(current_mana), max_mana=VALUES(max_mana), "
+		"flesh=VALUES(flesh), cloth=VALUES(cloth), "
+		"is_invincible=VALUES(is_invincible), is_visible=VALUES(is_visible), "
+		"life_state=VALUES(life_state), last_died=VALUES(last_died), "
+		"model=VALUES(model), render_scale=VALUES(render_scale), "
+		"experience_value=VALUES(experience_value)";
+
+	db.AsyncQuery(q, [](const auto&) {});
 }
 
 float GoAspect :: BoundingSphereRadius () const

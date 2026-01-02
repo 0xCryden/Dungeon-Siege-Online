@@ -8,6 +8,7 @@
 Engine g_engine;
 
 Engine :: Engine ()
+	: m_db(4)
 {
 	m_Running = true;
 }
@@ -46,7 +47,7 @@ void Engine::UnregisterPlayerCharacter(Go* pGo) {
 	m_playerChars.erase(pGo);
 }
 
-bool Engine :: IsRunning ()
+bool Engine :: IsRunning () const
 {
 	return m_Running;
 }
@@ -69,6 +70,12 @@ void Engine :: Loop ()
 		}
 		
 		delete event;
+	}
+
+	while (!m_mainThreadJobs.empty())
+	{
+		m_mainThreadJobs.front()();
+		m_mainThreadJobs.pop();
 	}
 }
 
@@ -495,9 +502,9 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			if (!from->Actor()->CanLevelUp())
 				return;
 
-			float targetExp = toAspect->ExperienceValue();
+			double targetExp = toAspect->ExperienceValue();
 			if (targetExp == 0) targetExp = 100.0f;
-			float addExp = targetExp / toAspect->MaxLife() * dmg;
+			double addExp = targetExp / toAspect->MaxLife() * dmg;
 
 			std::string skill = "melee";
 			switch (fromInv->GetSelectedSlot())
@@ -512,7 +519,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 					break;
 				}
 			}
-			float maxGain = from->Actor()->GetMaxExpGainForLevel(from->Actor()->GetSkillLevel(skill));
+			double maxGain = from->Actor()->GetMaxExpGainForLevel(from->Actor()->GetSkillLevel(skill));
 			if (addExp > maxGain) addExp = maxGain;
 
 			from->Actor()->AddSkillExp(skill, addExp);
@@ -589,9 +596,9 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 			if (!from->Actor()->CanLevelUp())
 				return;
 
-			float targetExp = toAspect->ExperienceValue();
+			double targetExp = toAspect->ExperienceValue();
 			if (targetExp == 0) targetExp = 100.0f;
-			float addExp = targetExp / toAspect->MaxLife() * dmg;
+			double addExp = targetExp / toAspect->MaxLife() * dmg;
 
 			std::string skill = "melee";
 			switch (fromInv->GetSelectedSlot())
@@ -606,7 +613,7 @@ void Engine :: HandleWorldMessage (const WorldMessage & message)
 					break;
 				}
 			}
-			float maxGain = from->Actor()->GetMaxExpGainForLevel(from->Actor()->GetSkillLevel(skill));
+			double maxGain = from->Actor()->GetMaxExpGainForLevel(from->Actor()->GetSkillLevel(skill));
 			if (addExp > maxGain) addExp = maxGain;
 
 			from->Actor()->AddSkillExp(skill, addExp);
@@ -661,12 +668,12 @@ void Engine::TimerPerMinute()
 	Log::Write(Log::Level::INFO, "[ENGINE] ####### [START] Timer Per Minute #######", true);
 	for (GopSet::iterator iterator = m_players.begin(); iterator != m_players.end(); iterator++)
 	{
-		(*iterator)->SaveToXml("actors");
+		(*iterator)->Save(m_db);
 	}
 
 	for (GopSet::iterator iterator = m_items.begin(); iterator != m_items.end(); iterator++)
 	{
-		(*iterator)->SaveToXml("items");
+		(*iterator)->Save(m_db);
 	}
 }
 
@@ -715,7 +722,7 @@ void Engine :: UpdateGo(Go* go, eWorldEvent type, const string& data)
 	}
 }
 
-void Engine :: UpdateGoExp(Go* go, float value)
+void Engine :: UpdateGoExp(Go* go, double value)
 {
 	if (go == nullptr)
 		return;

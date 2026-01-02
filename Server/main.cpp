@@ -36,13 +36,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-/*if (TemplateData* tpl = manager.GetTemplate("bd_ch_f_g_c_avg"))
-{
-    cout << "[info] template: " << tpl->name << "\n";
-    if (!tpl->specializes.empty())
-        cout << "  specializes: " << tpl->specializes << "\n";
-
-    for (const auto& [compname, comp] : tpl->components) {
-        gas.LogComponent(compname, comp, "  ");
-    }
-}*/

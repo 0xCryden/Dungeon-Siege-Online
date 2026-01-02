@@ -53,6 +53,14 @@
 		return "es_none";
 	}*/
 
+	inline string ToString(eDefendClass dc)
+	{
+		if (dc == dc_skin)			return "dc_skin";
+		else if (dc == dc_shield)	return "dc_shield";
+
+		return "dc_skin";
+	}
+
 	inline eDefendClass StringToDc(const std::string& s)
 	{
 	    if (s == "dc_skin") 			return dc_skin;

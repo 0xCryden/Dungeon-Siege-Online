@@ -23,51 +23,16 @@
 
 GoPlacement :: GoPlacement (Go * go) : GoComponent (go)
 {
-	m_region = go->Placement()->m_region;
-	m_position.Node = go->Placement()->m_position.Node;
-	m_position.X = go->Placement()->m_position.X;
-	m_position.Y = go->Placement()->m_position.Y;
-	m_position.Z = go->Placement()->m_position.Z;
 }
 
 GoPlacement::GoPlacement(Go* newGo, const GoPlacement& other) : GoComponent(newGo) // attach to new Go
 {
 	m_region = other.m_region;
 
-	// Copy position struct
 	m_position.Node = other.m_position.Node;
 	m_position.X = other.m_position.X;
 	m_position.Y = other.m_position.Y;
 	m_position.Z = other.m_position.Z;
-}
-
-GoPlacement :: GoPlacement (Go * go, xmlNode * node) : GoComponent (go)
-{
-	if (node != NULL)
-	{
-		m_region = xml::ReadAttribute<string> (node, "region", "");
-		
-		xmlNode * current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "position") != 0)
-			{
-				m_position.Node = xml::ReadAttribute<uint32_t> (current, "node", 0);
-				m_position.X = xml::ReadAttribute<float> (current, "x", 0.0f);
-				m_position.Y = xml::ReadAttribute<float> (current, "y", 0.0f);
-				m_position.Z = xml::ReadAttribute<float> (current, "z", 0.0f);
-
-				// Logging the placement info
-				/*std::cout << "[GoPlacement] Placed object with GO ID=" << go->Goid()
-				          << " in region=\"" << m_region << "\" at node=" << m_position.Node
-				          << " (" << std::fixed
-				          << m_position.X << ", " << m_position.Y << ", " << m_position.Z << ")"
-				          << std::endl;*/
-			}
-		}
-	}
 }
 
 GoPlacement::GoPlacement(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
@@ -99,70 +64,39 @@ GoPlacement::GoPlacement(Go* go, const TemplateComponent* tmplComp) : GoComponen
 	m_position.Y = py;
 	m_position.Z = pz;
 	m_position.Node = node;
-	m_region = "";
+	m_region = "town_center";
 }
 
-/*GoPlacement::GoPlacement(Go* go, const GoPlacement& placement) : GoComponent(go)
+GoPlacement::GoPlacement(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
 {
-	m_region = placement.m_region;
-	m_position.Node = placement.m_position.Node;
-	m_position.X = placement.m_position.X;
-	m_position.Y = placement.m_position.Y;
-	m_position.Z = placement.m_position.Z;
-}*/
-
-GoPlacement::GoPlacement(Go* go, const PlacementData& data) : GoComponent(go)
-{
-	m_region = data.regionName;
-	m_position.Node = data.position.Node;
-	m_position.X = data.position.X;
-	m_position.Y = data.position.Y;
-	m_position.Z = data.position.Z;
+	m_region = r.at("region");
+	m_position.Node = std::stoul(r.at("node_id"));
+	m_position.X = std::stof(r.at("pos_x"));
+	m_position.Y = std::stof(r.at("pos_y"));
+	m_position.Z = std::stof(r.at("pos_z"));
 
 	// TODO implement m_rotation into GoPlacement class
 	//m_orientation = data.orientation;
 }
 
-void GoPlacement::InheritFrom(const GoPlacement& other)
+void GoPlacement::Save(MySQL& db)
 {
-	// Inherit region only if empty
-	if (m_region.empty())
-		m_region = other.m_region;
+	std::string q =
+		"INSERT INTO t_go_placement (go_id, region, node_id, pos_x, pos_y, pos_z) VALUES (" +
+		std::to_string(GetGo()->Goid()) + ", '" +
+		m_region + "', " +
+		std::to_string(m_position.Node) + ", " +
+		std::to_string(m_position.X) + ", " +
+		std::to_string(m_position.Y) + ", " +
+		std::to_string(m_position.Z) + ") "
+		"ON DUPLICATE KEY UPDATE "
+		"region=VALUES(region), "
+		"node_id=VALUES(node_id), "
+		"pos_x=VALUES(pos_x), "
+		"pos_y=VALUES(pos_y), "
+		"pos_z=VALUES(pos_z)";
 
-	// Inherit position only if default (0) values
-	if (m_position.Node == 0) m_position.Node = other.m_position.Node;
-	if (m_position.X == 0.0f) m_position.X = other.m_position.X;
-	if (m_position.Y == 0.0f) m_position.Y = other.m_position.Y;
-	if (m_position.Z == 0.0f) m_position.Z = other.m_position.Z;
-}
-
-
-void GoPlacement :: Save(xmlNode* placementNode) const
-{
-	xml::SetAttribute(placementNode, "region", m_region);
-
-    // Search for an existing position node.
-    xmlNode* positionNode = nullptr;
-    for (xmlNode* child = placementNode->children; child; child = child->next)
-    {
-        if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, (const xmlChar*)"position"))
-        {
-            positionNode = child;
-            break;
-        }
-    }
-
-    // If the position node doesn't exist, create a new one.
-    if (!positionNode)
-    {
-        positionNode = xmlNewChild(placementNode, nullptr, BAD_CAST "position", nullptr);
-    }
-
-    // Update the position node attributes with the current values.
-    xml::SetAttribute(positionNode, "node", m_position.Node);
-    xml::SetAttribute(positionNode, "x", m_position.X);
-    xml::SetAttribute(positionNode, "y", m_position.Y);
-    xml::SetAttribute(positionNode, "z", m_position.Z);
+	db.AsyncQuery(q, [](const auto&) {});
 }
 
 bool GoPlacement :: IsDirty () const

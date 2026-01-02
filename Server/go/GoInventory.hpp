@@ -18,62 +18,62 @@
 #ifndef GOINVENTORY_HPP_
 #define GOINVENTORY_HPP_
 
-	#include "../enum/eEquipSlot.hpp"
-	#include "../enum/eInventoryLocation.hpp"
-	#include "GoComponent.hpp"
+#include "../enum/eEquipSlot.hpp"
+#include "../enum/eInventoryLocation.hpp"
+#include "GoComponent.hpp"
 	
-	#include <map>
-	using std::map;
+#include <map>
+using std::map;
 	
-	#include <set>
-	using std::set;
+#include <set>
+using std::set;
 	
-	class GoInventory : public GoComponent
-	{
-		public:
+class GoInventory : public GoComponent
+{
+	public:
 
-			GoInventory(Go* go);
-			GoInventory(Go* go, const GoInventory& other);
-			GoInventory(Go* go, xmlNode* node);
-			GoInventory(Go* go, const TemplateComponent* tmplComp);
+		GoInventory(Go* go);
+		GoInventory(Go* go, const TemplateComponent* tmplComp);
+		GoInventory(Go* go, const std::map<std::string, std::string>& r);
 			
-			void InheritFrom(const GoInventory& other);
-			void Save(xmlNode* inventoryNode) const;
-			bool Add (Go * item);
-			bool Contains (const Go * item) const;
-			// transfer item, to container, loc,
-			void Transfer (Go * item, Go * container, eInventoryLocation loc);
+		void Save(MySQL& db);
 
-			bool Equip (eEquipSlot slot, Go * item);
-			Go * GetEquipped (eEquipSlot slot) const;
-			eEquipSlot GetEquippedSlot (const Go * item) const;
+		bool Add (Go * item);
+		bool Contains (const Go * item) const;
+		// transfer item, to container, loc,
+		void Transfer (Go * item, Go * container, eInventoryLocation loc);
 
-			Go * ItemFromLocation (eInventoryLocation loc) const;
+		bool Equip (eEquipSlot slot, Go * item);
+		Go * GetEquipped (eEquipSlot slot) const;
+		eEquipSlot GetEquippedSlot (const Go * item) const;
 
-			void SetSelectedSlot(eInventoryLocation num);
-			eInventoryLocation GetSelectedSlot() { return m_selected_active_location; };
+		Go * ItemFromLocation (eInventoryLocation loc) const;
 
-			bool IsAnyWeaponEquipped () const;
-			bool IsEquipped (const Go * item) const;
+		void SetSelectedSlot(eInventoryLocation num);
+		eInventoryLocation GetSelectedSlot() { return m_selected_active_location; };
 
-			bool IsMeleeWeaponEquipped () const;
-			bool IsRangedWeaponEquipped () const;
-			bool IsSlotEquipped (eEquipSlot slot) const;
-			const GopSet & ListItems () const;
-			bool Remove (Go * item);
-			bool Unequip (eEquipSlot slot);
-			
-			string GetCustomHead () const;
-			bool HasCustomHead () const;
+		bool IsAnyWeaponEquipped () const;
+		bool IsEquipped (const Go * item) const;
 
-		private:
-			GopSet m_inventory;
-			eInventoryLocation m_selected_active_location;
-			map<eEquipSlot, Go *> m_equipment;
+		bool IsMeleeWeaponEquipped () const;
+		bool IsRangedWeaponEquipped () const;
+		bool IsSlotEquipped (eEquipSlot slot) const;
+		const GopSet & ListItems () const;
+		bool Remove (Go * item);
+		bool Unequip (eEquipSlot slot);
 
-			string m_custom_head;
+		string GetCustomHead() const;
+		void SetCustomHead(string head);
+		bool HasCustomHead () const;
 
-			//map<eInventoryLocation, Go *> m_bag;
-	};
+	private:
+		GopSet m_inventory;
+		eInventoryLocation m_selected_active_location;
+		map<eEquipSlot, Go *> m_equipment;
+
+		string m_custom_head;
+
+		//map<eInventoryLocation, Go *> m_bag;
+};
 
 #endif /* GOINVENTORY_HPP_ */

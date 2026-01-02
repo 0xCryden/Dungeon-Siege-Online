@@ -24,7 +24,7 @@
 	//#include <netinet/in.h>
 	#include <fcntl.h>
 
-	#include "WorldState.hpp"
+	#include "../worldstate/WorldState.hpp"
 
 	class Connection
 	{

@@ -91,6 +91,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -109,6 +110,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,6 +127,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +146,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="go\GoConversation.cpp" />
     <ClCompile Include="go\GoGui.cpp" />
+    <ClCompile Include="mysql\MySQL.cpp" />
     <ClCompile Include="utils\AIQuery.cpp" />
     <ClCompile Include="helper\CurrentTime.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -194,6 +199,7 @@
     <ClInclude Include="Globals.h" />
     <ClInclude Include="go\GoConversation.h" />
     <ClInclude Include="go\GoGui.h" />
+    <ClInclude Include="mysql\MySQL.h" />
     <ClInclude Include="utils\AIQuery.h" />
     <ClInclude Include="enum\eActorAlignment.hpp" />
     <ClInclude Include="enum\eAttackClass.hpp" />
@@ -233,14 +239,14 @@
     <ClInclude Include="net\Network.hpp" />
     <ClInclude Include="net\Packet.h" />
     <ClInclude Include="net\packets.hpp" />
-    <ClInclude Include="net\WorldState.hpp" />
+    <ClInclude Include="worldstate\WorldState.hpp" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="helper\CurrentTime.hpp" />
     <ClInclude Include="Engine.hpp" />
     <ClInclude Include="gas\Gas.hpp" />
-    <ClInclude Include="InGame.hpp" />
+    <ClInclude Include="worldstate\InGame.hpp" />
     <ClInclude Include="helper\Log.h" />
-    <ClInclude Include="MainMenu.hpp" />
+    <ClInclude Include="worldstate\MainMenu.hpp" />
     <ClInclude Include="platform\Platform.h" />
     <ClInclude Include="platform\windows\WinSockApi.h" />
     <ClInclude Include="scripts\Player.hpp" />

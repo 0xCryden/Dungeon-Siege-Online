@@ -20,117 +20,17 @@
 #include "Go.hpp"
 
 // for GoDb template creation
-Go :: Go (xmlNode * node) : m_parent (NULL), m_actor (NULL), m_aspect (NULL), m_attack (NULL), m_body (NULL), m_common (NULL), m_defend (NULL), m_gui(NULL), m_inventory (NULL), m_magic (NULL), m_mind (NULL), m_placement (NULL), m_conversation (NULL)
-{
-	if (node != NULL)
-	{
-		m_goid = xml::ReadAttribute<uint32_t> (node, "id", 0);
-		m_scid = 0;
-		m_admin = xml::ReadAttribute<uint8_t> (node, "admin", 0);
-		m_template_name = xml::ReadAttribute<string>(node, "template_name", "");
-		m_pcontent_query = "";
-		m_pcontent_query = xml::ReadAttribute<string>(node, "pcontent_query", "");
-		m_specializes = "";
-
-		xmlNode * current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "actor") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating actor...", m_goid);
-				if (m_actor == NULL) m_actor = new GoActor (this, current);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "aspect") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating aspect...", m_goid);
-				if (m_aspect == NULL) m_aspect = new GoAspect (this, current);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "attack") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating attack...", m_goid);
-				if (m_attack == NULL) m_attack = new GoAttack (this, current);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "body") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating body...", m_goid);
-				if (m_body == NULL) m_body = new GoBody (this, current);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "common") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating common...", m_goid);
-				if (m_common == NULL) m_common = new GoCommon (this, current);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"defend") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating defend...", m_goid);
-				if (m_defend == NULL) m_defend = new GoDefend(this, current);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"gui") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating gui...", m_goid);
-				if (m_gui == NULL) m_gui = new GoGui(this, current);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "inventory") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating inventory...", m_goid);
-				if (m_inventory == NULL) m_inventory = new GoInventory (this, current);
-				//cout << "////////////////// Inven Found. ID: " << m_goid << endl;
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "magic") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating magic...", m_goid);
-				if (m_magic == NULL) m_magic = new GoMagic (this, current);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "mind") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating mind...", m_goid);
-				if (m_mind == NULL) m_mind = new GoMind (this, current);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "placement") != 0)
-			{
-				//Log::WriteF("[Go %u] Creating placement...", m_goid);
-				if (m_placement == NULL) m_placement = new GoPlacement (this, current);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "scripts") != 0)
-			{
-				xmlNode * a = NULL;
-				for (a = current->children; a != NULL; a = a->next)
-				{
-					if (a->type != XML_ELEMENT_NODE) continue;
-					
-					// cout << "found name = " << a->name << endl;
-					
-					if (xmlStrEqual (a->name, (const xmlChar *) "test_script") != 0)
-					{
-						// add class test_script to m_scripts
-						map<string, GoScriptComponent *>::iterator iterator = m_scripts.find ("test_script");
-						if (iterator == m_scripts.end())
-						{
-							m_scripts["test_script"] = new test_script (this);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-// for GoDb template creation
-Go::Go(const TemplateData& tmpl, const string& pcontent)
+Go::Go(const TemplateData& tmpl, uint32_t goid, const string& pcontent)
 	: m_template_name(tmpl.name), m_pcontent_query(pcontent), m_specializes(tmpl.specializes),
 	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
 	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
 	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
 {
-	//m_goid = godb.NextId();
-	//m_scid = 0;
-	//if (tmpl.scid != "")
-	//	m_scid = static_cast<uint32_t>(std::stoul(tmpl.scid, nullptr, 16));
+	if (goid != 0)
+		m_goid = goid;
 
-	//m_admin = 0;
-	//m_template_name = tmpl.name;
+	if (tmpl.scid != "")
+		m_scid = static_cast<uint32_t>(std::stoul(tmpl.scid, nullptr, 16));
 
 	const TemplateComponent* comp;
 	if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
@@ -146,18 +46,19 @@ Go::Go(const TemplateData& tmpl, const string& pcontent)
 	// TODO Pcontent
 	if ((comp = tmpl.GetComponent("gui"))) { m_gui = new GoGui(this, comp); }
 	// TODO Physics
-
 	if ((comp = tmpl.GetComponent("placement"))) { m_placement = new GoPlacement(this, comp); }
 	if ((comp = tmpl.GetComponent("conversation"))) { m_conversation = new GoConversation(this, comp); }
 }
 
-Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_pcontent_query(""), m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL), m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL), m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
+// instantiate from contentdb
+Go :: Go (const Go * go, uint32_t goid, const string& pcontent_query) : m_specializes(""), m_pcontent_query(pcontent_query), m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL), m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL), m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
 {
-	m_goid = id;
-	m_admin = 0;
+	m_goid = goid;
 	m_scid = 0;
 	m_template_name = go->m_template_name;
-	m_pcontent_query = go->m_pcontent_query;
+	if (pcontent_query == "")
+		m_pcontent_query = go->m_pcontent_query;
+
 	m_specializes = go->m_specializes;
 	
 	if (go->m_actor != NULL) m_actor = new GoActor (this);
@@ -170,84 +71,13 @@ Go :: Go (uint32_t id, const Go * go) : m_specializes(""), m_pcontent_query(""),
 	if (go->m_inventory != NULL) m_inventory = new GoInventory (this);
 	if (go->m_magic != NULL) m_magic = new GoMagic (this);
 	if (go->m_mind != NULL) m_mind = new GoMind (this);
+
 	if (go->m_placement != NULL) m_placement = new GoPlacement(this);
 	if (go->m_conversation != NULL) m_conversation = new GoConversation(this);
 }
 
-Go::Go(const TemplateData& tmpl, const PlacementData& placement)
-	: m_template_name(tmpl.name), m_specializes(tmpl.specializes), m_pcontent_query(""),
-	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
-	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
-	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
-{
-	m_goid = godb.NextId();
-	m_scid = 0;
-	if (tmpl.scid != "" )
-		m_scid = static_cast<uint32_t>(std::stoul(tmpl.scid, nullptr, 16));
-
-	m_admin = 0;
-	m_template_name = tmpl.name;
-	//m_pcontent_query = go->m_pcontent_query;
-
-	const TemplateComponent* comp;
-	if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
-	if ((comp = tmpl.GetComponent("aspect"))) { m_aspect = new GoAspect(this, comp); }
-	if ((comp = tmpl.GetComponent("attack"))) { m_attack = new GoAttack(this, comp); }
-	if ((comp = tmpl.GetComponent("body"))) { m_body = new GoBody(this, comp); }
-	if ((comp = tmpl.GetComponent("common"))) { m_common = new GoCommon(this, comp); }
-	if ((comp = tmpl.GetComponent("defend"))) { m_defend = new GoDefend(this, comp); }
-	// X 2 more subcomponents remaining implementation for mob drops
-	if ((comp = tmpl.GetComponent("inventory"))) { m_inventory = new GoInventory(this, comp); }
-	if ((comp = tmpl.GetComponent("magic"))) { m_magic = new GoMagic(this, comp); }
-	if ((comp = tmpl.GetComponent("mind"))) { m_mind = new GoMind(this, comp); }
-	// TODO Pcontent
-	if ((comp = tmpl.GetComponent("gui"))) { m_gui = new GoGui(this, comp); }
-	// TODO Physics
-	if ((comp = tmpl.GetComponent("conversation"))) { m_conversation = new GoConversation(this, comp); }
-
-	m_placement = new GoPlacement(this, placement);
-
-	m_conversations = placement.conversations;
-}
-
-Go::Go(const TemplateData& tmpl, const GoPlacement& placement, const string& pcontent)
-	: m_template_name(tmpl.name), m_specializes(""), m_pcontent_query(pcontent),
-	m_parent(NULL), m_actor(NULL), m_aspect(NULL), m_attack(NULL),
-	m_body(NULL), m_common(NULL), m_defend(NULL), m_gui(NULL),
-	m_inventory(NULL), m_magic(NULL), m_mind(NULL), m_placement(NULL), m_conversation(NULL)
-{
-	m_goid = godb.NextId();
-	m_admin = 0;
-	m_template_name = tmpl.name;
-
-	const TemplateComponent* comp;
-	if ((comp = tmpl.GetComponent("actor"))) { m_actor = new GoActor(this, comp); }
-	if ((comp = tmpl.GetComponent("aspect"))) { m_aspect = new GoAspect(this, comp); }
-	if ((comp = tmpl.GetComponent("attack"))) { m_attack = new GoAttack(this, comp); }
-	if ((comp = tmpl.GetComponent("body"))) { m_body = new GoBody(this, comp); }
-	if ((comp = tmpl.GetComponent("common"))) { m_common = new GoCommon(this, comp); }
-	if ((comp = tmpl.GetComponent("defend"))) { m_defend = new GoDefend(this, comp); }
-	// X 2 more subcomponents remaining implementation for mob drops
-	if ((comp = tmpl.GetComponent("inventory"))) { m_inventory = new GoInventory(this, comp); }
-	if ((comp = tmpl.GetComponent("magic"))) { m_magic = new GoMagic(this, comp); }
-	if ((comp = tmpl.GetComponent("mind"))) { m_mind = new GoMind(this, comp); }
-	// TODO Pcontent
-	if ((comp = tmpl.GetComponent("gui"))) { m_gui = new GoGui(this, comp); }
-	// TODO Physics
-	if ((comp = tmpl.GetComponent("conversation"))) { m_conversation = new GoConversation(this, comp); }
-
-	m_placement = new GoPlacement(this, placement);
-}
-
-
-
 Go :: ~Go ()
 {
-	if (HasComponent("player"))
-		SaveToXml("actors");
-	else
-		SaveToXml("items");
-
 	if (m_actor) delete m_actor;
 	if (m_aspect) delete m_aspect;
 	if (m_attack) delete m_attack;
@@ -268,78 +98,300 @@ Go :: ~Go ()
 	}
 }
 
-/*void Go::InheritFrom(const string& parentName)
+void Go::LoadFromDatabase(MySQL& db, std::function<void(Go*)> onLoaded)
 {
-	Go* parent = godb.FindTemplateByName(parentName);
-	if (parent == NULL)
-	{
-		Log::Write(Log::Level::ERR, "Couldnt find parent template to inherit from ERROR", true);
-		return;
-	}
+	std::string query =
+		"SELECT component_type FROM t_go_components WHERE go_id = " +
+		std::to_string(m_goid);
 
-	if (parent->m_specializes != "")
-	{
-		InheritFrom(parent->m_specializes);
-	}
+	cout << "Loading Goid " << std::to_string(m_goid) << endl;
 
-	if (parent->m_actor)
-	{
-		if (!m_actor) m_actor = new GoActor(this, *parent->m_actor);
-		else          m_actor->InheritFrom(*parent->m_actor);
-	}
-	if (parent->m_aspect)
-	{
-		if (!m_aspect) m_aspect = new GoAspect(this, *parent->m_aspect);
-		else           m_aspect->InheritFrom(*parent->m_aspect);
-	}
-	if (parent->m_attack)
-	{
-		if (!m_attack) m_attack = new GoAttack(this, *parent->m_attack);
-		else           m_attack->InheritFrom(*parent->m_attack);
-	}
-	if (parent->m_body)
-	{
-		if (!m_body) m_body = new GoBody(this, *parent->m_body);
-		else          m_body->InheritFrom(*parent->m_body);
-	}
-	if (parent->m_common)
-	{
-		if (!m_common) m_common = new GoCommon(this, *parent->m_common);
-		else           m_common->InheritFrom(*parent->m_common);
-	}
-	if (parent->m_defend)
-	{
-		if (!m_defend) m_defend = new GoDefend(this, *parent->m_defend);
-		else           m_defend->InheritFrom(*parent->m_defend);
-	}
-	if (parent->m_gui)
-	{
-		if (!m_gui) m_gui = new GoGui(this, *parent->m_gui);
-		else        m_gui->InheritFrom(*parent->m_gui);
-	}
-	if (parent->m_inventory)
-	{
-		if (!m_inventory) m_inventory = new GoInventory(this, *parent->m_inventory);
-		else              m_inventory->InheritFrom(*parent->m_inventory);
-	}
-	if (parent->m_magic)
-	{
-		if (!m_magic) m_magic = new GoMagic(this, *parent->m_magic);
-		else          m_magic->InheritFrom(*parent->m_magic);
-	}
-	if (parent->m_mind)
-	{
-		if (!m_mind) m_mind = new GoMind(this, *parent->m_mind);
-		else         m_mind->InheritFrom(*parent->m_mind);
-	}
-	if (parent->m_placement)
-	{
-		if (!m_placement) m_placement = new GoPlacement(this, *parent->m_placement);
-		else              m_placement->InheritFrom(*parent->m_placement);
-	}
-}*/
+	db.AsyncQuery(query,
+		[this, dbPtr = &db, onLoaded = std::move(onLoaded)](const auto& rows)
+		{
+			auto pending = std::make_shared<std::atomic<int>>(rows.size());
 
-double Go :: GetDistanceTo(Go * target)
+			// Lambda to call when one component is done
+			auto doneOne = [pending, this, onLoaded]()
+				{
+					if (pending->fetch_sub(1) == 1)
+					{
+						// Queue final callback to main thread
+						g_engine.m_mainThreadJobs.push([this, onLoaded]()
+							{
+								onLoaded(this);
+							});
+					}
+				};
+
+			if (rows.empty())
+			{
+				// No components  immediately push to main thread
+				g_engine.m_mainThreadJobs.push([this, onLoaded]()
+					{
+						onLoaded(this);
+					});
+				return;
+			}
+
+			for (const auto& row : rows)
+			{
+				const std::string& type = row.at("component_type");
+				if (type == "actor")
+					LoadActor(*dbPtr, doneOne);
+				else if (type == "aspect")
+					LoadAspect(*dbPtr, doneOne);
+				else if (type == "placement")
+					LoadPlacement(*dbPtr, doneOne);
+				else if (type == "common")
+					LoadCommon(*dbPtr, doneOne);
+				else if (type == "inventory")
+					LoadInventory(*dbPtr, doneOne);
+				else if (type == "attack")
+					LoadAttack(*dbPtr, doneOne);
+				else if (type == "body")
+					LoadBody(*dbPtr, doneOne);
+				else if (type == "defend")
+					LoadDefend(*dbPtr, doneOne);
+				else if (type == "gui")
+					LoadGui(*dbPtr, doneOne);
+				else if (type == "magic")
+					LoadMagic(*dbPtr, doneOne);
+				else if (type == "mind")
+					LoadMind(*dbPtr, doneOne);
+				else
+					doneOne(); // unknown component
+			}
+		}
+	);
+}
+
+void Go::LoadAttack(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_attack WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_attack = new GoAttack(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+void Go::LoadDefend(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_defend WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_defend = new GoDefend(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+void Go::LoadBody(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_body WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_body = new GoBody(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+void Go::LoadGui(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_gui WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_gui = new GoGui(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+void Go::LoadMagic(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_magic WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_magic = new GoMagic(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+void Go::LoadMind(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_mind WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_mind = new GoMind(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+
+void Go::LoadPlacement(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT region, node_id, pos_x, pos_y, pos_z "
+		"FROM t_go_placement WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_placement = new GoPlacement(this, rows[0]);
+			}
+
+			done();
+		}
+	);
+}
+
+void Go::LoadActor(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_actor WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_actor = new GoActor(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+
+void Go::LoadAspect(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_aspect WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_aspect = new GoAspect(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+
+void Go::LoadCommon(MySQL& db, std::function<void()> done)
+{
+	std::string query =
+		"SELECT * FROM t_go_common WHERE go_id = " + std::to_string(m_goid);
+
+	db.AsyncQuery(query,
+		[this, done](const auto& rows)
+		{
+			if (!rows.empty())
+			{
+				m_common = new GoCommon(this, rows[0]);
+			}
+			done();
+		}
+	);
+}
+
+void Go::LoadInventory(MySQL& db, std::function<void()> done)
+{
+	std::string invQuery =
+		"SELECT * FROM t_go_inventory WHERE go_id = " + std::to_string(m_goid) + ";";
+
+	db.AsyncQuery(invQuery,
+		[this, &db, done](const auto& invRows)
+		{
+			if (invRows.empty())
+			{
+				done();
+				return;
+			}
+
+			// Create inventory from base row
+			m_inventory = new GoInventory(this, invRows[0]);
+
+			// Second query: items
+			std::string itemsQuery =
+				"SELECT * FROM t_go_inventory_items WHERE go_id = " +
+				std::to_string(m_goid) + ";";
+
+			db.AsyncQuery(itemsQuery,
+				[this, done](const auto& itemRows)
+				{
+					for (const auto& row : itemRows)
+					{
+						// convert row to item
+						const string& equipSlot = row.at("equip_slot");
+
+						Go* item = godb.FindGoById(stoi(row.at("item_go_id")));
+						if (!item) // error template not found
+						{
+							cout << "ERROR item not found for inventory of go " << m_goid << endl;
+							continue;
+						}
+
+						if (m_inventory->Add(item))
+						{
+							// Set inventory location
+							item->SetLoc(item->IntendedLoc());
+
+							// If equip_slot is present, equip it
+							eEquipSlot slot = StringToNum(equipSlot); // You need to implement this
+							if (slot != es_none)
+							{
+								m_inventory->Equip(slot, item); // Will only succeed if not already equipped
+							}
+						}
+					}
+
+					done();
+				}
+			);
+		}
+	);
+}
+
+double Go :: GetDistanceTo(Go * target) const
 {
 	if (target == NULL)
 	{
@@ -408,7 +460,7 @@ void Go :: HandleCommand (const string& command)
 			pContent = "#" + templateName;
 		}
 		
-		if (TemplateData* tpl = manager.GetTemplate(templateName))
+		/*if (TemplateData* tpl = manager.GetTemplate(templateName))
 		{
 			cout << "[info] template: " << tpl->name << "\n";
 			if (!tpl->specializes.empty())
@@ -417,7 +469,7 @@ void Go :: HandleCommand (const string& command)
 			for (const auto& [compname, comp] : tpl->components) {
 				gas.LogComponent(compname, comp, "  ");
 			}
-		}
+		}*/
 
         // Try to spawn or add using the template name
 		godb.SpawnGo(templateName, this, pContent);
@@ -499,38 +551,7 @@ void Go :: HandleCommand (const string& command)
     }
 }
 
-eEquipSlot Go :: IntendedSlot()
-{
-	// TODO check eEquipSlot value inherited from template instead
-
-	if (HasGui() && Gui()->EquipSlot() != es_none)
-	{
-		return Gui()->EquipSlot();
-	}
-
-	eEquipSlot slot = es_any;
-
-	if (HasAttack() && IsMeleeWeapon())
-	{
-		cout << "Mapping item slot to es_weapon_hand" << endl;
-		slot = es_weapon_hand;
-	}
-	if (HasAttack() && IsRangedWeapon())
-	{
-		cout << "Mapping item slot to es_shield_hand" << endl;
-		slot = es_shield_hand;
-	}
-
-	if (HasDefend() && Defend()->DefendClass() == dc_shield)
-	{
-		cout << "Mapping item slot to es_shield_hand" << endl;
-		slot = es_shield_hand;
-	}
-
-	return slot;
-}
-
-eInventoryLocation Go :: IntendedLoc()
+eInventoryLocation Go :: IntendedLoc() const
 {
 	eInventoryLocation loc = il_main;
 
@@ -553,107 +574,6 @@ eInventoryLocation Go :: IntendedLoc()
 
 	return loc;
 }
-
-string Go::GetTitle() {
-    struct TitleGroup {
-        vector<string> skills;
-        vector<string> maleTitles;
-        vector<string> femaleTitles; // optional
-    };
-
-    vector<TitleGroup> titleGroups = {
-        {{"melee", "ranged", "nature magic", "combat magic"},
-         {"Freelance", "Journeyman", "Adventurer", "Master", "Grand Master", "Grand High SiegeMaster"},
-         {"Freelance", "Journeyman", "Adventurer", "Master", "Grand Master", "Grand High Siegemistress"}},
-
-        {{"melee", "ranged", "combat magic"},
-         {"Mercenary", "Gladiator", "Centurion", "Myrmidon", "Warlord", "Warlord Noble"},
-         {"Mercenary", "Gladiator", "Centurion", "Myrmidon", "Warlady", "Warlady Noble"}},
-
-        {{"melee", "ranged", "nature magic"},
-         {"Cavalier", "Marshal", "Paladin", "Templar", "Arch Templar", "Supreme Templar"}},
-
-        {{"melee", "nature magic", "combat magic"},
-         {"Initiate", "Mystic", "Sage", "Deacon", "Grand Deacon", "Grand High Deacon"},
-         {"Initiate", "Mystic", "Sage", "Deaconess", "Grand Deaconess", "Grand High Deaconess"}},
-
-        {{"ranged", "nature magic", "combat magic"},
-         {"Adept", "Conjurer", "Thaumaturgist", "Evoker", "Senior Evoker", "Lord Evoker"},
-         {"Adept", "Conjurer", "Thaumaturgist", "Evoker", "Senior Evoker", "Lady Evoker"}},
-
-        {{"melee", "ranged"},
-         {"Man-At-Arms", "Skirmisher", "Raider", "Campaigner", "Crusader", "Grand Crusader"},
-         {"Woman-At-Arms", "Skirmisher", "Raider", "Campaigner", "Crusader", "Grand Crusader"}},
-
-        {{"melee", "nature magic"},
-         {"Friar", "Curate", "Druid", "Preserver", "Grand Preserver", "Supreme Preserver"}},
-
-        {{"melee", "combat magic"},
-         {"Combatant", "Duelist", "Dragoon", "Warlock", "Grand Warlock", "Grand High Warlock"},
-         {"Combatant", "Duelist", "Dragoon", "Warwitch", "Grand Warwitch", "Grand High Warwitch"}},
-
-        {{"ranged", "nature magic"},
-         {"Scout", "Forester", "Ranger", "Warder", "Arch Ward", "Supreme High Ward"},
-         {"Scout", "Forester", "Ranger", "Wardess", "Arch Wardess", "Supreme High Wardess"}},
-
-        {{"ranged", "combat magic"},
-         {"Jager", "Conjurer", "Channeler", "Matross", "Master Matross", "Grandmaster Matross"}},
-
-        {{"nature magic", "combat magic"},
-         {"Acolyte", "Shaman", "Scholar", "Magus", "Grand Magus", "Grand High Magus"}},
-
-        {{"melee"},
-         {"Squire", "Soldier", "Warrior", "Knight", "Champion", "Grand Champion"}},
-
-        {{"ranged"},
-         {"Bowyer", "Archer", "Marksman", "Sharpshooter", "Master Sharpshooter", "Grandmaster Sharpshooter"}},
-
-        {{"nature magic"},
-         {"Apprentice", "Theurgist", "Magician", "Grand Mage", "Arch Mage", "Supreme Arch Mage"}},
-
-        {{"combat magic"},
-         {"Savant", "Hedge Wizard", "Wizard", "Sorcerer", "Grand Sorcerer", "Grand High Sorcerer"},
-         {"Savant", "Hedge Wizard", "Wizard", "Sorceress", "Grand Sorceress", "Grand High Sorceress"}}
-    };
-
-    auto getBracket = [](float level) {
-        if (level >= 100) return 5;
-        if (level >= 50)  return 4;
-        if (level >= 20)  return 3;
-        if (level >= 11)  return 2;
-        if (level >= 5)   return 1;
-        if (level >= 1)   return 0;
-        return -1;
-    };
-
-    int gender = 0; // TODO add gender getter GetGender(); // 0 = male, 1 = female
-
-    for (const auto& group : titleGroups) {
-        bool qualifies = true;
-        int minBracket = 6;
-
-        for (const string& skill : group.skills) {
-            float level = Actor()->GetSkillLevel(skill.c_str());
-            int bracket = getBracket(level);
-            if (bracket == -1) {
-                qualifies = false;
-                break;
-            }
-            minBracket = min(minBracket, bracket);
-        }
-
-        if (qualifies) {
-            if (gender == 1 && group.femaleTitles.size() == 6)
-                return group.femaleTitles[minBracket];
-            else
-                return group.maleTitles[minBracket];
-        }
-    }
-
-    return "Noob";
-}
-
-
 
 void Go :: AddChild (Go * child)
 {
@@ -748,7 +668,7 @@ bool Go :: HasInventory () const
 
 bool Go :: HasMagic () const
 {
-	return false;
+	return m_magic != NULL;
 }
 
 bool Go :: HasMind () const
@@ -978,6 +898,12 @@ GoGui* Go::Gui() const
 	throw logic_error("null pointer referenced");
 }
 
+void Go::CopyPlacement(GoPlacement* placement)
+{
+	delete m_placement;
+	m_placement = new GoPlacement(this, *placement); // or new GoActor(actor)
+}
+
 uint32_t Go::Goid() const
 {
 	return m_goid;
@@ -996,16 +922,6 @@ GoInventory * Go :: Inventory () const
 	}
 	
 	throw logic_error ("null pointer referenced");
-}
-
-eLifeState Go :: LifeState () const
-{
-	if (m_aspect != NULL)
-	{
-		return m_aspect->LifeState();
-	}
-	
-	return ls_ignore;
 }
 
 GoMagic * Go :: Magic () const
@@ -1038,14 +954,24 @@ Go * Go :: Parent () const
 	throw logic_error ("null pointer referenced");
 }
 
-GoPlacement * Go :: Placement () const
+GoPlacement* Go::Placement() const
 {
 	if (m_placement != NULL)
 	{
 		return m_placement;
 	}
-	
-	throw logic_error ("null pointer referenced");
+
+	throw logic_error("null pointer referenced");
+}
+
+GoConversation* Go::Conversation() const
+{
+	if (m_conversation != NULL)
+	{
+		return m_conversation;
+	}
+
+	throw logic_error("null pointer referenced");
 }
 
 string Go::TemplateName() const
@@ -1061,7 +987,7 @@ string Go::TemplateName() const
 	return m_template_name;
 }
 
-string Go::pContentQuery()
+string Go::pContentQuery() const
 {
 	if (m_pcontent_query.empty())
 	{
@@ -1100,141 +1026,52 @@ void Go :: RemoveComponent (const string & component)
 	}
 }
 
-void Go::SaveToXml(const string& folderName)
+void Go::Save(MySQL& db)
 {
-    const string idStr = to_string(Goid());
-    const string path = "data/" + folderName + "/" + idStr + ".xml";
+	cout << "Saving GoID: " << Goid() << endl;
 
-	cout << "Saving GoID: " << idStr << endl;
-    xmlDoc* doc = xml::LoadFile(path);
-    if (!doc) {
-		cout << "Failed to open " << path << ". Creating new xml" << endl;
+	// 0) ENSURE parent row exists
+	std::string ensureGo =
+		"INSERT INTO t_gos (go_id, template_name, pcontent_query) VALUES (" +
+		std::to_string(m_goid) + ", '" +
+		m_template_name + "', '" +
+		m_pcontent_query + "' " +
+		") ON DUPLICATE KEY UPDATE go_id = go_id";
 
-		// Create document
-		CreateXml(folderName);
-		doc = xml::LoadFile(path);
-    }
-
-	if (!doc) {
-		cout << "Failed to open " << path << endl;
-		return;
-	}
-
-    xmlNodePtr root = xmlDocGetRootElement(doc);
-    if (!root || !xmlStrEqual(root->name, BAD_CAST "objects")) {
-        cerr << "Invalid GO XML structure in " << path << endl;
-        xmlFreeDoc(doc);
-        return;
-    }
-
-    xmlNode* goNode = nullptr;
-    for (xmlNode* node = root->children; node; node = node->next) {
-        if (node->type == XML_ELEMENT_NODE && xmlStrEqual(node->name, BAD_CAST "go")) {
-            if (xml::XReadString(node, "id", "") == idStr) {
-                goNode = node;
-                break;
-            }
-        }
-    }
-
-    if (!goNode) {
-        cerr << "[GO] Not found GO " << Goid() << " in " << path << endl;
-        xmlFreeDoc(doc);
-        return;
-    }
-
-	auto FindOrCreateChild = [](xmlNode* parent, const char* name) -> xmlNode* 
-	{
-		for (xmlNode* child = parent->children; child; child = child->next)
+	db.AsyncQuery(ensureGo,
+		[this, &db](const auto&)
 		{
-			if (child->type == XML_ELEMENT_NODE &&
-				xmlStrEqual(child->name, BAD_CAST name))
-				return child;
-		}
+			// 1) Delete old components AFTER parent exists
+			std::string del =
+				"DELETE FROM t_go_components WHERE go_id = " +
+				std::to_string(m_goid);
 
-		// CREATE if missing
-		return xmlNewChild(parent, nullptr, BAD_CAST name, nullptr);
-	};
+			db.AsyncQuery(del,
+				[this, &db](const auto&)
+				{
+					// 2) Insert components AFTER delete
+					auto insertComp = [&](const char* type)
+						{
+							std::string q =
+								"INSERT INTO t_go_components (go_id, component_type) VALUES (" +
+								std::to_string(m_goid) + ", '" + type + "')";
 
+							db.AsyncQuery(q, [](const auto&) {});
+						};
 
-    if (HasActor())
-        if (xmlNode* n = FindOrCreateChild(goNode, "actor"))
-            Actor()->Save(n);
-
-    if (HasAspect()/* && (folderName == "actors")*/)
-        if (xmlNode* n = FindOrCreateChild(goNode, "aspect"))
-            Aspect()->Save(n);
-
-    if (HasAttack())
-        if (xmlNode* n = FindOrCreateChild(goNode, "attack"))
-            Attack()->Save(n);
-
-    if (HasCommon())
-        if (xmlNode* n = FindOrCreateChild(goNode, "common"))
-            Common()->Save(n);
-
-    if (HasInventory())
-        if (xmlNode* n = FindOrCreateChild(goNode, "inventory"))
-            Inventory()->Save(n);
-
-    if (HasPlacement())
-        if (xmlNode* n = FindOrCreateChild(goNode, "placement"))
-            Placement()->Save(n);
-
-    if (!xml::SaveFile(doc, path))
-        cerr << "Failed to save XML to " << path << endl;
-
-    xmlFreeDoc(doc);
-}
-
-void Go::CreateXml(const string& folderName)
-{
-	const string idStr = to_string(Goid());
-	const string path = "data/" + folderName + "/" + idStr + ".xml";
-
-	// Create document
-	xmlDoc* doc = xmlNewDoc(BAD_CAST "1.0");
-	if (!doc)
-	{
-		cerr << "Failed to create xml document" << endl;
-		return;
-	}
-
-	// <objects>
-	xmlNode* root = xmlNewNode(nullptr, BAD_CAST "objects");
-	xmlDocSetRootElement(doc, root);
-
-	// <go>
-	xmlNode* goNode = xmlNewChild(root, nullptr, BAD_CAST "go", nullptr);
-	xmlNewProp(goNode, BAD_CAST "id", BAD_CAST idStr.c_str());
-	xmlNewProp(goNode, BAD_CAST "template_name", BAD_CAST m_template_name.c_str());
-	xmlNewProp(goNode, BAD_CAST "pcontent_query", BAD_CAST m_pcontent_query.c_str());
-
-	// Component containers
-	if (HasActor())
-		xmlNewChild(goNode, nullptr, BAD_CAST "actor", nullptr);
-
-	if (HasAspect())
-		xmlNewChild(goNode, nullptr, BAD_CAST "aspect", nullptr);
-
-	if (HasAttack())
-		xmlNewChild(goNode, nullptr, BAD_CAST "attack", nullptr);
-
-	if (HasCommon())
-		xmlNewChild(goNode, nullptr, BAD_CAST "common", nullptr);
-
-	if (HasInventory())
-		xmlNewChild(goNode, nullptr, BAD_CAST "inventory", nullptr);
-
-	if (HasPlacement())
-		xmlNewChild(goNode, nullptr, BAD_CAST "placement", nullptr);
-
-	// Save immediately so the file exists on disk
-	if (!xml::SaveFile(doc, path))
-		cerr << "Failed to save new xml file: " << path << endl;
-
-	xmlFreeDoc(doc); 
-	cout << "[TRACE] Saving to path: " << path << endl;
+					if (HasActor()) { insertComp("actor");      Actor()->Save(db); }
+					if (HasAspect()) { insertComp("aspect");     Aspect()->Save(db); }
+					if (HasAttack()) { insertComp("attack");     Attack()->Save(db); }
+					if (HasBody()) { insertComp("body");       Body()->Save(db); }
+					if (HasCommon()) { insertComp("common");     Common()->Save(db); }
+					if (HasDefend()) { insertComp("defend");     Defend()->Save(db); }
+					if (HasGui()) { insertComp("gui");        Gui()->Save(db); }
+					if (HasInventory()) { insertComp("inventory"); Inventory()->Save(db); }
+					if (HasMagic()) { insertComp("magic");      Magic()->Save(db); }
+					if (HasMind()) { insertComp("mind");       Mind()->Save(db); }
+					if (HasPlacement()) { insertComp("placement"); Placement()->Save(db); }
+				});
+		});
 }
 
 void Go :: CalculateStatus()

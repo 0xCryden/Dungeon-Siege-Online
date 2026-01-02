@@ -6,60 +6,9 @@
 #include "../Engine.hpp"
 #include "../helper/Helper.h"
 
+
 GoAttack :: GoAttack (Go * go) : GoComponent (go)
 {
-}
-
-GoAttack::GoAttack(Go* newGo, const GoAttack& other) : GoComponent(newGo) // attach to new Go
-{
-	m_attack_range = other.m_attack_range;
-	m_critical_hit_chance = other.m_critical_hit_chance;
-	m_damage_max = other.m_damage_max;
-	m_damage_min = other.m_damage_min;
-	m_two_handed = other.m_two_handed;
-	m_reload_delay = other.m_reload_delay;
-	m_attack_class = other.m_attack_class;
-}
-
-GoAttack :: GoAttack (Go * go, xmlNode * node) : GoComponent (go)
-{
-	if (node != NULL)
-	{
-		xmlNode * current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "attack_range") != 0)
-			{
-				m_attack_range = xml::ReadAttribute<float> (current, "value", 1.0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "critical_hit_chance") != 0)
-			{
-				m_critical_hit_chance = xml::ReadAttribute<float> (current, "value", 0.0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "damage_max") != 0)
-			{
-				m_damage_max = xml::ReadAttribute<float> (current, "value", 0.0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "damage_min") != 0)
-			{
-				m_damage_min = xml::ReadAttribute<float> (current, "value", 0.0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "is_two_handed") != 0)
-			{
-				m_two_handed = xml::ReadAttribute<bool> (current, "value", false);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "reload_delay") != 0)
-			{
-				m_reload_delay = xml::ReadAttribute<uint64_t> (current, "value", 0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "attack_class") != 0)
-			{
-				m_attack_class = acStringToNum(xml::ReadAttribute<string> (current, "value", ""));
-			}
-		}
-	}
 }
 
 GoAttack::GoAttack(Go* go, const TemplateComponent* tmplComp) : GoComponent (go)
@@ -77,27 +26,43 @@ GoAttack::GoAttack(Go* go, const TemplateComponent* tmplComp) : GoComponent (go)
 	if (f = tmplComp->GetField("reload_delay")) { try { m_reload_delay = static_cast<uint64_t>(std::stoi(*f)); } catch (...) { m_reload_delay = 0; } }
 	if (f = tmplComp->GetField("attack_class")) { if (FromString(*f, m_attack_class) != true) m_attack_class = ac_beastfu; }
 }
-
-void GoAttack::InheritFrom(const GoAttack& other)
+GoAttack::GoAttack(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
 {
-	// Only inherit if still at default/fallback values
-	if (m_attack_range == 1.0f)         m_attack_range = other.m_attack_range;
-	if (m_critical_hit_chance == 0.0f) m_critical_hit_chance = other.m_critical_hit_chance;
-	if (m_damage_max == 0.0f)           m_damage_max = other.m_damage_max;
-	if (m_damage_min == 0.0f)           m_damage_min = other.m_damage_min;
-	if (m_two_handed == false)          m_two_handed = other.m_two_handed;
-	if (m_reload_delay == 0)            m_reload_delay = other.m_reload_delay;
-	if (m_attack_class == ac_beastfu)   m_attack_class = other.m_attack_class;
+	m_attack_range = std::stof(r.at("attack_range"));
+	m_critical_hit_chance = std::stof(r.at("critical_hit_chance"));
+
+	m_damage_min = std::stof(r.at("damage_min"));
+	m_damage_max = std::stof(r.at("damage_max"));
+
+	m_two_handed = r.at("is_two_handed") == "1";
+	m_reload_delay = std::stoull(r.at("reload_delay"));
+
+	m_attack_class = acStringToNum(r.at("attack_class"));
 }
 
-void GoAttack :: Save (xmlNode* attackNode) const
+void GoAttack::Save(MySQL& db)
 {
-	xml::SetOrUpdateChildValue(attackNode, "attack_range", AttackRange());
-	xml::SetOrUpdateChildValue(attackNode, "critical_hit_chance", CriticalHitChance());
-	xml::SetOrUpdateChildValue(attackNode, "damage_max", DamageMax());
-	xml::SetOrUpdateChildValue(attackNode, "damage_min", DamageMin());
-	xml::SetOrUpdateChildValue(attackNode, "is_two_handed", IsTwoHanded());
-	//xml::SetOrUpdateChildValue(attackNode, "reload_delay", ReloadDelay());
+	std::string q =
+		"INSERT INTO t_go_attack (go_id, attack_range, critical_hit_chance, "
+		"damage_min, damage_max, is_two_handed, reload_delay, attack_class) VALUES (" +
+		std::to_string(GetGo()->Goid()) + ", " +
+		std::to_string(m_attack_range) + ", " +
+		std::to_string(m_critical_hit_chance) + ", " +
+		std::to_string(m_damage_min) + ", " +
+		std::to_string(m_damage_max) + ", " +
+		std::to_string(m_two_handed ? 1 : 0) + ", " +
+		std::to_string(m_reload_delay) + ", '" +
+		ToString(m_attack_class) + "') "
+		"ON DUPLICATE KEY UPDATE "
+		"attack_range=VALUES(attack_range), "
+		"critical_hit_chance=VALUES(critical_hit_chance), "
+		"damage_min=VALUES(damage_min), "
+		"damage_max=VALUES(damage_max), "
+		"is_two_handed=VALUES(is_two_handed), "
+		"reload_delay=VALUES(reload_delay), "
+		"attack_class=VALUES(attack_class)";
+
+	db.AsyncQuery(q, [](const auto&) {});
 }
 
 float GoAttack :: AttackRange () const

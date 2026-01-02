@@ -19,46 +19,44 @@
 #define GODB_HPP_
 
 #include "Go.hpp"
+#include "../mysql/MySQL.h"
 	
 #include <map>
 
 using std::map;
+
+class Account;
 
 class GoDb
 {
 	public:
 
 		GoDb ();
-
 		~GoDb ();
 
-		void LoadGasToGo();
+		void LoadSqlDb();
 
-		void LoadGoDbFolder (const string & folderName);
-		void LoadGoDbSingleChar (uint32_t id);
+		void AddGo(Go* go);
+		void RemoveGo(Go* go);
+		Go* CloneGo(const string& template_name, const string& pcontent_query = "");
 
 		void LoadContentDb();
-		void LoadContentDbOld(const string& filename);
-		void GasToGoDb();
 		void InstantiateMapTemplates();
-		void LoadSpawns();
+
 		void SpawnGo(const string& templateName, const Go* go, const string& pContent);
 
 		Go* FindGoById(uint32_t id);
 		Go* FindTemplateByName(const string& template_name);
 
-		Go * CloneGo (const Go * go);
-		Go* CloneGo(const string& template_name);
-		Go* CloneGo(const string& template_name, const GoPlacement& placement);
-		//Go * GetTemplate (const string & templateName);
 		void MarkGoForDeletion (uint32_t id);
 		void MarkGoAndChildrenForDeletion (uint32_t id);
 
 		uint32_t NextId();
 
+		void CreateChar(Account* account, const string& charName, int charType, int charHead, int charSkin, int charHair, int charShirt, int charPants, std::function<void()> onInserted);
+		void DeleteChar(int selectSlot, Account* account, std::function<void()> onInserted);
+
 	private:
-
-
 		map<uint32_t, Go *> m_godb;
 		map<string, Go *> m_contentdb;
 };

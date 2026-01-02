@@ -14,11 +14,11 @@ class GoMind : public GoComponent
 	public:
 
 		GoMind(Go* go);
-		GoMind(Go* go, const GoMind& other);
-		GoMind (Go * go, xmlNode * node);
 		GoMind(Go* go, const TemplateComponent* tmplComp);
+		GoMind(Go* go, const std::map<std::string, std::string>& r);
 
-		void InheritFrom(const GoMind& other);
+		void Save(MySQL& db);
+
 		int64_t TimeElapsedSinceLastMeleeAttack () const;
 		int64_t TimeElapsedSinceLastRangedAttack () const;
 		int64_t TimeElapsedSinceLastSpellCast () const;

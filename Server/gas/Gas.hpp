@@ -156,6 +156,7 @@ public:
 	void MergeTemplates(TemplateData& child, const string& parent);
 	void MergeTemplates(TemplateData& child, const TemplateData& parent);
 
+	auto& GetAll() { return templates; }
 	const auto& GetAll() const { return templates; }
 	auto& GetAllMap() { return mapTemplates; }
 	const auto& GetAllMap() const { return mapTemplates; }
@@ -222,7 +223,6 @@ public:
 
 	void LoadTemplates();
 	void LoadMapTemplates();
-	void LoadGasToGo();
 
 	// Helper functions
 	string StripLineComment(const string& line);

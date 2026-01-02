@@ -29,12 +29,10 @@
 		public:
 			
 			GoAspect(Go * go);
-			GoAspect(Go* go, const GoAspect& originAspect); // copy
-			GoAspect(Go * go, xmlNode * node);
 			GoAspect(Go* go, const TemplateComponent* tmpl);
+			GoAspect(Go* go, const std::map<std::string, std::string>& r);
 
-			void InheritFrom(const GoAspect& other);
-			void Save(xmlNode* aspectNode) const;
+			void Save(MySQL& db);
 
 			float BoundingSphereRadius () const;
 			float CurrentLife () const;
@@ -67,7 +65,7 @@
 			void RecoverLife();
 			void RecoverMana();
 
-			float ExperienceValue() const { return m_experience_value; }
+			double ExperienceValue() const { return m_experience_value; }
 			
 			void SetHpRecUnit (float rate) { m_life_recovery_unit = rate; };
 			void SetMpRecUnit (float rate) { m_mana_recovery_unit = rate; };
@@ -91,7 +89,7 @@
 			string m_model; // template name?
 			optional<float> m_render_scale;
 
-			float m_experience_value;
+			double m_experience_value;
 	};
 
 #endif /* GOASPECT_HPP_ */

@@ -23,33 +23,6 @@ GoDefend :: GoDefend (Go * go) : GoComponent (go)
 {
 }
 
-GoDefend::GoDefend(Go* newGo, const GoDefend& other) : GoComponent(newGo) // attach to new Go
-{
-	m_defense = other.m_defense;
-	m_defend_class = other.m_defend_class;
-}
-
-GoDefend::GoDefend(Go* go, xmlNode* node) : GoComponent(go)
-{
-	if (node != NULL)
-	{
-		xmlNode* current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-
-			if (xmlStrEqual(current->name, (const xmlChar*)"defense") != 0)
-			{
-				m_defense = xml::ReadAttribute<float>(current, "value", 0.0);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"defend_class") != 0)
-			{
-				m_defend_class = StringToDc(xml::XReadString(current, "value", "dc_skin"));
-			}
-		}
-	}
-}
-
 GoDefend::GoDefend(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 {
 
@@ -62,10 +35,31 @@ GoDefend::GoDefend(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("defend_class")) { if (FromString(*f, m_defend_class) != true) m_defend_class = dc_skin; }
 }
 
-void GoDefend::InheritFrom(const GoDefend& other)
+GoDefend::GoDefend(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
 {
-	if (m_defense == 0.0f)          m_defense = other.m_defense;
-	if (m_defend_class == dc_skin)  m_defend_class = other.m_defend_class;
+	m_defense = std::stof(r.at("defense"));
+	m_defend_class = StringToDc(r.at("defend_class"));
+}
+
+void GoDefend::Save(MySQL& db)
+{
+	std::string q =
+		"INSERT INTO t_go_defend (go_id, is_critical_hit_immune, damage_threshold, "
+		"defend_class, defense, armor_type, armor_style) VALUES (" +
+		std::to_string(GetGo()->Goid()) + ", " +
+		std::to_string(0 ? 1 : 0) + ", " +
+		std::to_string(0) + ", '" +
+		ToString(m_defend_class) + "', " +
+		std::to_string(m_defense) + ", '', '') "
+		"ON DUPLICATE KEY UPDATE "
+		"is_critical_hit_immune=VALUES(is_critical_hit_immune), "
+		"damage_threshold=VALUES(damage_threshold), "
+		"defend_class=VALUES(defend_class), "
+		"defense=VALUES(defense), "
+		"armor_type=VALUES(armor_type), "
+		"armor_style=VALUES(armor_style)";
+
+	db.AsyncQuery(q, [](const auto&) {});
 }
 
 float GoDefend :: Defense () const

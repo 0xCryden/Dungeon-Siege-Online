@@ -36,8 +36,11 @@
 
 #include "../helper/vector_3.h"
 #include "../Gas/Gas.hpp"
-	
-/*
+#include "../server/Account.hpp"
+
+#include "../mysql/MySQL.h"
+
+	/*
 	* GoActor
 	* GoAspect
 	* GoAttack
@@ -52,121 +55,125 @@
 	* GoPlacement
 	*/
 	
-struct sqlResult; // temp until sql implemented
-	
+using QueryResult = std::vector<std::map<std::string, std::string>>;
+
+class Account;
+//class MySQL;
+
 class Go
 {
 	public:
-
-		Go(xmlNode* node); // ONLY USED FOR CREATING NEW TEMPLATES
-		Go(const TemplateData& tmpl, const string& pcontent); // ONLY USED FOR CREATING NEW TEMPLATES
-		Go (uint32_t id, const Go * go); // used for creating a new go from either [an existing go, or a template]
-		Go(const TemplateData& tmpl, const PlacementData& placement);
-		Go(const TemplateData& tmpl, const GoPlacement& placement, const string& pContent);
-
+		Go(const TemplateData& tmpl, uint32_t goid = 0, const string& pcontent = "");	// for pContent (if goid == 0) & Instantiating new templates
+		Go(const Go* go, uint32_t goid, const string& pcontent_query);			// (CloneGo) used for creating a new go from either [an existing go, or a template]
 		~Go ();
 
-		GoActor * Actor () const;
-		eEquipSlot IntendedSlot ();
-		eInventoryLocation IntendedLoc ();
-		void HandleCommand (const string& command);
-		void SaveToXml(const std::string& folderName);
-		void CreateXml(const std::string& folderName);
-		string GetTitle();
-		void AddChild (Go * child);
-		GoAspect * Aspect () const;
-		GoAttack * Attack () const;
-		GoBody * Body () const;
-		const GopSet & Children () const;
-		void ClearParent ();
-		GoCommon * Common () const;
-		// GoConversation * Conversation () const;
-		GoDefend * Defend () const;
-		GoGui* Gui() const;
-		const GopSet & Frustum ();
-		GoScriptComponent * GetComponent (const string & component) const;
+		void Save(MySQL& db);
+
 		uint32_t Goid() const;
 		uint32_t Scid() const;
-		// GoGui * Gui () const;
-		bool HasActor () const;
-		bool HasAspect () const;
-		bool HasAttack () const;
-		bool HasBody () const;
-		bool HasChild (Go * child) const;
-		bool HasCommon () const;
-		bool HasComponent (const string & component) const;
-		bool HasConversation () const;
-		bool HasDefend () const;
-		bool HasGui () const; // code me
-		bool HasInventory () const;
-		bool HasMagic () const; // has magic
-		bool HasMind () const;
-		// bool HasParty () const; 
-		bool HasPlacement () const;
-		GoInventory * Inventory () const;
-		bool IsActor () const;
-		// bool IsAnyHumanPartyMember () const;
-		bool IsArmor () const;
-		bool IsBreakable () const; // code me
-		bool IsContainer () const; // code me
-		bool IsEquipped () const;
-		bool IsGhost () const; // code me!
+		string TemplateName() const;
+		string pContentQuery() const;
+
+		GoActor * Actor () const;
+		GoAspect* Aspect() const;
+		GoAttack* Attack() const;
+		GoCommon* Common() const;
+		GoDefend* Defend() const;
+		GoGui* Gui() const;
+		GoBody* Body() const;
+		GoInventory* Inventory() const;
+		GoMagic* Magic() const;
+		GoMind* Mind() const;
+		GoPlacement* Placement() const;
+		// TODO make GoConveration
+		GoConversation* Conversation() const;
+
+		const GopSet& Children() const;
+		GoScriptComponent* GetComponent(const string& component) const;
+		Account* GetAccount() const { return m_account; }
+
+		void CopyPlacement(GoPlacement* placement);
+
+		void SetAccount(Account* acc) { m_account = acc; }
+		void AddChild(Go* child);
+		void AddComponent(GoScriptComponent* component);
+
+		bool HasActor() const;
+		bool HasAspect() const;
+		bool HasAttack() const;
+		bool HasCommon() const;
+		bool HasDefend() const;
+		bool HasGui() const;
+		bool HasBody() const;
+		bool HasInventory() const;
+		bool HasMagic() const;
+		bool HasMind() const;
+		bool HasPlacement() const;
+		bool HasConversation() const;
+
+		bool HasChild(Go* child) const;
+		bool HasComponent(const string& component) const;
+
+		bool IsActor() const;
+		bool IsItem() const;
+		bool IsArmor() const;
+		bool IsWeapon() const;
+		bool IsMeleeWeapon() const;
+		bool IsRangedWeapon() const;
+		bool IsSpell() const; // code me
+		bool IsSpellBook() const; // code me
+		bool IsEquipped() const;
+		bool IsBreakable() const; // code me
+		bool IsContainer() const; // code me
+		bool IsGhost() const; // code me!
+
+		void LoadFromDatabase(MySQL& db, std::function<void(Go*)> onLoaded);
+		void LoadPlacement(MySQL& db, std::function<void()> done);
+		void LoadActor(MySQL& db, std::function<void()> done);
+		void LoadAspect(MySQL& db, std::function<void()> done);
+		void LoadCommon(MySQL& db, std::function<void()> done);
+		void LoadInventory(MySQL& db, std::function<void()> done);
+		void LoadAttack(MySQL& db, std::function<void()> done);
+		void LoadDefend(MySQL& db, std::function<void()> done);
+		void LoadMind(MySQL& db, std::function<void()> done);
+		void LoadBody(MySQL& db, std::function<void()> done);
+		void LoadGui(MySQL& db, std::function<void()> done);
+		void LoadMagic(MySQL& db, std::function<void()> done);
+
+		// TODO move
+		eInventoryLocation IntendedLoc () const;
+		void SetLoc(eInventoryLocation loc) { m_inventoryLocation = loc; }
+		eInventoryLocation GetLoc() { return m_inventoryLocation; }
+		// to placement component
+		double GetDistanceTo(Go* target) const;
+		void SetLastLocal(vector_3 lastLoc) { lastLocal = lastLoc; }
+		vector_3 GetLastLocal() { return lastLocal; }
+		void SetLastPos(SiegePos lastPosi) { lastPos = lastPosi; }
+		SiegePos GetLastPos() { return lastPos; }
+		void SetWaitForNodeInfo(bool is) { waitForNodeInfo = is; }
+		bool WaitForNodeInfo() { return waitForNodeInfo; }
+		void SetLastRota(uint8_t lastRot) { lastRota = lastRot; }
+		uint8_t GetLastRota() { return lastRota; }
+
+
+		void HandleCommand(const string& command);
+		void ClearParent ();
+		const GopSet & Frustum ();
 		bool IsInsideInventory () const;
-		bool IsItem () const;
-		bool IsMeleeWeapon () const;
-		bool IsRangedWeapon () const;
-		bool IsSpell () const; // code me
-		bool IsSpellBook () const; // code me
 		bool IsTeamMember (const Go * go) const; // code me
-		bool IsWeapon () const;
-		eLifeState LifeState () const;
-		GoMagic * Magic () const;
-		GoMind * Mind () const;
 		Go * Parent () const;
-		GoPlacement * Placement () const;
 		void RemoveAllChildren ();
 		void RemoveChild (Go * child);
 		void Send (const WorldMessage & message);
 		void SetParent (Go * parent);
 		// void SetPlayer( const PlayerId * ) ??????
-		string TemplateName() const;
-		string pContentQuery();
+		// bool HasParty () const; 
+		// bool IsAnyHumanPartyMember () const;
 
 		// depreciate please
-		void AddComponent (GoScriptComponent * component);
 		void RemoveComponent (const string & component);
-			
-		void SetLoc(eInventoryLocation loc) {
-			//cout << "Set loc id " << Goid() << " loc: " << (eInventoryLocation)loc << endl;
-			m_inventoryLocation = loc;
-			/*Parent()->Inventory()->SetBagLoc(this, loc);*/ }
-
-		eInventoryLocation GetLoc() {
-			//cout << "Get loc id " << Goid() << " loc " << (eInventoryLocation)m_inventoryLocation << endl;
-			return m_inventoryLocation; }
-
-		void SetOwner(int ownerId) { m_inventoryOwnerId = ownerId; }
-		int GetOwner() { return m_inventoryOwnerId; }
-
-		void SetLastLocal(vector_3 lastLoc) { lastLocal = lastLoc; }
-		vector_3 GetLastLocal() { return lastLocal; }
-
-		void SetLastPos(SiegePos lastPosi) { lastPos = lastPosi; }
-		SiegePos GetLastPos() { return lastPos; }
-
-		void SetWaitForNodeInfo(bool is) { waitForNodeInfo = is; }
-		bool WaitForNodeInfo() { return waitForNodeInfo; }
-
-		void SetLastRota(uint8_t lastRot) { lastRota = lastRot; }
-		uint8_t GetLastRota() { return lastRota; }
 
 		void CalculateStatus();
-
-		double GetDistanceTo(Go * target);
-
-		int Admin() { return m_admin; }
-		void SetAdmin(int level) { m_admin = (uint8_t)level; }
-		vector<string> Conversations() { return m_conversations; }
 
 	private:
 
@@ -193,18 +200,16 @@ class Go
 		GoMind * m_mind;
 		GoPlacement * m_placement;
 		GoConversation* m_conversation;
+
+		Account* m_account;
 			
 		eInventoryLocation m_inventoryLocation = il_main;
-		int m_inventoryOwnerId = 0;
 		SiegePos lastPos;
 		vector_3 lastLocal;
 		uint8_t lastRota = 0;
 		bool waitForNodeInfo = false;
-		uint8_t m_admin = 0;
 
 		map<string, GoScriptComponent*> m_scripts;
-
-		vector<string> m_conversations;
 };
 
 #endif /* GO_HPP_ */

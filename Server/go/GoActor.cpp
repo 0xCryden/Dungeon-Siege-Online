@@ -18,29 +18,31 @@
 #include "GoActor.hpp"
 #include "../Engine.hpp"
 #include "../helper/Helper.h"
+#include "../mysql/MySQL.h"
+#include "../Globals.h"
 
 static const vector<float> experience_table = {
-    0.0f, 70.0f, 650.0f, 1450.0f, 2350.0f, 3350.0f, 4650.0f, 6650.0f, 9450.0f, 12950.0f,
-    17100.0f, 22000.0f, 27800.0f, 34300.0f, 41300.0f, 49191.0f, 58327.0f, 68882.0f,
-    81054.0f, 95071.0f, 111190.0f, 129706.0f, 150954.0f, 175317.0f, 203567.0f,
-    236338.0f, 274352.0f, 318449.0f, 369600.0f, 428936.0f, 497766.0f, 577609.0f,
-    670226.0f, 777662.0f, 902288.0f, 1046855.0f, 1214551.0f, 1409080.0f, 1634732.0f,
-    1896489.0f, 2200128.0f, 2552348.0f, 2960924.0f, 3434872.0f, 3984651.0f,
-    4622395.0f, 5362179.0f, 6220327.0f, 7215779.0f, 8370504.0f, 9709985.0f,
-    11263782.0f, 13066188.0f, 15156978.0f, 17582294.0f, 20395661.0f, 23659167.0f,
-    27444833.0f, 31836207.0f, 36930200.0f, 42839232.0f, 49780637.0f, 58283859.0f,
-    68700306.0f, 81460453.0f, 97091634.0f, 116239830.0f, 139696370.0f, 168430631.0f,
-    203630102.0f, 246749453.0f, 299570658.0f, 364276635.0f, 443541456.0f,
-    540640862.0f, 659587634.0f, 805297430.0f, 983791930.0f, 1202447693.0f,
-    1470301002.0f, 1798421306.0f, 2200368678.0f, 2692754209.0f, 3295926485.0f,
-    4034812522.0f, 4939947918.0f, 6048738778.0f, 7407007581.0f, 9070886865.0f,
-    11109138988.0f, 13605997839.0f, 16664649931.0f, 20411498744.0f, 25001388540.0f,
-    30624003540.0f, 37511706915.0f, 45949143550.0f, 56285003427.0f, 68946431776.0f,
-    84456681504.0f, 103456737421.0f, 126731805919.0f, 155243764829.0f,
-    190170914494.0f, 232956672834.0f, 285369226800.0f, 349574605408.0f,
-    428226194203.0f, 524574390477.0f, 642600930913.0f, 781081513558566.0f,
-    956824851411821.0f, 1172110440282060.0f, 1435835286648100.0f,
-    1758898223446500.0f, 2154650321024540.0f, 2639446640557650.0f
+		0.0f, 70.0f, 650.0f, 1450.0f, 2350.0f, 3350.0f, 4650.0f, 6650.0f, 9450.0f, 12950.0f,
+		17100.0f, 22000.0f, 27800.0f, 34300.0f, 41300.0f, 49191.0f, 58327.0f, 68882.0f,
+		81054.0f, 95071.0f, 111190.0f, 129706.0f, 150954.0f, 175317.0f, 203567.0f,
+		236338.0f, 274352.0f, 318449.0f, 369600.0f, 428936.0f, 497766.0f, 577609.0f,
+		670226.0f, 777662.0f, 902288.0f, 1046855.0f, 1214551.0f, 1409080.0f, 1634732.0f,
+		1896489.0f, 2200128.0f, 2552348.0f, 2960924.0f, 3434872.0f, 3984651.0f,
+		4622395.0f, 5362179.0f, 6220327.0f, 7215779.0f, 8370504.0f, 9709985.0f,
+		11263782.0f, 13066188.0f, 15156978.0f, 17582294.0f, 20395661.0f, 23659167.0f,
+		27444833.0f, 31836207.0f, 36930200.0f, 42839232.0f, 49780637.0f, 58283859.0f,
+		68700306.0f, 81460453.0f, 97091634.0f, 116239830.0f, 139696370.0f, 168430631.0f,
+		203630102.0f, 246749453.0f, 299570658.0f, 364276635.0f, 443541456.0f,
+		540640862.0f, 659587634.0f, 805297430.0f, 983791930.0f, 1202447693.0f,
+		1470301002.0f, 1798421306.0f, 2200368678.0f, 2692754209.0f, 3295926485.0f,
+		4034812522.0f, 4939947918.0f, 6048738778.0f, 7407007581.0f, 9070886865.0f,
+		11109138988.0f, 13605997839.0f, 16664649931.0f, 20411498744.0f, 25001388540.0f,
+		30624003540.0f, 37511706915.0f, 45949143550.0f, 56285003427.0f, 68946431776.0f,
+		84456681504.0f, 103456737421.0f, 126731805919.0f, 155243764829.0f,
+		190170914494.0f, 232956672834.0f, 285369226800.0f, 349574605408.0f,
+		428226194203.0f, 524574390477.0f, 642600930913.0f, 781081513558566.0f,
+		956824851411821.0f, 1172110440282060.0f, 1435835286648100.0f,
+		1758898223446500.0f, 2154650321024540.0f, 2639446640557650.0f
 };
 
 GoActor::GoActor(Go* go) : GoComponent(go)
@@ -49,67 +51,8 @@ GoActor::GoActor(Go* go) : GoComponent(go)
 	m_can_level_up = false;
 }
 
-GoActor::GoActor(Go* go, const GoActor& actor) : GoComponent(go)
-{
-	m_alignment = actor.m_alignment;
-	m_can_level_up = actor.m_can_level_up;
-	m_skills = actor.m_skills;
-}
-
-GoActor::GoActor(Go* go, xmlNode* node) : GoComponent(go)
-{
-	m_alignment = aa_neutral;
-	m_can_level_up = false;
-
-	if (node != NULL)
-	{
-		xmlNode* current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-
-			if (xmlStrEqual(current->name, (const xmlChar*)"alignment") != 0)
-			{
-				string alignment = xml::XReadString(current, "value", "aa_neutral");
-				if (FromString(alignment, m_alignment) != true) m_alignment = aa_neutral;
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"can_level_up") != 0)
-			{
-				m_can_level_up = xml::ReadAttribute<bool>(current, "value", true);
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"skills") != 0)
-			{
-				xmlNode* child = NULL;
-				for (child = current->children; child != NULL; child = child->next)
-				{
-					if (child->type != XML_ELEMENT_NODE) continue;
-
-					if (xmlStrEqual(child->name, (const xmlChar*)"skill") != 0)
-					{
-						string name = (const char*)child->name;
-
-						map<string, Skill*>::iterator iterator = m_skills.find(name);
-						if (iterator == m_skills.end())
-						{
-							Skill* skill = new Skill;
-							skill->name = xml::XReadString(child, "name", name);
-							skill->level = xml::ReadAttribute<float>(child, "level", 0.0);
-							skill->experience = xml::ReadAttribute<float>(child, "experience", 0.0);
-
-							m_skills[skill->name] = skill;
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
 GoActor::GoActor(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 {
-	//m_alignment = aa_neutral;
-	//m_can_level_up = false;
-
 	if (tmplComp == nullptr)
 		return;
 
@@ -147,6 +90,79 @@ GoActor::GoActor(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	}
 }
 
+GoActor::GoActor(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
+{
+	string alignmentStr = r.at("alignment");
+	if (FromString(alignmentStr, m_alignment) != true) { m_alignment = aa_neutral; }
+
+	m_can_level_up = r.at("can_level_up") == "1";
+
+	{
+		Skill* skill = new Skill;
+		skill->name = "uber";
+		skill->level = std::stof(r.at("skill_uber"));
+		skill->experience = std::stod(r.at("skill_uber_exp"));
+
+		m_skills[skill->name] = skill;
+	}
+	{
+		Skill* skill = new Skill;
+		skill->name = "strength";
+		skill->level = std::stof(r.at("skill_strength"));
+		skill->experience = std::stod(r.at("skill_strength_exp"));
+
+		m_skills[skill->name] = skill;
+	}
+	{
+		Skill* skill = new Skill;
+		skill->name = "intelligence";
+		skill->level = std::stof(r.at("skill_intelligence"));
+		skill->experience = std::stod(r.at("skill_intelligence_exp"));
+
+		m_skills[skill->name] = skill;
+	}
+	{
+		Skill* skill = new Skill;
+		skill->name = "dexterity";
+		skill->level = std::stof(r.at("skill_dexterity"));
+		skill->experience = std::stod(r.at("skill_dexterity_exp"));
+
+		m_skills[skill->name] = skill;
+	}
+	{
+		Skill* skill = new Skill;
+		skill->name = "melee";
+		skill->level = std::stof(r.at("skill_melee"));
+		skill->experience = std::stod(r.at("skill_melee_exp"));
+
+		m_skills[skill->name] = skill;
+	}
+	{
+		Skill* skill = new Skill;
+		skill->name = "ranged";
+		skill->level = std::stof(r.at("skill_ranged"));
+		skill->experience = std::stod(r.at("skill_ranged_exp"));
+
+		m_skills[skill->name] = skill;
+	}
+	{
+		Skill* skill = new Skill;
+		skill->name = "nature magic";
+		skill->level = std::stof(r.at("skill_nature_magic"));
+		skill->experience = std::stod(r.at("skill_nature_magic_exp"));
+
+		m_skills[skill->name] = skill;
+	}
+	{
+		Skill* skill = new Skill;
+		skill->name = "combat magic";
+		skill->level = std::stof(r.at("skill_combat_magic"));
+		skill->experience = std::stod(r.at("skill_combat_magic_exp"));
+
+		m_skills[skill->name] = skill;
+	}
+}
+
 GoActor :: ~GoActor ()
 {
 	for (map<string, Skill *>::iterator iterator = m_skills.begin(); iterator != m_skills.end(); iterator++)
@@ -155,88 +171,146 @@ GoActor :: ~GoActor ()
 	}
 }
 
-void GoActor::InheritFrom(const GoActor& parent)
-{
-	if (m_alignment == aa_neutral) m_alignment = parent.m_alignment;
-
-	if (m_can_level_up == false) m_can_level_up = parent.m_can_level_up;
-
-	// Merge map: add keys from 'other' if they don't exist in this
-	for (const auto& [key, value] : parent.m_skills)
-	{
-		if (m_skills.find(key) == m_skills.end())
-		{
-			m_skills[key] = value;
-		}
-	}
-}
-
 map<string, Skill*> GoActor::Skills()
 {
 	return m_skills;
 }
 
-void GoActor::SaveSkills(xmlNode* actorNode) const
+void GoActor::Save(MySQL& db)
 {
-    // Get or create <skills> node
-    xmlNode* skillsNode = nullptr;
-    for (xmlNode* child = actorNode->children; child; child = child->next)
-    {
-    	if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST "skills"))
-    	{
-    		skillsNode = child;
-            break;
-        }
-    }
+	std::string q =
+		"INSERT INTO t_go_actor (go_id, alignment, can_level_up, "
+		"skill_uber, skill_uber_exp, "
+		"skill_strength, skill_strength_exp, "
+		"skill_intelligence, skill_intelligence_exp, "
+		"skill_dexterity, skill_dexterity_exp, "
+		"skill_melee, skill_melee_exp, "
+		"skill_ranged, skill_ranged_exp, "
+		"skill_nature_magic, skill_nature_magic_exp, "
+		"skill_combat_magic, skill_combat_magic_exp) VALUES (" +
+		std::to_string(GetGo()->Goid()) + ", '" + 
+		ToString(m_alignment) + "', " +
+		std::to_string(m_can_level_up ? 1 : 0) + ", " +
+		std::to_string(GetSkillLevel("uber")) + ", " + std::to_string(GetSkillExp("uber")) + ", " +
+		std::to_string(GetSkillLevel("strength")) + ", " + std::to_string(GetSkillExp("strength")) + ", " +
+		std::to_string(GetSkillLevel("intelligence")) + ", " + std::to_string(GetSkillExp("intelligence")) + ", " +
+		std::to_string(GetSkillLevel("dexterity")) + ", " + std::to_string(GetSkillExp("dexterity")) + ", " +
+		std::to_string(GetSkillLevel("melee")) + ", " + std::to_string(GetSkillExp("melee")) + ", " +
+		std::to_string(GetSkillLevel("ranged")) + ", " + std::to_string(GetSkillExp("ranged")) + ", " +
+		std::to_string(GetSkillLevel("nature_magic")) + ", " + std::to_string(GetSkillExp("nature_magic")) + ", " +
+		std::to_string(GetSkillLevel("combat_magic")) + ", " + std::to_string(GetSkillExp("combat_magic")) + ") "
+		"ON DUPLICATE KEY UPDATE "
+		"alignment=VALUES(alignment), can_level_up=VALUES(can_level_up), "
+		"skill_uber=VALUES(skill_uber), skill_uber_exp=VALUES(skill_uber_exp), "
+		"skill_strength=VALUES(skill_strength), skill_strength_exp=VALUES(skill_strength_exp), "
+		"skill_intelligence=VALUES(skill_intelligence), skill_intelligence_exp=VALUES(skill_intelligence_exp), "
+		"skill_dexterity=VALUES(skill_dexterity), skill_dexterity_exp=VALUES(skill_dexterity_exp), "
+		"skill_melee=VALUES(skill_melee), skill_melee_exp=VALUES(skill_melee_exp), "
+		"skill_ranged=VALUES(skill_ranged), skill_ranged_exp=VALUES(skill_ranged_exp), "
+		"skill_nature_magic=VALUES(skill_nature_magic), skill_nature_magic_exp=VALUES(skill_nature_magic_exp), "
+		"skill_combat_magic=VALUES(skill_combat_magic), skill_combat_magic_exp=VALUES(skill_combat_magic_exp)";
 
-    if (!skillsNode) {
-    	std::cout << "[GoActor] No skills to save" << std::endl;
-    	return;
-    }
-
-    const std::string hardcodedSkills[] = {
-        "uber", "strength", "intelligence", "dexterity",
-        "melee", "ranged", "nature magic", "combat magic"
-    };
-
-    // Assuming skillsNode is already your <skills> xmlNode
-    for (const std::string& name : hardcodedSkills)
-    {
-        auto it = m_skills.find(name);
-        if (it == m_skills.end()) continue;
-
-        Skill* skill = it->second;
-        if (!skill) continue;
-
-        xmlNode* skillNode = nullptr;
-
-        // Search for existing <skill> node by name
-        for (xmlNode* child = skillsNode->children; child; child = child->next)
-        {
-            if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST "skill"))
-            {
-                std::string existingName = xml::XReadString(child, "name", "");
-                if (existingName == name)
-                {
-                    skillNode = child;
-                    break;
-                }
-            }
-        }
-
-        if (!skillNode)
-        	std::cout << "Skill '" << name << "' not found" << std::endl;
-        // Update attributes
-        //xml::SetAttribute(skillNode, "name", skill->name);
-        xml::SetAttribute(skillNode, "level", skill->level);
-        xml::SetAttribute(skillNode, "experience", skill->experience);
-    }
+	db.AsyncQuery(q, [](const auto&) {});
 }
 
-void GoActor::Save(xmlNode* actorNode) const
+string GoActor::GetTitle() const
 {
-	xml::SetOrUpdateChildValue(actorNode, "alignment", ToString(Alignment()));
-    SaveSkills(actorNode);
+	struct TitleGroup {
+		vector<string> skills;
+		vector<string> maleTitles;
+		vector<string> femaleTitles; // optional
+	};
+
+	vector<TitleGroup> titleGroups = {
+		{{"melee", "ranged", "nature magic", "combat magic"},
+		 {"Freelance", "Journeyman", "Adventurer", "Master", "Grand Master", "Grand High SiegeMaster"},
+		 {"Freelance", "Journeyman", "Adventurer", "Master", "Grand Master", "Grand High Siegemistress"}},
+
+		{{"melee", "ranged", "combat magic"},
+		 {"Mercenary", "Gladiator", "Centurion", "Myrmidon", "Warlord", "Warlord Noble"},
+		 {"Mercenary", "Gladiator", "Centurion", "Myrmidon", "Warlady", "Warlady Noble"}},
+
+		{{"melee", "ranged", "nature magic"},
+		 {"Cavalier", "Marshal", "Paladin", "Templar", "Arch Templar", "Supreme Templar"}},
+
+		{{"melee", "nature magic", "combat magic"},
+		 {"Initiate", "Mystic", "Sage", "Deacon", "Grand Deacon", "Grand High Deacon"},
+		 {"Initiate", "Mystic", "Sage", "Deaconess", "Grand Deaconess", "Grand High Deaconess"}},
+
+		{{"ranged", "nature magic", "combat magic"},
+		 {"Adept", "Conjurer", "Thaumaturgist", "Evoker", "Senior Evoker", "Lord Evoker"},
+		 {"Adept", "Conjurer", "Thaumaturgist", "Evoker", "Senior Evoker", "Lady Evoker"}},
+
+		{{"melee", "ranged"},
+		 {"Man-At-Arms", "Skirmisher", "Raider", "Campaigner", "Crusader", "Grand Crusader"},
+		 {"Woman-At-Arms", "Skirmisher", "Raider", "Campaigner", "Crusader", "Grand Crusader"}},
+
+		{{"melee", "nature magic"},
+		 {"Friar", "Curate", "Druid", "Preserver", "Grand Preserver", "Supreme Preserver"}},
+
+		{{"melee", "combat magic"},
+		 {"Combatant", "Duelist", "Dragoon", "Warlock", "Grand Warlock", "Grand High Warlock"},
+		 {"Combatant", "Duelist", "Dragoon", "Warwitch", "Grand Warwitch", "Grand High Warwitch"}},
+
+		{{"ranged", "nature magic"},
+		 {"Scout", "Forester", "Ranger", "Warder", "Arch Ward", "Supreme High Ward"},
+		 {"Scout", "Forester", "Ranger", "Wardess", "Arch Wardess", "Supreme High Wardess"}},
+
+		{{"ranged", "combat magic"},
+		 {"Jager", "Conjurer", "Channeler", "Matross", "Master Matross", "Grandmaster Matross"}},
+
+		{{"nature magic", "combat magic"},
+		 {"Acolyte", "Shaman", "Scholar", "Magus", "Grand Magus", "Grand High Magus"}},
+
+		{{"melee"},
+		 {"Squire", "Soldier", "Warrior", "Knight", "Champion", "Grand Champion"}},
+
+		{{"ranged"},
+		 {"Bowyer", "Archer", "Marksman", "Sharpshooter", "Master Sharpshooter", "Grandmaster Sharpshooter"}},
+
+		{{"nature magic"},
+		 {"Apprentice", "Theurgist", "Magician", "Grand Mage", "Arch Mage", "Supreme Arch Mage"}},
+
+		{{"combat magic"},
+		 {"Savant", "Hedge Wizard", "Wizard", "Sorcerer", "Grand Sorcerer", "Grand High Sorcerer"},
+		 {"Savant", "Hedge Wizard", "Wizard", "Sorceress", "Grand Sorceress", "Grand High Sorceress"}}
+	};
+
+	auto getBracket = [](float level) {
+		if (level >= 100) return 5;
+		if (level >= 50)  return 4;
+		if (level >= 20)  return 3;
+		if (level >= 11)  return 2;
+		if (level >= 5)   return 1;
+		if (level >= 1)   return 0;
+		return -1;
+		};
+
+	int gender = 0; // TODO add gender getter GetGender(); // 0 = male, 1 = female
+
+	for (const auto& group : titleGroups) {
+		bool qualifies = true;
+		int minBracket = 6;
+
+		for (const string& skill : group.skills) {
+			float level = GetSkillLevel(skill.c_str());
+			int bracket = getBracket(level);
+			if (bracket == -1) {
+				qualifies = false;
+				break;
+			}
+			minBracket = min(minBracket, bracket);
+		}
+
+		if (qualifies) {
+			if (gender == 1 && group.femaleTitles.size() == 6)
+				return group.femaleTitles[minBracket];
+			else
+				return group.maleTitles[minBracket];
+		}
+	}
+
+	return "Noob";
 }
 
 eActorAlignment GoActor :: Alignment () const
@@ -244,13 +318,18 @@ eActorAlignment GoActor :: Alignment () const
 	return m_alignment;
 }
 
-bool GoActor :: CanLevelUp ()
+bool GoActor::CanLevelUp() const
 {
 	return m_can_level_up;
 }
 
+void GoActor::SetCanLevelUp(bool can)
+{
+	m_can_level_up = can;
+}
 
-float GoActor :: GetLevelFromXP(float xp) {
+
+float GoActor :: GetLevelFromXP(double xp) {
     const auto& table = experience_table;
     size_t level = 0;
 
@@ -272,7 +351,7 @@ float GoActor :: GetLevelFromXP(float xp) {
     return static_cast<float>(level) + fraction;
 }
 
-float GoActor :: GetXPFromLevel(float level) {
+double GoActor :: GetXPFromLevel(float level) {
     const auto& table = experience_table;
     int baseLevel = static_cast<int>(floor(level));
 
@@ -287,9 +366,9 @@ float GoActor :: GetXPFromLevel(float level) {
     return (xp_start + fraction * (xp_end - xp_start));
 }
 
-float  GoActor :: GetMaxExpGainForLevel(float level)
+double  GoActor :: GetMaxExpGainForLevel(float level)
 {
-    static const std::vector<float> maxExpPerLevel = {
+    static const std::vector<double> maxExpPerLevel = {
         7.00f,14.50f,20.00f,22.50f,25.00f,32.50f,50.00f,70.00f,87.50f,103.75f,122.50f,145.00f,162.50f,175.00f,197.28f,228.40f,
         263.88f,304.30f,350.43f,402.98f,462.90f,531.20f,609.08f,706.25f,819.28f,950.35f,1102.42f,1278.78f,1483.40f,1720.75f,
         1996.08f,2315.43f,2685.90f,3115.65f,3614.18f,4192.40f,4863.23f,5641.30f,6543.93f,7590.98f,8805.50f,10214.40f,11848.70f,
@@ -352,7 +431,7 @@ float GoActor :: GetSkillLevel (const string & skill) const
 	return 0.0;
 }
 
-float GoActor :: GetSkillExp (const string & skill) const
+double GoActor :: GetSkillExp (const string & skill) const
 {
 	map<string, Skill *>::const_iterator iterator = m_skills.find (skill);
 	if (iterator != m_skills.end())
@@ -387,12 +466,12 @@ void GoActor :: SetSkillLevel (const string & skill, float value)
 	if (iterator != m_skills.end())
 	{
 		iterator->second->level = value;
-		float exp = GetXPFromLevel(value);
+		double exp = GetXPFromLevel(value);
 		iterator->second->experience = exp;
 	}
 }
 
-void GoActor :: SetSkillExp (const string & skill, float value)
+void GoActor :: SetSkillExp (const string & skill, double value)
 {
 	map<string, Skill *>::iterator iterator = m_skills.find (skill);
 	if (iterator != m_skills.end())
@@ -403,7 +482,7 @@ void GoActor :: SetSkillExp (const string & skill, float value)
 	}
 }
 
-void GoActor::AddSkillExp(const string& skill, float value)
+void GoActor::AddSkillExp(const string& skill, double value)
 {
 	auto it = m_skills.find(skill);
 	if (it == m_skills.end())
@@ -422,7 +501,7 @@ void GoActor::AddSkillExp(const string& skill, float value)
 	   1. AWARD SKILL XP (NORMAL SKILL BEHAVIOR)
 	   ------------------------------------------------------------ */
 
-	float oldXP = skillPtr->experience;
+	double oldXP = skillPtr->experience;
 	float oldLevel = skillPtr->level;
 
 	skillPtr->experience += value;
@@ -459,7 +538,7 @@ void GoActor::AddSkillExp(const string& skill, float value)
 
 	Skill* uber = m_skills["uber"];
 
-	float uberOldXP = uber->experience;
+	double uberOldXP = uber->experience;
 	float uberOldLevel = uber->level;
 
 	uber->experience += value;
@@ -475,21 +554,21 @@ void GoActor::AddSkillExp(const string& skill, float value)
 
 	float uberFloor = std::floor(uberOldLevel);
 
-	float xpCurrent = GetXPFromLevel(uberFloor);
-	float xpNext = GetXPFromLevel(uberFloor + 1.0f);
+	double xpCurrent = GetXPFromLevel(uberFloor);
+	double xpNext = GetXPFromLevel(uberFloor + 1.0f);
 
-	float xpToNextUber = xpNext - xpCurrent;
+	double xpToNextUber = xpNext - xpCurrent;
 
 	if (xpToNextUber <= 0.0f)
 		return;
 
-	float uber_factor = value / xpToNextUber;
+	double uber_factor = value / xpToNextUber;
 
 	/* ------------------------------------------------------------
 	   5. ATTRIBUTE INFLUENCE WEIGHTS (DS1 TABLE)
 	   ------------------------------------------------------------ */
 
-	float strInf = 0.f, dexInf = 0.f, intInf = 0.f;
+	double strInf = 0.f, dexInf = 0.f, intInf = 0.f;
 
 	if (skill == "melee") {
 		strInf = 0.64f; dexInf = 0.27f; intInf = 0.09f;
@@ -508,7 +587,7 @@ void GoActor::AddSkillExp(const string& skill, float value)
 	   6. APPLY ATTRIBUTE GROWTH (FLOAT LEVELS, NO XP)
 	   ------------------------------------------------------------ */
 
-	auto applyAttribute = [&](const string& attr, float delta)
+	auto applyAttribute = [&](const string& attr, double delta)
 		{
 			Skill* a = m_skills[attr];
 			float old = a->level;

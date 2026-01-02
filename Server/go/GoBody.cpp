@@ -7,38 +7,6 @@ GoBody :: GoBody (Go * go) : GoComponent (go)
 {
 }
 
-GoBody::GoBody(Go* newGo, const GoBody& other) : GoComponent(newGo) // attach to new Go
-{
-	m_avg_move_velocity = other.m_avg_move_velocity;
-	m_max_move_velocity = other.m_max_move_velocity;
-	m_min_move_velocity = other.m_min_move_velocity;
-}
-
-GoBody :: GoBody (Go * go, xmlNode * node) : GoComponent (go)
-{
-	if (node != NULL)
-	{
-		xmlNode * current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "avg_move_velocity") != 0)
-			{
-				m_avg_move_velocity = xml::ReadAttribute<float> (current, "value", 0.0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "max_move_velocity") != 0)
-			{
-				m_max_move_velocity = xml::ReadAttribute<float> (current, "value", 0.0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "min_move_velocity") != 0)
-			{
-				m_min_move_velocity = xml::ReadAttribute<float> (current, "value", 0.0);
-			}
-		}
-	}
-}
-
 GoBody::GoBody(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 {
 	if (tmplComp == nullptr)
@@ -50,12 +18,27 @@ GoBody::GoBody(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("max_move_velocity")) { try { m_max_move_velocity = std::stof(*f); } catch (...) { m_max_move_velocity = 0.0f; } }
 	if (f = tmplComp->GetField("min_move_velocity")) { try { m_min_move_velocity = std::stof(*f); } catch (...) { m_min_move_velocity = 0.0f; } }
 }
-
-void GoBody::InheritFrom(const GoBody& other)
+GoBody::GoBody(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
 {
-	if (m_avg_move_velocity == 0.0f) m_avg_move_velocity = other.m_avg_move_velocity;
-	if (m_max_move_velocity == 0.0f) m_max_move_velocity = other.m_max_move_velocity;
-	if (m_min_move_velocity == 0.0f) m_min_move_velocity = other.m_min_move_velocity;
+	m_avg_move_velocity = std::stof(r.at("avg_move_velocity"));
+	m_max_move_velocity = std::stof(r.at("max_move_velocity"));
+	m_min_move_velocity = std::stof(r.at("min_move_velocity"));
+}
+
+void GoBody::Save(MySQL& db)
+{
+	std::string q =
+		"INSERT INTO t_go_body (go_id, avg_move_velocity, max_move_velocity, min_move_velocity) VALUES (" +
+		std::to_string(GetGo()->Goid()) + ", " +
+		std::to_string(m_avg_move_velocity) + ", " +
+		std::to_string(m_max_move_velocity) + ", " +
+		std::to_string(m_min_move_velocity) + ") "
+		"ON DUPLICATE KEY UPDATE "
+		"avg_move_velocity=VALUES(avg_move_velocity), "
+		"max_move_velocity=VALUES(max_move_velocity), "
+		"min_move_velocity=VALUES(min_move_velocity)";
+
+	db.AsyncQuery(q, [](const auto&) {});
 }
 
 float GoBody :: AvgMoveVelocity () const

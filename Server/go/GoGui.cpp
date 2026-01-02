@@ -8,44 +8,6 @@ GoGui::GoGui(Go* go) : GoComponent(go)
 {
 }
 
-GoGui::GoGui(Go* newGo, const GoGui& other) : GoComponent(newGo) // attach to new Go
-{
-    m_equip_slot = other.m_equip_slot;
-    m_inventory_width = other.m_inventory_width;
-    m_inventory_height = other.m_inventory_height;
-    m_equip_requirements = other.m_equip_requirements; // assuming std::string or similar
-}
-
-GoGui::GoGui(Go* go, xmlNode* node) : GoComponent(go)
-{
-	if (node != NULL)
-	{
-		xmlNode* current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-
-			if (xmlStrEqual(current->name, (const xmlChar*)"equip_slot") != 0)
-			{
-                m_equip_slot = StringToNum(xml::ReadAttribute<string>(current, "value", "es_none"));
-			}
-			else if (xmlStrEqual(current->name, (const xmlChar*)"inventory_width") != 0)
-			{
-				m_inventory_width = xml::ReadAttribute<int>(current, "value", 0);
-			}
-            else if (xmlStrEqual(current->name, (const xmlChar*)"inventory_height") != 0)
-            {
-                m_inventory_height = xml::ReadAttribute<int>(current, "value", 0);
-            }
-            else if (xmlStrEqual(current->name, (const xmlChar*)"equip_requirements") != 0)
-            {
-                std::string reqStr = xml::XReadString(current, "value", "");
-                SetEquipRequirements(reqStr);
-            }
-		}
-	}
-}
-
 GoGui::GoGui(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 {
 	if (tmplComp == nullptr)
@@ -61,19 +23,33 @@ GoGui::GoGui(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
     if (f = tmplComp->GetField("equip_requirements")) { SetEquipRequirements(*f); }
 }
 
-void GoGui::InheritFrom(const GoGui& other)
+GoGui::GoGui(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
 {
-    // Merge map: add keys from 'other' if they don't exist in this
-    for (const auto& [key, value] : other.m_equip_requirements)
-    {
-        if (m_equip_requirements.find(key) == m_equip_requirements.end())
-        {
-            m_equip_requirements[key] = value;
-        }
-    }
-    if (m_equip_slot == es_none)                 m_equip_slot = other.m_equip_slot;
-    if (m_inventory_width == 0)                  m_inventory_width = other.m_inventory_width;
-    if (m_inventory_height == 0)                 m_inventory_height = other.m_inventory_height;
+    m_equip_slot = StringToNum(r.at("equip_slot"));
+    m_inventory_width = std::stoi(r.at("inventory_width"));
+    m_inventory_height = std::stoi(r.at("inventory_height"));
+
+    // equip_requirements is serialized; handle parsing if needed
+    // For now, store as string pointer map placeholder
+    // You can implement actual parsing elsewhere
+    // Example: parse "skill1:1.0;skill2:2.5" into m_equip_requirements
+}
+
+void GoGui::Save(MySQL& db)
+{
+    std::string q =
+        "INSERT INTO t_go_gui (go_id, equip_slot, inventory_width, inventory_height, equip_requirements) VALUES (" +
+        std::to_string(GetGo()->Goid()) + ", '" +
+        ToString(m_equip_slot) + "', " +
+        std::to_string(m_inventory_width) + ", " +
+        std::to_string(m_inventory_height) + ", '') "
+        "ON DUPLICATE KEY UPDATE "
+        "equip_slot=VALUES(equip_slot), "
+        "inventory_width=VALUES(inventory_width), "
+        "inventory_height=VALUES(inventory_height), "
+        "equip_requirements=VALUES(equip_requirements)";
+
+    db.AsyncQuery(q, [](const auto&) {});
 }
 
 void GoGui::SetEquipRequirements(const std::string& input)

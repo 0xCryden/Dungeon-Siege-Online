@@ -18,29 +18,28 @@
 #ifndef GODEFEND_HPP_
 #define GODEFEND_HPP_
 
-	#include "GoComponent.hpp"
-	#include "../enum/eDefendClass.hpp"
+#include "GoComponent.hpp"
+#include "../enum/eDefendClass.hpp"
 	
-	class GoDefend : public GoComponent
-	{
-		public:
+class GoDefend : public GoComponent
+{
+	public:
 
-			GoDefend(Go* go);
-			GoDefend(Go* go, const GoDefend& other);
-			GoDefend(Go* go, xmlNode* node);
-			GoDefend(Go* go, const TemplateComponent* tmpl);
+		GoDefend(Go* go);
+		GoDefend(Go* go, const TemplateComponent* tmpl);
+		GoDefend(Go* go, const std::map<std::string, std::string>& r);
 			
-			void InheritFrom(const GoDefend& other);
-			float Defense () const;
+		void Save(MySQL& db);
 
-			eDefendClass DefendClass () { return m_defend_class; };
-			float GetTotalDefense();
-			float GetTotalFireResistance();
+		float Defense () const;
+		eDefendClass DefendClass () { return m_defend_class; };
+		float GetTotalDefense();
+		float GetTotalFireResistance();
 			
-		private:
+	private:
 			
-			float m_defense;
-			eDefendClass m_defend_class;
-	};
+		float m_defense;
+		eDefendClass m_defend_class;
+};
 
 #endif /* GODEFEND_HPP_ */

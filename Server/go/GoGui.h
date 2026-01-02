@@ -8,13 +8,12 @@ class GoGui : public GoComponent
 {
 	public:
 		GoGui(Go* go);
-		GoGui(Go* go, const GoGui& other);
-		GoGui(Go* go, xmlNode* node);
 		GoGui(Go* go, const TemplateComponent* tmplComp);
+		GoGui(Go* go, const std::map<std::string, std::string>& r);
 
-		void InheritFrom(const GoGui& other);
+		void Save(MySQL& db);
+
 		void SetEquipRequirements(const string& input);
-
 		eEquipSlot EquipSlot() { return m_equip_slot; }
 		map<string, float*> EquipRequirements() { return m_equip_requirements; }
 		int InventoryWidth() { return m_inventory_width; }

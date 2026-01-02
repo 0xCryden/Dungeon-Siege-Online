@@ -1,0 +1,370 @@
+CREATE TABLE t_accounts (
+    account_id     BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    username       VARCHAR(64)     NOT NULL,
+    password_hash  VARBINARY(64)   NOT NULL,
+    password_plain VARCHAR(64) COLLATE utf8mb4_bin,
+    admin          BIGINT UNSIGNED NOT NULL,
+
+    created_at     TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_login_at  TIMESTAMP       NULL,
+
+    PRIMARY KEY (account_id),
+    UNIQUE KEY uk_username (username)
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_gos (
+    go_id            BIGINT UNSIGNED NOT NULL,
+
+    template_name    VARCHAR(128)    NOT NULL,
+    pcontent_query   VARCHAR(255)    NOT NULL,
+
+    account_id       BIGINT UNSIGNED NULL,
+
+    created_at       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP       NULL ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (go_id),
+
+    KEY idx_account_id (account_id),
+    KEY idx_template_name (template_name),
+
+    CONSTRAINT fk_gos_account
+        FOREIGN KEY (account_id)
+        REFERENCES t_accounts(account_id)
+        ON DELETE SET NULL
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_components (
+    go_id           BIGINT UNSIGNED NOT NULL,
+    component_type  VARCHAR(64)     NOT NULL,
+
+    created_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (go_id, component_type),
+
+    CONSTRAINT fk_gc_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_placement (
+    go_id        BIGINT UNSIGNED NOT NULL,
+
+    region       VARCHAR(128)    NULL,
+
+    node_id      BIGINT UNSIGNED NOT NULL,
+
+    pos_x        FLOAT           NOT NULL,
+    pos_y        FLOAT           NOT NULL,
+    pos_z        FLOAT           NOT NULL,
+
+    updated_at   TIMESTAMP       NOT NULL
+                  DEFAULT CURRENT_TIMESTAMP
+                  ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (go_id),
+
+    KEY idx_region (region),
+
+    CONSTRAINT fk_placement_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_actor (
+    go_id           BIGINT UNSIGNED NOT NULL,
+
+    alignment       VARCHAR(32)    NOT NULL,
+    can_level_up    TINYINT(1)     NOT NULL DEFAULT 0,
+
+    skill_uber             FLOAT   NOT NULL DEFAULT 0,
+    skill_uber_exp         DOUBLE  NOT NULL DEFAULT 0,
+
+    skill_strength         FLOAT   NOT NULL DEFAULT 0,
+    skill_strength_exp     DOUBLE  NOT NULL DEFAULT 0,
+
+    skill_intelligence     FLOAT   NOT NULL DEFAULT 0,
+    skill_intelligence_exp DOUBLE  NOT NULL DEFAULT 0,
+
+    skill_dexterity        FLOAT   NOT NULL DEFAULT 0,
+    skill_dexterity_exp    DOUBLE  NOT NULL DEFAULT 0,
+
+    skill_melee            FLOAT   NOT NULL DEFAULT 0,
+    skill_melee_exp        DOUBLE  NOT NULL DEFAULT 0,
+
+    skill_ranged           FLOAT   NOT NULL DEFAULT 0,
+    skill_ranged_exp       DOUBLE  NOT NULL DEFAULT 0,
+
+    skill_nature_magic     FLOAT   NOT NULL DEFAULT 0,
+    skill_nature_magic_exp DOUBLE  NOT NULL DEFAULT 0,
+
+    skill_combat_magic     FLOAT   NOT NULL DEFAULT 0,
+    skill_combat_magic_exp DOUBLE  NOT NULL DEFAULT 0,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_actor_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_aspect (
+    go_id                    BIGINT UNSIGNED NOT NULL,
+
+    bounding_sphere_radius    FLOAT       NOT NULL DEFAULT 1.0,
+    current_life              FLOAT       NOT NULL DEFAULT 10.0,
+    max_life                  FLOAT       NOT NULL DEFAULT 10.0,
+    current_mana              FLOAT       NOT NULL DEFAULT 10.0,
+    max_mana                  FLOAT       NOT NULL DEFAULT 10.0,
+
+    flesh                     VARCHAR(255) COLLATE utf8mb4_bin NULL,
+    cloth                     VARCHAR(255) COLLATE utf8mb4_bin NULL,
+
+    is_invincible             TINYINT(1) NOT NULL DEFAULT 0,
+    is_visible                TINYINT(1) NOT NULL DEFAULT 1,
+
+    life_state                VARCHAR(64)  COLLATE utf8mb4_bin NOT NULL,
+    last_died                 BIGINT       NOT NULL DEFAULT 0,
+
+    model                     VARCHAR(64)  COLLATE utf8mb4_bin NOT NULL,
+    render_scale              FLOAT        NOT NULL DEFAULT 1.0,
+    experience_value          BIGINT       NOT NULL DEFAULT 0,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_aspect_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_common (
+    go_id                     BIGINT UNSIGNED NOT NULL,
+
+    auto_expiration_class      VARCHAR(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'never',
+    forced_expiration_class    VARCHAR(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'auto',
+    screen_name                VARCHAR(64) COLLATE utf8mb4_bin NOT NULL,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_common_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_inventory (
+    go_id                   BIGINT UNSIGNED NOT NULL,
+    custom_head             VARCHAR(64) COLLATE utf8mb4_bin NULL,
+    selected_active_location TINYINT UNSIGNED NOT NULL DEFAULT 0,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_inventory_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+CREATE TABLE t_go_inventory_items (
+    go_id          BIGINT UNSIGNED NOT NULL,
+    item_go_id     BIGINT UNSIGNED NOT NULL,
+    equip_slot     VARCHAR(32) COLLATE utf8mb4_bin NOT NULL,
+    inven_loc      VARCHAR(32) COLLATE utf8mb4_bin NOT NULL,
+
+    PRIMARY KEY (go_id, item_go_id),
+
+    CONSTRAINT fk_invitem_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_invitem_item
+        FOREIGN KEY (item_go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_attack (
+    go_id                 BIGINT UNSIGNED NOT NULL,
+
+    attack_range           FLOAT           NOT NULL DEFAULT 1.0,
+    critical_hit_chance    FLOAT           NOT NULL DEFAULT 0.0,
+
+    damage_min             FLOAT           NOT NULL DEFAULT 0.0,
+    damage_max             FLOAT           NOT NULL DEFAULT 0.0,
+
+    is_two_handed           TINYINT(1)      NOT NULL DEFAULT 0,
+
+    reload_delay           BIGINT UNSIGNED  NOT NULL DEFAULT 1,
+
+    attack_class           VARCHAR(32) COLLATE utf8mb4_bin NOT NULL DEFAULT 'ac_beastfu',
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_attack_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_body (
+    go_id                 BIGINT UNSIGNED NOT NULL,
+
+    avg_move_velocity      FLOAT           NOT NULL DEFAULT 1.0,
+    max_move_velocity      FLOAT           NOT NULL DEFAULT 1.0,
+    min_move_velocity      FLOAT           NOT NULL DEFAULT 1.0,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_body_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+CREATE TABLE t_go_defend (
+    go_id                      BIGINT UNSIGNED NOT NULL,
+
+    is_critical_hit_immune     TINYINT(1)      NOT NULL DEFAULT 0,
+    damage_threshold           FLOAT           NOT NULL DEFAULT 0.0,
+
+    defend_class               VARCHAR(32) COLLATE utf8mb4_bin NOT NULL DEFAULT 'dc_skin',
+    defense                    FLOAT           NOT NULL DEFAULT 0.0,
+
+    armor_type                 VARCHAR(64) COLLATE utf8mb4_bin NULL,
+    armor_style                VARCHAR(64) COLLATE utf8mb4_bin NULL,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_defend_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+CREATE TABLE t_go_gui (
+    go_id                BIGINT UNSIGNED NOT NULL,
+
+    equip_slot            VARCHAR(32) COLLATE utf8mb4_bin NOT NULL DEFAULT 'es_none',
+
+    inventory_width       INT             NOT NULL DEFAULT 0,
+    inventory_height      INT             NOT NULL DEFAULT 0,
+
+    equip_requirements    VARCHAR(255) COLLATE utf8mb4_bin NULL,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_gui_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_magic (
+    go_id                    BIGINT UNSIGNED NOT NULL,
+
+    spell_class              VARCHAR(32) COLLATE utf8mb4_bin NOT NULL DEFAULT 'mc_none',
+
+    required_level           FLOAT           NOT NULL DEFAULT 0.0,
+
+    cast_sub_animation       TINYINT UNSIGNED NOT NULL DEFAULT 1,
+    cast_range               FLOAT           NOT NULL DEFAULT 1.0,
+
+    cast_reload_delay        INT              NOT NULL DEFAULT 1,
+    effect_duration          INT              NOT NULL DEFAULT 1,
+
+    is_defensive             TINYINT(1)       NOT NULL DEFAULT 0,
+    is_offensive             TINYINT(1)       NOT NULL DEFAULT 0,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_magic_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;
+
+
+
+CREATE TABLE t_go_mind (
+    go_id                 BIGINT UNSIGNED NOT NULL,
+
+    melee_engage_range     FLOAT           NOT NULL DEFAULT 0.0,
+
+    PRIMARY KEY (go_id),
+
+    CONSTRAINT fk_mind_go
+        FOREIGN KEY (go_id)
+        REFERENCES t_gos(go_id)
+        ON DELETE CASCADE
+)
+ENGINE=InnoDB
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_bin;

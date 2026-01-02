@@ -6,108 +6,6 @@
 
 GoInventory :: GoInventory (Go * go) : GoComponent (go)
 {
-	/*
-	GopSet::iterator iterator = m_go->Inventory()->m_inventory.begin();
-	while (iterator != m_go->Inventory()->m_inventory.end())
-	{
-		Go * item = *iterator;
-		
-		Go * clone = NULL;
-		if (item->TemplateName() != "")
-		{
-			clone = godb.CloneGo (item->TemplateName());
-		}
-		else
-		{
-			clone = godb.CloneGo (*item);
-		}
-		
-		if (clone)
-		{
-			m_inventory.insert (clone);
-			// SendWorldMessage (we_entered_world, copy->Id(), copy->Id(), "");
-		}
-		
-		iterator++;
-	}
-	*/
-}
-
-GoInventory::GoInventory(Go* newGo, const GoInventory& other) : GoComponent(newGo) // attach to new Go
-{
-	m_custom_head = other.m_custom_head;
-	m_selected_active_location = other.m_selected_active_location;
-
-	// Copy inventory items
-	for (Go* item : other.m_inventory)
-	{
-		if (item)
-		{
-			// Shallow copy pointer
-			//m_inventory.insert(item);
-
-			// OR deep copy if needed:
-			m_inventory.insert(godb.CloneGo(item->TemplateName()));
-		}
-	}
-
-	// Copy equipped items
-	for (const auto& [slot, item] : other.m_equipment)
-	{
-		m_equipment[slot] = item;
-	}
-}
-
-GoInventory :: GoInventory (Go * go, xmlNode * node) : GoComponent (go)
-{
-	if (node == NULL)
-		return;
-
-	m_custom_head = "";
-
-	for (xmlNode * current = node->children; current != NULL; current = current->next)
-	{
-		if (current->type != XML_ELEMENT_NODE) continue;
-
-		if (xmlStrEqual(current->name, (const xmlChar *) "custom_head") != 0)
-		{
-			m_custom_head = xml::XReadString (current, "value", "");
-		}
-		else if (xmlStrEqual(current->name, (const xmlChar *) "item") != 0)
-		{
-			uint32_t id = xml::ReadAttribute<uint32_t> (current, "id", 0);
-			std::string equipSlotStr = xml::ReadAttribute<std::string>(current, "equip_slot", "");
-			std::string invenLocStr = xml::ReadAttribute<std::string>(current, "inven_loc", "");
-
-			Go* item = nullptr;
-			item = godb.FindGoById(id);
-			if (!item)
-			{
-				// means its either a template or not in DB
-				//cout << "Failed loading item. ID: " << id << " | OwnerGoId: " << m_go->Goid() << endl;
-				continue;
-			}
-
-			// Add to inventory
-			if (Add(item))
-			{
-				// Set inventory location
-				eInventoryLocation invenLoc = StringToNumLoc(invenLocStr); // You already have this
-
-				item->SetLoc(invenLoc);
-
-				// If equip_slot is present, equip it
-				if (!equipSlotStr.empty())
-				{
-					eEquipSlot slot = StringToNum(equipSlotStr); // You need to implement this
-					if (slot != es_none)
-					{
-						Equip(slot, item); // Will only succeed if not already equipped
-					}
-				}
-			}
-		}
-	}
 }
 
 GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
@@ -116,10 +14,6 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 		return;
 
 	const string* f;
-
-	//m_custom_head = "";
-	//m_selected_active_location = il_active_melee_weapon;
-
 	if (f = tmplComp->GetField("custom_head")) { try { m_custom_head = *f; } catch (...) { m_custom_head = ""; } }
 	if (f = tmplComp->GetField("selected_active_location")) { if (FromString(*f, m_selected_active_location) != true) m_selected_active_location = il_active_melee_weapon; }
 
@@ -136,10 +30,11 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 			if (originString[0] == '#')
 			{
 				size_t colonPos = originString.find(':');
+				// TODO add case of '/' instead  of ':'
 
 				if (colonPos != string::npos && colonPos > 1 && colonPos < originString.size() - 1)
 				{
-					pContent = originString; // pContent = templateName.substr(colonPos + 1);
+					pContent = originString;
 					itemTemplateName = originString.substr(1, colonPos - 1); // skip '#'
 				}
 				else
@@ -157,8 +52,8 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 			}
 
 			Go* item = nullptr;
-			//item = godb.CloneGo(itemTemplateName);
-			item = new Go(*itemTmpl, pContent);
+			uint32_t goid = godb.NextId();
+			item = new Go(*itemTmpl, goid, pContent);
 			if (!item) // error template not found
 			{
 				cout << "ERROR item template not found for inventory of go" << endl;
@@ -171,7 +66,7 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 				item->SetLoc(item->IntendedLoc());
 
 				// If equip_slot is present, equip it
-				eEquipSlot slot = StringToNum(equipSlot); // You need to implement this
+				eEquipSlot slot = StringToNum(equipSlot);
 				if (slot != es_none)
 				{
 					Equip(slot, item); // Will only succeed if not already equipped
@@ -183,95 +78,73 @@ GoInventory::GoInventory(Go* go, const TemplateComponent* tmplComp) : GoComponen
 	// TODO add [pcontent]
 }
 
-void GoInventory::InheritFrom(const GoInventory& other)
+GoInventory::GoInventory(Go* go, const std::map<std::string, std::string>& r) : GoComponent (go)
 {
-	// Merge inventory items
-	m_inventory.insert(other.m_inventory.begin(), other.m_inventory.end());
-
-	// Merge equipped items (only if slot empty)
-	for (const auto& [slot, item] : other.m_equipment)
-	{
-		if (m_equipment.find(slot) == m_equipment.end() && item)
-		{
-			m_equipment[slot] = item;
-		}
-	}
-
-	// Merge custom head
-	if (m_custom_head.empty())
-		m_custom_head = other.m_custom_head;
-
-	// Merge selected active location
-	if (m_selected_active_location == il_active_melee_weapon) // default value
-		m_selected_active_location = other.m_selected_active_location;
+	m_custom_head = r.at("custom_head");
+	string lsStr = r.at("selected_active_location");
+	if (FromString(lsStr, m_selected_active_location) != true) { m_selected_active_location = il_active_melee_weapon; }
 }
 
-
-void GoInventory :: Save (xmlNode* inventoryNode) const
+void GoInventory::Save(MySQL& db)
 {
-	//cout << "Entering save inventory" << endl;
+	uint32_t goid = GetGo()->Goid();
 
-	if (!inventoryNode)
-			return;
-
-	// Step 1: Remove old <item> nodes
-	xmlNode* current = inventoryNode->children;
-	while (current != NULL)
+	/* -------------------------------------------------------
+	   1) UPSERT t_go_inventory
+	   ------------------------------------------------------- */
 	{
-		xmlNode* next = current->next;
-		if (current->type == XML_ELEMENT_NODE && xmlStrEqual(current->name, BAD_CAST "item"))
-		{
-			xmlUnlinkNode(current);
-			xmlFreeNode(current);
-		}
-		else if (current->type == XML_ELEMENT_NODE && xmlStrEqual(current->name, BAD_CAST "custom_head"))
-		{
-			xml::SetAttribute(current, "value", GetCustomHead());
-		}
-		current = next;
+		std::string q =
+			"INSERT INTO t_go_inventory (go_id, custom_head, selected_active_location) VALUES ("
+			+ std::to_string(goid) + ", "
+			+ (m_custom_head.empty() ? "NULL" : "'" + m_custom_head + "'") + ", "
+			+ std::to_string(m_selected_active_location) +
+			") ON DUPLICATE KEY UPDATE "
+			"custom_head = VALUES(custom_head), "
+			"selected_active_location = VALUES(selected_active_location)";
+
+		db.AsyncQuery(q, [](const auto&) {});
 	}
 
+	/* -------------------------------------------------------
+	   2) Resync t_go_inventory_items
+	   ------------------------------------------------------- */
 
+	   // Remove previous items
+	{
+		std::string q =
+			"DELETE FROM t_go_inventory_items WHERE go_id = "
+			+ std::to_string(goid);
+
+		db.AsyncQuery(q, [](const auto&) {});
+	}
+
+	// Insert current items
 	for (GopSet::const_iterator it = m_inventory.begin(); it != m_inventory.end(); ++it)
 	{
 		Go* item = *it;
 		if (!item)
 			continue;
 
-		xmlNode* itemNode = xmlNewChild(inventoryNode, NULL, BAD_CAST "item", NULL);
+		std::string q =
+			"INSERT INTO t_go_inventory_items "
+			"(go_id, item_go_id, equip_slot, inven_loc) VALUES ("
+			+ std::to_string(goid) + ", "
+			+ std::to_string(item->Goid()) + ", '"
+			+ ToString(GetEquippedSlot(item)) + "', '"
+			+ ToString(item->GetLoc()) + "')";
 
-		uint32_t id = item->Goid();
-
-		if (id != 0)
-		{
-			xml::SetAttribute(itemNode, "id", id);
-		}
-		else
-		{
-			std::string templateName = item->TemplateName();
-			if (!templateName.empty())
-			{
-				xml::SetAttribute(itemNode, "template_name", templateName);
-			}
-		}
-
-		// Step 3: Add equip_slot if equipped
-		eEquipSlot slot = GetEquippedSlot(item);
-		std::string slotStr = ToString(slot);
-		if (!slotStr.empty())
-			xml::SetAttribute(itemNode, "equip_slot", slotStr);
-		else
-			xml::SetAttribute(itemNode, "equip_slot", "es_none");
-
-		eInventoryLocation loc = item->GetLoc();
-		std::string slotStr2 = ToString(loc);
-		xml::SetAttribute(itemNode, "inven_loc", slotStr2);
+		db.AsyncQuery(q, [](const auto&) {});
 	}
 }
 
-std::string GoInventory :: GetCustomHead () const
+std::string GoInventory::GetCustomHead() const
 {
 	return m_custom_head;
+}
+
+void GoInventory::SetCustomHead(string head)
+{
+	m_custom_head = head;
 }
 
 bool GoInventory :: HasCustomHead () const

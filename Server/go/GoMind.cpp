@@ -9,39 +9,6 @@ GoMind :: GoMind (Go * go) : GoComponent (go)
 	m_melee = 0;
 }
 
-GoMind::GoMind(Go* newGo, const GoMind& other) : GoComponent(newGo) // attach to new Go
-{
-	m_actor_auto_defends_others = other.m_actor_auto_defends_others;
-	m_actor_auto_heals_others_life = other.m_actor_auto_heals_others_life;
-	m_actor_auto_switches_to_karate = other.m_actor_auto_switches_to_karate;
-	m_actor_auto_switches_to_melee = other.m_actor_auto_switches_to_melee;
-
-	m_actor_life_ratio_high_threshold = other.m_actor_life_ratio_high_threshold;
-	m_actor_life_ratio_low_threshold = other.m_actor_life_ratio_low_threshold;
-	m_actor_mana_ratio_high_threshold = other.m_actor_mana_ratio_high_threshold;
-	m_actor_mana_ratio_low_threshold = other.m_actor_mana_ratio_low_threshold;
-
-	m_actor_may_attack = other.m_actor_may_attack;
-	m_actor_may_be_attacked = other.m_actor_may_be_attacked;
-
-	m_jat_brain = other.m_jat_brain;
-	m_jat_listen = other.m_jat_listen;
-	m_melee_engage_range = other.m_melee_engage_range;
-
-	m_on_enemy_entered_icz_switch_to_melee = other.m_on_enemy_entered_icz_switch_to_melee;
-	m_on_engaged_lost_consciousness_abort_attack = other.m_on_engaged_lost_consciousness_abort_attack;
-
-	m_ranged_engage_range = other.m_ranged_engage_range;
-	m_sensor_scan_period = other.m_sensor_scan_period;
-	m_sight_range = other.m_sight_range;
-}
-
-
-GoMind :: GoMind (Go * go, xmlNode * node) : GoComponent (go)
-{
-	m_melee = 0;
-}
-
 GoMind::GoMind(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 {
 	if (tmplComp == nullptr)
@@ -75,32 +42,21 @@ GoMind::GoMind(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("sight_range")) { try { m_sight_range = std::stof(*f); } catch (...) { m_sight_range = 0.0f; } }
 }
 
-void GoMind::InheritFrom(const GoMind& other)
+GoMind::GoMind(Go* go, const std::map<std::string, std::string>& r) : GoComponent (go)
 {
-	if (!m_actor_auto_defends_others)                m_actor_auto_defends_others = other.m_actor_auto_defends_others;
-	if (!m_actor_auto_heals_others_life)            m_actor_auto_heals_others_life = other.m_actor_auto_heals_others_life;
-	if (!m_actor_auto_switches_to_karate)           m_actor_auto_switches_to_karate = other.m_actor_auto_switches_to_karate;
-	if (!m_actor_auto_switches_to_melee)            m_actor_auto_switches_to_melee = other.m_actor_auto_switches_to_melee;
+	m_melee_engage_range = stof(r.at("melee_engage_range"));
+}
 
-	if (m_actor_life_ratio_high_threshold == 0.0f) m_actor_life_ratio_high_threshold = other.m_actor_life_ratio_high_threshold;
-	if (m_actor_life_ratio_low_threshold == 0.0f)  m_actor_life_ratio_low_threshold = other.m_actor_life_ratio_low_threshold;
-	if (m_actor_mana_ratio_high_threshold == 0.0f) m_actor_mana_ratio_high_threshold = other.m_actor_mana_ratio_high_threshold;
-	if (m_actor_mana_ratio_low_threshold == 0.0f)  m_actor_mana_ratio_low_threshold = other.m_actor_mana_ratio_low_threshold;
+void GoMind::Save(MySQL& db)
+{
+	std::string q =
+		"INSERT INTO t_go_mind (go_id, melee_engage_range) VALUES (" +
+		std::to_string(GetGo()->Goid()) + ", " +
+		std::to_string(m_melee_engage_range) + ") "
+		"ON DUPLICATE KEY UPDATE "
+		"melee_engage_range=VALUES(melee_engage_range)";
 
-	if (!m_actor_may_attack)                        m_actor_may_attack = other.m_actor_may_attack;
-	if (!m_actor_may_be_attacked)                   m_actor_may_be_attacked = other.m_actor_may_be_attacked;
-
-	if (m_jat_brain.empty())                        m_jat_brain = other.m_jat_brain;
-	if (m_jat_listen.empty())                       m_jat_listen = other.m_jat_listen;
-	if (m_melee_engage_range == 0.0f)              m_melee_engage_range = other.m_melee_engage_range;
-
-	if (!m_on_enemy_entered_icz_switch_to_melee)   m_on_enemy_entered_icz_switch_to_melee = other.m_on_enemy_entered_icz_switch_to_melee;
-	if (!m_on_engaged_lost_consciousness_abort_attack)
-		m_on_engaged_lost_consciousness_abort_attack = other.m_on_engaged_lost_consciousness_abort_attack;
-
-	if (m_ranged_engage_range == 0.0f)             m_ranged_engage_range = other.m_ranged_engage_range;
-	if (m_sensor_scan_period == 0.0f)              m_sensor_scan_period = other.m_sensor_scan_period;
-	if (m_sight_range == 0.0f)                     m_sight_range = other.m_sight_range;
+	db.AsyncQuery(q, [](const auto&) {});
 }
 
 int64_t GoMind :: TimeElapsedSinceLastMeleeAttack () const
@@ -214,7 +170,7 @@ void GoMind :: Equip (eEquipSlot slot, Go * item)
 
 	if (slot == es_any)
 	{
-		slot = item->IntendedSlot();
+		slot = item->Gui()->EquipSlot();
 		cout << "Equip: auto-mapped item " << item->Common()->ScreenName() << " location to slot " << slot << endl;
 	}
 

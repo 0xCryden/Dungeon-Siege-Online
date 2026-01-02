@@ -11,6 +11,11 @@ class Engine
 		Engine ();
 		~Engine ();
 
+		bool IsRunning() const;
+		void Loop();
+		void RegisterEvent(Event* event);
+		void HandleWorldMessage(const WorldMessage& message);
+
 		void RegisterPlayer(Go* go);  // Add this
 		void UnregisterPlayer(Go* go); // Optional, for logout cleanup
 		bool IsPlayer(Go* obj) const;
@@ -26,13 +31,11 @@ class Engine
 		GopSet GetItems() { return m_items; };
 
 		void UpdateGo(Go* go, eWorldEvent type, const string& data = "");
-		void UpdateGoExp(Go* go, float value);
+		void UpdateGoExp(Go* go, double value);
 		void UpdateGoLvlup(Go* go, const string & data);
 
-		bool IsRunning ();
-		void Loop ();
-		void RegisterEvent (Event * event);
-		void HandleWorldMessage (const WorldMessage & message);
+		std::queue<std::function<void()>> m_mainThreadJobs;
+		MySQL& Db() { return m_db; }
 
 	private:
 		void TimerPerSecond();
@@ -50,6 +53,7 @@ class Engine
 		GopSet m_players;
 		GopSet m_playerChars;
 		GopSet m_items;
+		MySQL m_db;
 };
 	
 extern Engine g_engine;

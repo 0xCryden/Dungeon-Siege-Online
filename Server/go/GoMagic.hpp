@@ -25,11 +25,11 @@ class GoMagic : public GoComponent
 {
 	public:
 		GoMagic(Go* go);
-		GoMagic(Go* go, const GoMagic& other);
-		GoMagic (Go * go, xmlNode * node);
 		GoMagic(Go* go, const TemplateComponent* tmpl);
+		GoMagic(Go* go, const std::map<std::string, std::string>& r);
+
+		void Save(MySQL& db);
 			
-		void InheritFrom(const GoMagic& other);
 		bool IsCastableOn (Go * go) const;
 		bool IsDefensive () const;
 		bool IsOffensive () const;

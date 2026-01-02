@@ -21,6 +21,227 @@
 
 #include "../Gas/Gas.hpp"
 
+#include "../server/Account.hpp"
+
+std::vector<std::string> modelStrings = {
+        "humanboy",
+        "humangirl",
+        "dso_dwarf",
+        "dso_skeleton",
+        "dso_utraean_boy",
+        "dso_utraean_girl",
+        "dso_halfgiant"
+};
+
+std::vector<std::vector<std::string>> headStrings = {
+    // humanboy (portal_farmboy)
+    {
+        "default", "m_c_gah_fb_hlmt_head-02", "m_c_gah_fb_hlmt_head-03", "m_c_gah_fb_hlmt_head-04", "m_c_gah_fb_hlmt_head-05"
+    },
+    // humangirl (portal_farmgirl)
+    {
+        "default",  "m_c_gah_fg_hlmt_head-02", "m_c_gah_fg_hlmt_head-03", "m_c_gah_fg_hlmt_head-04", "m_c_gah_fg_hlmt_head-05"
+    },
+    // dwarf (portal_dwarf)
+    {
+        "default"
+    },
+    // skeleton (portal_skeleton)
+    {
+        "default"
+    },
+    // utraean_boy (portal_utraean_boy)
+    {
+        "default", "m_c_gah_fb_hlmt_head-02", "m_c_gah_fb_hlmt_head-03", "m_c_gah_fb_hlmt_head-04", "m_c_gah_fb_hlmt_head-05"
+    },
+    // utraean_girl (portal_utraean_girl)
+    {
+        "default", "m_c_gah_fg_hlmt_head-02", "m_c_gah_fg_hlmt_head-03", "m_c_gah_fg_hlmt_head-04", "m_c_gah_fg_hlmt_head-05"
+    },
+    // halfgiant (portal_halfgiant)
+    {
+        "default"
+    }
+};
+
+std::vector<std::vector<std::string>> skinStrings = {
+    // humanboy
+    {
+        "b_c_gah_fb_skin_001", "b_c_gah_fb_skin_002", "b_c_gah_fb_skin_003", "b_c_gah_fb_skin_004",
+        "b_c_gah_fb_skin_005", "b_c_gah_fb_skin_006", "b_c_gah_fb_skin_007", "b_c_gah_fb_skin_008",
+        "b_c_gah_fb_skin_009", "b_c_gah_fb_skin_010", "b_c_gan_fb_skin_jondar"
+    },
+    // humangirl
+    {
+        "b_c_gah_fg_skin_001", "b_c_gah_fg_skin_002", "b_c_gah_fg_skin_003", "b_c_gah_fg_skin_004",
+        "b_c_gah_fg_skin_005", "b_c_gah_fg_skin_006", "b_c_gah_fg_skin_007", "b_c_gah_fg_skin_008",
+        "b_c_gah_fg_skin_009", "b_c_gah_fg_skin_010", "b_c_gan_fg_skin_lyssa"
+    },
+    // dwarf
+    {
+        "b_c_gan_df_skin_01", "b_c_gan_df_skin_02", "b_c_gan_df_skin_03",
+        "b_c_gan_df_skin_04", "b_c_gan_df_skin_05", "b_c_gan_df_skin_06"
+    },
+    // skeleton
+    {
+        "b_c_ecm_sk", "b_c_ecm_sk-02", "b_c_ecm_skg"
+    },
+    // utraean_boy
+    {
+        "b_c_gan_utraean_skin_01", "b_c_gan_utraean_skin_02", "b_c_gan_utraean_skin_03"
+    },
+    // utraean_girl
+    {
+        "b_c_gan_utraean_skin_04", "b_c_gan_utraean_skin_06"
+    },
+    // halftgiant
+    {
+        "b_c_gan_hg_skin_01", "b_c_gan_hg_skin_02", "b_c_gan_hg_skin_03",
+        "b_c_gan_hg_skin_04", "b_c_gan_hg_skin_05", "b_c_gan_hg_skin_06",
+        "b_c_gan_hg_skin_07"
+    }
+};
+
+std::vector<std::vector<std::string>> hairStrings = {
+    // humanboy
+    {
+        "b_c_gah_fb_hair_001", "b_c_gah_fb_hair_002", "b_c_gah_fb_hair_003", "b_c_gah_fb_hair_004",
+        "b_c_gah_fb_hair_005", "b_c_gah_fb_hair_006", "b_c_gah_fb_hair_007", "b_c_gah_fb_hair_008",
+        "b_c_gah_fb_hair_009", "b_c_gah_fb_hair_010"
+    },
+    // humangirl
+    {
+        "b_c_gah_fg_hair_001", "b_c_gah_fg_hair_002", "b_c_gah_fg_hair_003", "b_c_gah_fg_hair_004",
+        "b_c_gah_fg_hair_005", "b_c_gah_fg_hair_006", "b_c_gah_fg_hair_007", "b_c_gah_fg_hair_008",
+        "b_c_gah_fg_hair_009", "b_c_gah_fg_hair_010"
+    },
+    // dwarf
+    {
+        "default"// empty
+    },
+    // skeleton
+    {
+        "default"// empty
+    },
+    // utraean_boy
+    {
+        "b_c_gah_fb_hair_001", "b_c_gah_fb_hair_002", "b_c_gah_fb_hair_003", "b_c_gah_fb_hair_004",
+        "b_c_gah_fb_hair_005", "b_c_gah_fb_hair_006", "b_c_gah_fb_hair_007", "b_c_gah_fb_hair_008",
+        "b_c_gah_fb_hair_009", "b_c_gah_fb_hair_010"
+    },
+    // utraean_girl
+    {
+        "default",
+        "b_c_gah_fg_hair_001", "b_c_gah_fg_hair_002", "b_c_gah_fg_hair_003", "b_c_gah_fg_hair_004",
+        "b_c_gah_fg_hair_005", "b_c_gah_fg_hair_006", "b_c_gah_fg_hair_007", "b_c_gah_fg_hair_008",
+        "b_c_gah_fg_hair_009", "b_c_gah_fg_hair_010"
+    },
+    // halftgiant
+    {
+        "default",
+        "b_c_gah_fb_hair_001", "b_c_gah_fb_hair_002", "b_c_gah_fb_hair_003", "b_c_gah_fb_hair_004",
+        "b_c_gah_fb_hair_005", "b_c_gah_fb_hair_006", "b_c_gah_fb_hair_007", "b_c_gah_fb_hair_008",
+        "b_c_gah_fb_hair_009", "b_c_gah_fb_hair_010"
+    }
+};
+
+std::vector<std::vector<std::string>> shirtStrings = {
+    // humanboy
+    {
+        "b_c_pos_a1_jondar",
+        "b_c_pos_a1_shrt_004", "b_c_pos_a1_shrt_005", "b_c_pos_a1_shrt_008",
+        "b_c_pos_a1_shrt_009", "b_c_pos_a1_shrt_010", "b_c_pos_a1_shrt_011", "b_c_pos_a1_shrt_012",
+        "b_c_pos_a1_shrt_013", "b_c_pos_a1_shrt_014", "b_c_pos_a1_shrt_015", "b_c_pos_a1_shrt_016",
+        "b_c_pos_a1_shrt_017", "b_c_pos_a1_shrt_018"
+    },
+    // humangirl
+    {
+        "b_c_pos_a1_lyssa",
+        "b_c_pos_a1_shrt_004", "b_c_pos_a1_shrt_005", "b_c_pos_a1_shrt_008",
+        "b_c_pos_a1_shrt_009", "b_c_pos_a1_shrt_010", "b_c_pos_a1_shrt_011", "b_c_pos_a1_shrt_012",
+        "b_c_pos_a1_shrt_013", "b_c_pos_a1_shrt_014", "b_c_pos_a1_shrt_015", "b_c_pos_a1_shrt_016",
+        "b_c_pos_a1_shrt_017", "b_c_pos_a1_shrt_018"
+    },
+    // dwarf
+    {
+        "b_c_pos_a1_shrt_004", "b_c_pos_a1_shrt_005", "b_c_pos_a1_shrt_008",
+        "b_c_pos_a1_shrt_009", "b_c_pos_a1_shrt_010", "b_c_pos_a1_shrt_011", "b_c_pos_a1_shrt_012",
+        "b_c_pos_a1_shrt_013", "b_c_pos_a1_shrt_014", "b_c_pos_a1_shrt_015", "b_c_pos_a1_shrt_016",
+        "b_c_pos_a1_shrt_017", "b_c_pos_a1_shrt_018"
+    },
+    // skeleton
+    {
+        "default"// empty
+    },
+    // utraean_boy
+    {
+        "b_c_pos_a1_utraean-01",
+        "b_c_pos_a1_shrt_004", "b_c_pos_a1_shrt_005", "b_c_pos_a1_shrt_008",
+        "b_c_pos_a1_shrt_009", "b_c_pos_a1_shrt_010", "b_c_pos_a1_shrt_011", "b_c_pos_a1_shrt_012",
+        "b_c_pos_a1_shrt_013", "b_c_pos_a1_shrt_014", "b_c_pos_a1_shrt_015", "b_c_pos_a1_shrt_016",
+        "b_c_pos_a1_shrt_017", "b_c_pos_a1_shrt_018"
+    },
+    // utraean_girl
+    {
+        "b_c_pos_a1_utraean-01", "b_c_pos_a1_utraean-04",
+        "b_c_pos_a1_shrt_004", "b_c_pos_a1_shrt_005", "b_c_pos_a1_shrt_008",
+        "b_c_pos_a1_shrt_009", "b_c_pos_a1_shrt_010", "b_c_pos_a1_shrt_011", "b_c_pos_a1_shrt_012",
+        "b_c_pos_a1_shrt_013", "b_c_pos_a1_shrt_014", "b_c_pos_a1_shrt_015", "b_c_pos_a1_shrt_016",
+        "b_c_pos_a1_shrt_017", "b_c_pos_a1_shrt_018"
+    },
+    // halftgiant
+    {
+        "b_c_pos_a1_100", "b_c_pos_a1_200", "b_c_pos_a1_300",
+        "b_c_pos_a1_shrt_004", "b_c_pos_a1_shrt_005", "b_c_pos_a1_shrt_008",
+        "b_c_pos_a1_shrt_009", "b_c_pos_a1_shrt_010", "b_c_pos_a1_shrt_011", "b_c_pos_a1_shrt_012",
+        "b_c_pos_a1_shrt_013", "b_c_pos_a1_shrt_014", "b_c_pos_a1_shrt_015", "b_c_pos_a1_shrt_016",
+        "b_c_pos_a1_shrt_017", "b_c_pos_a1_shrt_018"
+    }
+};
+
+std::vector<std::vector<std::string>> pantsStrings = {
+    // humanboy
+    {
+        "b_c_pos_a1_pant_004", "b_c_pos_a1_pant_005", "b_c_pos_a1_pant_006", "b_c_pos_a1_pant_008",
+        "b_c_pos_a1_pant_009", "b_c_pos_a1_pant_010", "b_c_pos_a1_pant_011", "b_c_pos_a1_pant_012",
+        "b_c_pos_a1_pant_013", "b_c_pos_a1_pant_014", "b_c_pos_a1_pant_015", "b_c_pos_a1_pant_016"
+    },
+    // humangirl
+    {
+        "b_c_pos_a1_pant_004", "b_c_pos_a1_pant_005", "b_c_pos_a1_pant_006", "b_c_pos_a1_pant_008",
+        "b_c_pos_a1_pant_009", "b_c_pos_a1_pant_010", "b_c_pos_a1_pant_011", "b_c_pos_a1_pant_012",
+        "b_c_pos_a1_pant_013", "b_c_pos_a1_pant_014", "b_c_pos_a1_pant_015", "b_c_pos_a1_pant_016"
+    },
+    // dwarf
+    {
+        "b_c_pos_a1_pant_004", "b_c_pos_a1_pant_005", "b_c_pos_a1_pant_006", "b_c_pos_a1_pant_008",
+        "b_c_pos_a1_pant_009", "b_c_pos_a1_pant_010", "b_c_pos_a1_pant_011", "b_c_pos_a1_pant_012",
+        "b_c_pos_a1_pant_013", "b_c_pos_a1_pant_014", "b_c_pos_a1_pant_015", "b_c_pos_a1_pant_016"
+    },
+    // skeleton
+    {
+        "default" // empty
+    },
+    // utraean_boy
+    {
+        "b_c_pos_a1_pant_004", "b_c_pos_a1_pant_005", "b_c_pos_a1_pant_006", "b_c_pos_a1_pant_008",
+        "b_c_pos_a1_pant_009", "b_c_pos_a1_pant_010", "b_c_pos_a1_pant_011", "b_c_pos_a1_pant_012",
+        "b_c_pos_a1_pant_013", "b_c_pos_a1_pant_014", "b_c_pos_a1_pant_015", "b_c_pos_a1_pant_016"
+    },
+    // utraean_girl
+    {
+        "b_c_pos_a1_pant_004", "b_c_pos_a1_pant_005", "b_c_pos_a1_pant_006", "b_c_pos_a1_pant_008",
+        "b_c_pos_a1_pant_009", "b_c_pos_a1_pant_010", "b_c_pos_a1_pant_011", "b_c_pos_a1_pant_012",
+        "b_c_pos_a1_pant_013", "b_c_pos_a1_pant_014", "b_c_pos_a1_pant_015", "b_c_pos_a1_pant_016"
+    },
+    // halftgiant
+    {
+        "b_c_pos_a1_pant_004", "b_c_pos_a1_pant_005", "b_c_pos_a1_pant_006", "b_c_pos_a1_pant_008",
+        "b_c_pos_a1_pant_009", "b_c_pos_a1_pant_010", "b_c_pos_a1_pant_011", "b_c_pos_a1_pant_012",
+        "b_c_pos_a1_pant_013", "b_c_pos_a1_pant_014", "b_c_pos_a1_pant_015", "b_c_pos_a1_pant_016"
+    }
+};
+
 GoDb godb;
 
 GoDb :: GoDb ()
@@ -44,19 +265,90 @@ GoDb :: ~GoDb ()
 	}}
 }
 
-void GoDb::SpawnGo(const string& templateName, const Go* summonerGo, const string& pContent)
+void GoDb::LoadSqlDb()
 {
-    const TemplateData* tmpl = manager.GetTemplate(templateName);
-    if (!tmpl) {
-        Log::Write(Log::Level::ERR,
-            "Unknown template: " + templateName, true);
+    std::atomic<bool> finished = false;
+    std::atomic<int> pending = 0;
+
+    std::vector<std::map<std::string, std::string>> rows;
+    if (!g_engine.Db().QuerySync(
+        "SELECT go_id, template_name, pcontent_query FROM t_gos;", rows))
+    {
+        std::cout << "Failed to query t_gos\n";
         return;
     }
 
+    pending = static_cast<int>(rows.size());
+    if (pending == 0)
+        return;
+
+    for (const auto& row : rows)
+    {
+        uint32_t goid = std::stoul(row.at("go_id"));
+        Go* go = nullptr;
+
+        if (auto* tpl = manager.GetTemplate(row.at("template_name")))
+            go = new Go(*tpl, goid, row.at("pcontent_query"));
+
+        if (go == nullptr)
+        {
+            cout << "Skipping go because template " << row.at("template_name") << " wasnt found in manager" << endl;
+        }
+
+        go->LoadFromDatabase(
+            g_engine.Db(),
+            [this, go, &pending, &finished](Go*)
+            {
+                // enqueue world registration
+                g_engine.m_mainThreadJobs.push([this, go]()
+                    {
+                        godb.AddGo(go);
+
+                        if (g_engine.IsPlayer(go) || go->IsItem() || go->Goid() == 5)
+                        {
+                            const std::string& region = go->Placement()->GetRegion();
+                            if (!region.empty())
+                            {
+                                SendWorldMessage(we_entered_world, go, go, region);
+                                std::cout << "[GODB] Spawned Go "
+                                    << go->Goid() << "\n";
+                            }
+                        }
+
+                        if (go->IsItem())
+                            g_engine.RegisterItem(go);
+                        else
+                        {
+                            g_engine.RegisterPlayerCharacter(go);
+                        }
+                    });
+
+                if (--pending == 0)
+                    finished = true;
+            });
+    }
+
+    while (!finished)
+    {
+        g_engine.Loop();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+void GoDb::SpawnGo(const string& templateName, const Go* summonerGo, const string& pContent)
+{
     try
     {
-        Go* t = new Go(*tmpl, *summonerGo->Placement(), pContent);
-        m_godb[NextId()] = t;
+        Go* t = godb.CloneGo(templateName, pContent);
+
+        if (t == NULL)
+        {
+            Log::Write(Log::Level::ERR,
+                "Unknown template: " + templateName, true);
+            return;
+        }
+
+        t->CopyPlacement(summonerGo->Placement());
 
         string region = t->Placement()->GetRegion();
         if (!region.empty())
@@ -66,7 +358,8 @@ void GoDb::SpawnGo(const string& templateName, const Go* summonerGo, const strin
             if (t->IsItem())
             {
                 g_engine.RegisterItem(t);
-                t->SaveToXml("items");
+                t->Save(g_engine.Db());
+                //t->SaveToXml("items");
             }
         }
     }
@@ -74,47 +367,6 @@ void GoDb::SpawnGo(const string& templateName, const Go* summonerGo, const strin
     {
         Log::WriteF(Log::Level::ERR, "go %u was not loaded because: %s", NextId(), e.what());
     }
-}
-
-void GoDb::GasToGoDb()
-{
-    int totalLoaded = 0;
-    for (auto& [instanceName, placement] : placementManager.GetAll()) {
-
-        const TemplateData* tmpl = manager.GetTemplate(placement.templateName);
-        if (!tmpl) {
-            Log::Write(Log::Level::ERR,
-                "Unknown template: " + placement.templateName, true);
-            continue;
-        }
-
-        // check if the node exists
-        const auto& nodes = g_world.GetRegion(placement.regionName)->GetNodes();
-        if (nodes.find(placement.position.Node) == nodes.end()) 
-        {
-            //std::cout << "Skipping spawn .. region has no nodes" << std::endl;
-            continue;
-        }
-
-        try
-        {
-            Go* t = new Go(*tmpl, placement);
-            m_godb[NextId()] = t;
-
-            string region = t->Placement()->GetRegion();
-            if (!region.empty())
-            {
-                SendWorldMessage(we_entered_world, t, t, region);
-                cout << "[GODB] Spawned Go " << NextId() << " using template: " << placement.templateName << " in region: " << region << " at: " << placement.position.X << " | " << placement.position.Y << " | " << placement.position.Z << " in node: " << placement.position.Node <<  endl;
-                totalLoaded++;
-            }
-        }
-        catch (exception& e)
-        {
-            Log::WriteF(Log::Level::ERR, "go %u was not loaded because: %s", NextId(), e.what());
-        }
-    }
-    cout << "[INFO] Finished converting Gas to Gos. Total: " << totalLoaded << endl;
 }
 
 void GoDb::InstantiateMapTemplates()
@@ -136,81 +388,39 @@ void GoDb::InstantiateMapTemplates()
             continue;
         }
 
-        // --------------------------------------------
-        // Extract placement data from TemplateData component
-        // --------------------------------------------
-        const TemplateComponent* placementComp = it->second.GetComponent("placement");
-        if (!placementComp)
-        {
-            Log::Write(Log::Level::ERR,
-                "SCID template '" + it->second.name +
-                "' has no 'placement' component.", true);
-            continue;
-        }
-
-        const auto& pc = *placementComp;
-
-        float px = 0, py = 0, pz = 0;
-        uint32_t node = 0;
-
-        float ox = 0, oy = 0, oz = 0, ow = 1;
-
-        if (pc.fields.count("p position"))
-        {
-            const std::string& v = pc.fields.at("p position");
-            if (sscanf_s(v.c_str(), "%f,%f,%f,0x%x", &px, &py, &pz, &node) != 4)
-                continue; // invalid position format ? skip
-        }
-        else
-            continue; // placement must have a position
-
-        if (pc.fields.count("q orientation"))
-        {
-            const std::string& v = pc.fields.at("q orientation");
-            sscanf_s(v.c_str(), "%f,%f,%f,%f", &ox, &oy, &oz, &ow);
-        }
-        PlacementData placement;
-        // REGION
-        placement.regionName = it->second.region;
-        placement.position.X = px;
-        placement.position.Y = py;
-        placement.position.Z = pz;
-        placement.position.Node = node;
-        // ORIENTATION
-        placement.orientation.x = ox;
-        placement.orientation.y = oy;
-        placement.orientation.z = oz;
-        placement.templateName = it->second.name;
-        placement.instanceName = it->second.name; // or mapTpl.name + some id
-
-        // --------------------------------------------
-        // Check if the node exists in the region
-        // --------------------------------------------
-        auto region = g_world.GetRegion(placement.regionName);
-        if (!region)
-        {
-            Log::Write(Log::Level::ERR,
-                "Region '" + placement.regionName +
-                "' does not exist for template '" + it->second.name + "'", true);
-            it = maps.erase(it);
-            continue;
-        }
-
-        const auto& nodes = region->GetNodes();
-        if (nodes.find(placement.position.Node) == nodes.end())
-        {
-            // Region has no such node ? skip spawn
-            it = maps.erase(it);
-            continue;
-        }
-
-        // --------------------------------------------
-        // Construct the Go from TemplateData + Placement
-        // --------------------------------------------
         try
         {
-            Go* go = new Go(it->second, placement);
             uint32_t id = NextId();
+            Go* go = new Go(it->second, id);
+
+            // --------------------------------------------
+            // Check if the node exists in the region
+            // --------------------------------------------
+            auto region = g_world.GetRegion(go->Placement()->GetRegion());
+            if (!region)
+            {
+                Log::Write(Log::Level::ERR,
+                    "Region '" + go->Placement()->GetRegion() +
+                    "' does not exist for template '" + it->second.name + "'", true);
+
+                it = maps.erase(it);
+                delete go;
+                continue;
+            }
+
+            const auto& nodes = region->GetNodes();
+            if (nodes.find(go->Placement()->Position().Node) == nodes.end())
+            {
+                // Region has no such node ? skip spawn
+
+                /*Log::Write(Log::Level::ERR,
+                    "Node '" + to_string(go->Placement()->Position().Node) +
+                    "' does not exist for template '" + it->second.name + "'", true);*/
+
+                it = maps.erase(it);
+                delete go;
+                continue;
+            }
 
             string regionName = go->Placement()->GetRegion();
             if (!regionName.empty())
@@ -220,11 +430,11 @@ void GoDb::InstantiateMapTemplates()
 
                 cout << "[GODB] Spawned Go " << id
                     << " using SCID template: " << it->second.name
-                    << " in region: " << regionName
-                    << " at: " << placement.position.X
-                    << " | " << placement.position.Y
-                    << " | " << placement.position.Z
-                    << " node: " << placement.position.Node
+                    << " in region: " << go->Placement()->GetRegion()
+                    << " at: " << go->Placement()->Position().X
+                    << " | " << go->Placement()->Position().Y
+                    << " | " << go->Placement()->Position().Z
+                    << " node: " << go->Placement()->Position().Node
                     << endl;
 
                 ++totalLoaded;
@@ -260,282 +470,74 @@ void GoDb::InstantiateMapTemplates()
     size_t templates = manager.GetAll().size();
     cout << "[INFO] templates remaining in cache: "
         << templates << endl;
+
+    /*if (TemplateData* tpl = manager.GetTemplate("dso_utraean_boy"))
+    {
+        cout << "[info] template: " << tpl->name << "\n";
+        if (!tpl->specializes.empty())
+            cout << "  specializes: " << tpl->specializes << "\n";
+
+        for (const auto& [compname, comp] : tpl->components) {
+            gas.LogComponent(compname, comp, "  ");
+        }
+    }*/
+
+    auto& all = manager.GetAll();
+    for (auto it = all.begin(); it != all.end(); )
+    {
+        it = all.erase(it);
+    }
+    //delete &manager.templates;
 }
 
-void GoDb::LoadGoDbFolder(const string& folderName)
+void GoDb::AddGo(Go* go)
 {
-    string folderPath = "data\\" + folderName + "\\";
-    string searchPattern = folderPath + "*.xml";
+    m_godb[go->Goid()] = go;
+}
 
-    WIN32_FIND_DATA findFileData;
-    HANDLE hFind = FindFirstFile(searchPattern.c_str(), &findFileData);
+void GoDb::RemoveGo(Go* go)
+{
+    if (!go)
+        return;
 
-    if (hFind == INVALID_HANDLE_VALUE)
+    auto it = m_godb.find(go->Goid());
+    if (it != m_godb.end())
+        m_godb.erase(it);
+}
+void GoDb::LoadContentDb()
+{
+    size_t totalLoaded = 0;
+
+    auto& maps = manager.GetAll();
+
+    for (auto it = maps.begin(); it != maps.end(); it++ )
     {
-        throw runtime_error("No actor XML files found in: " + folderPath);
-    }
+        // SCID template name == base template name
+        TemplateData* tpl = manager.GetTemplate(it->second.name);
 
-    vector<pair<uint32_t, xmlNode*>> withoutInventory;
-    vector<pair<uint32_t, xmlNode*>> withInventory;
-
-    do
-    {
-        string filePath = folderPath + findFileData.cFileName;
-        xmlDoc* document = xmlReadFile(filePath.c_str(), NULL, 0);
-        if (!document)
+        map<string, Go*>::iterator iterator = m_contentdb.find(tpl->name);
+        if (iterator != m_contentdb.end())
         {
-            Log::WriteF(Log::Level::ERR, "Failed to read file: %s", filePath.c_str());
-            continue;
+            throw runtime_error("template already exists in contentdb");
         }
 
-        xmlNode* root = xmlDocGetRootElement(document);
-        if (!root)
-        {
-            xmlFreeDoc(document);
-            Log::WriteF(Log::Level::ERR, "Invalid XML in file: %s", filePath.c_str());
-            continue;
-        }
-
-        for (xmlNode* node = root->children; node != nullptr; node = node->next)
-        {
-            if (node->type != XML_ELEMENT_NODE || !xmlStrEqual(node->name, BAD_CAST "go"))
-                continue;
-
-            uint32_t id = xml::ReadAttribute<uint32_t>(node, "id", 0);
-            if (id == 0)
-                continue;
-
-            if (m_godb.find(id) != m_godb.end())
-            {
-                Log::WriteF(Log::Level::ERR, "Duplicate GO ID %u found in file: %s", id, filePath.c_str());
-                continue;
-            }
-
-            // Classify GO node by presence of <inventory>
-            bool hasInventory = false;
-            for (xmlNode* child = node->children; child; child = child->next)
-            {
-                if (child->type == XML_ELEMENT_NODE && xmlStrEqual(child->name, BAD_CAST "inventory"))
-                {
-                    hasInventory = true;
-                    break;
-                }
-            }
-
-            auto& targetVec = hasInventory ? withInventory : withoutInventory;
-            targetVec.emplace_back(id, xmlCopyNode(node, 1)); // deep copy so doc can be freed
-
-        }
-
-        xmlFreeDoc(document);
-
-    } while (FindNextFile(hFind, &findFileData) != 0);
-
-    FindClose(hFind);
-
-    auto processNodes = [&](const vector<pair<uint32_t, xmlNode*>>& nodes)
-    {
-        for (const auto& [id, node] : nodes)
+        if (tpl->name.empty() != true)
         {
             try
             {
-                Go* t = new Go(node);
-                m_godb[id] = t;
-
-                //if (t->HasPlacement())
-                if (g_engine.IsPlayer(t) || folderName == "items" || t->Goid() == 5)
-                {
-                    string region = t->Placement()->GetRegion();
-                    if (!region.empty())
-                    {
-                        SendWorldMessage(we_entered_world, t, t, region);
-                        cout << "[GODB] Spawned Go " << id << endl;
-                    }
-                }
-
-                if (folderName == "items")
-                {
-                    g_engine.RegisterItem(t);
-                }
-
-                if (folderName == "actors")
-                {
-                    g_engine.RegisterPlayerCharacter(t);
-                }
+                Go* t = new Go(*tpl);
+                m_contentdb[tpl->name] = t;
+                //cout << "Loaded template " << tpl->name.c_str() << endl;
+                totalLoaded++;
             }
             catch (exception& e)
             {
-                Log::WriteF(Log::Level::ERR, "go %u was not loaded because: %s", id, e.what());
-            }
-
-            xmlFreeNode(node); // free deep copy after use
-        }
-    };
-
-    // 1. Load GOs without inventory
-    processNodes(withoutInventory);
-
-    // 2. Load GOs with inventory
-    processNodes(withInventory);
-}
-
-void GoDb :: LoadGoDbSingleChar (uint32_t id)
-{
-	string filePath = "data\\actors\\" + to_string(id) + ".xml";
-
-    xmlDoc* document = xmlReadFile(filePath.c_str(), NULL, 0);
-    if (!document)
-    {
-        Log::WriteF(Log::Level::ERR, "Failed to open file for GO ID %u: %s", id, filePath.c_str());
-        return;
-    }
-
-    xmlNode* root = xmlDocGetRootElement(document);
-    if (!root)
-    {
-        xmlFreeDoc(document);
-        Log::WriteF(Log::Level::ERR, "Invalid XML structure in file: %s", filePath.c_str());
-        return;
-    }
-
-    for (xmlNode* node = root->children; node != nullptr; node = node->next)
-    {
-        if (node->type != XML_ELEMENT_NODE) continue;
-        if (!xmlStrEqual(node->name, (const xmlChar*)"go")) continue;
-
-        uint32_t nodeId = xml::ReadAttribute<uint32_t>(node, "id", 0);
-        if (nodeId != id) continue;
-
-        try
-        {
-            Go* t = new Go(node);
-            m_godb[id] = t;
-
-            if (g_engine.IsPlayer(t))
-            {
-                string region = t->Placement()->GetRegion();
-                if (!region.empty())
-                {
-                    SendWorldMessage(we_entered_world, t, t, region);
-                    cout << "Loaded go " << id << " from " << filePath << endl;
-                }
-            }
-
-            g_engine.RegisterPlayerCharacter(t);
-
-            xmlFreeDoc(document);
-            return;
-        }
-        catch (const exception& e)
-        {
-            Log::WriteF(Log::Level::ERR, "Error constructing GO %u from file %s: %s", id, filePath.c_str(), e.what());
-            xmlFreeDoc(document);
-            return;
-        }
-    }
-
-    xmlFreeDoc(document);
-    Log::WriteF(Log::Level::ERR, "No matching <go> node with ID %u found in file %s", id, filePath.c_str());
-}
-
-/*void GoDb::LoadContentDb()
-{
-    //unordered_map<string, TemplateData> templates;
-    unordered_set<string> allowed = { "actor", "aspect", "mind" };
-
-    const string rootPath = "data/static/templates";
-
-    size_t totalLoaded = 0;
-
-    for (const auto& entry : fs::recursive_directory_iterator(rootPath)) {
-        if (entry.is_regular_file() && entry.path().extension() == ".gas") {
-            const string filePath = entry.path().string();
-
-            unordered_map<string, TemplateData> fileTemplates;
-            if (gas.ReadTemplatesFile(filePath, fileTemplates, allowed)) {
-                for (auto& [name, tpl] : fileTemplates) {
-                    //cout << "Loaded Template: " << name << " from " << filePath << endl;
-                    //manager.AddTemplate(move(tpl));
-                    map<string, Go*>::iterator iterator = m_contentdb.find(name);
-                    if (iterator != m_contentdb.end())
-                    {
-                        throw runtime_error("template already exists in contentdb");
-                    }
-
-                    if (name.empty() != true)
-                    {
-                        try
-                        {
-                            Go* t = new Go(tpl);
-                            m_contentdb[name] = t;
-                            cout << "Loaded template " << name.c_str() << endl;
-                        }
-                        catch (exception& e)
-                        {
-                            Log::WriteF(Log::Level::ERR, "template %s was not loaded because : %s", name.c_str(), e.what());
-                        }
-                    }
-
-                    ++totalLoaded;
-                }
+                Log::WriteF(Log::Level::ERR, "template %s was not loaded because : %s", tpl->name.c_str(), e.what());
             }
         }
     }
-    manager.ResolveTemplateInheritance();
 
-    Log::Write(Log::Level::INFO, "[INFO] Finished loading templates. Total loaded: " + to_string(totalLoaded), true);
-}*/
-
-void GoDb :: LoadContentDbOld (const string & filename)
-{
-    // for loop for all files
-    // read all templates
-
-	xmlDoc * document = xmlReadFile (filename.c_str(), NULL, 0);
-	if (document == NULL)
-	{
-		throw runtime_error ("file does not exist");
-	}
-	
-	xmlNode * root = xmlDocGetRootElement (document);
-	if (root == NULL)
-	{
-		xmlFree (document);
-		throw runtime_error ("file is not valid xml");
-	}
-	
-	xmlNode * node = NULL;
-	for (node = root->children; node != NULL; node = node->next)
-	{
-		if (node->type != XML_ELEMENT_NODE) continue;
-		
-		if (xmlStrEqual (node->name, (const xmlChar *) "template") != 0)
-		{
-			string name = xml::ReadAttribute<string> (node, "template_name", "");
-			
-			map<string, Go *>::iterator iterator = m_contentdb.find (name);
-			if (iterator != m_contentdb.end())
-			{
-				throw runtime_error ("template already exists in contentdb");
-			}
-			
-			if (name.empty() != true)
-			{
-				try
-				{
-					Go * t = new Go (node);
-					m_contentdb[name] = t;
-					cout << "Loaded template " << name.c_str() << endl;
-				}
-				catch (exception & e)
-				{
-					Log::WriteF(Log::Level::ERR, "template %s was not loaded because : %s", name.c_str(), e.what());
-				}
-			}
-		}
-	}
-	
-	xmlFreeDoc (document);
+    Log::Write(Log::Level::INFO, "[INFO] Finished loading templates into contentDb. Total loaded: " + to_string(totalLoaded), true);
 }
 
 Go * GoDb :: FindGoById (uint32_t id)
@@ -560,40 +562,14 @@ Go* GoDb::FindTemplateByName(const string& template_name)
     return NULL;
 }
 
-Go * GoDb :: CloneGo (const Go * go)
-{
-	uint32_t id = NextId();
-	
-	Go * clone = new Go (id, go);
-	m_godb[id] = clone;
-	
-	return clone;
-}
-
-/*Go* GoDb::CloneGo(const string& template_name, const GoPlacement& placement)
+Go* GoDb::CloneGo(const string& template_name, const string& pcontent_query)
 {
     map<string, Go*>::iterator iterator = m_contentdb.find(template_name);
     if (iterator != m_contentdb.end())
     {
         uint32_t id = NextId();
 
-        Go* go = new Go(id, iterator->second);
-        m_godb[id] = go;
-
-        return go;
-    }
-
-    return NULL;
-}*/
-
-Go* GoDb::CloneGo(const string& template_name)
-{
-    map<string, Go*>::iterator iterator = m_contentdb.find(template_name);
-    if (iterator != m_contentdb.end())
-    {
-        uint32_t id = NextId();
-
-        Go* go = new Go(id, iterator->second);
+        Go* go = new Go(iterator->second, id, pcontent_query);
         m_godb[id] = go;
 
         return go;
@@ -650,4 +626,150 @@ uint32_t GoDb :: NextId ()
 	}
 	
 	return open;
+}
+
+void GoDb::CreateChar(
+	Account* account,
+	const std::string& charName,
+	int charType,
+	int charHead,
+	int charSkin,
+	int charHair,
+	int charShirt,
+	int charPants,
+	std::function<void()> onInserted
+)
+{
+	// Validate indices
+	if (charType < 0 || charType >= static_cast<int>(modelStrings.size()) ||
+		charHead < 0 || charHead >= static_cast<int>(headStrings[charType].size()) ||
+		charSkin < 0 || charSkin >= static_cast<int>(skinStrings[charType].size()) ||
+		charHair < 0 || charHair >= static_cast<int>(hairStrings[charType].size()) ||
+		charPants < 0 || charPants >= static_cast<int>(pantsStrings[charType].size()) ||
+		charShirt < 0 || charShirt >= static_cast<int>(shirtStrings[charType].size()))
+	{
+		std::cout << "Invalid character customization index." << std::endl;
+		return;
+	}
+
+	std::string strModel = modelStrings[charType];
+	std::string strHead = headStrings[charType][charHead];
+	std::string strSkin = skinStrings[charType][charSkin];
+	std::string strHair = hairStrings[charType][charHair];
+	std::string strPants = pantsStrings[charType][charPants];
+	std::string strShirt = shirtStrings[charType][charShirt];
+
+	uint32_t goid = godb.NextId();
+
+	g_engine.Db().InsertGo(goid, charName, strModel, strHead, strSkin, strHair, strShirt, strPants, account,
+		[this, account, strModel, onInserted]()
+		{
+			cout << "Go fully inserted to db\n";
+			Go* go = godb.CloneGo(strModel);
+			go->LoadFromDatabase(g_engine.Db(), [this, go, account, onInserted](Go* go)
+				{
+					g_engine.m_mainThreadJobs.push([this, go, account, onInserted]()
+						{
+							godb.AddGo(go);
+							go->SetAccount(account);
+							go->GetAccount()->AddCharacter(go);
+							g_engine.RegisterPlayerCharacter(go);
+
+							if (onInserted)
+								onInserted();
+						});
+				});
+		}
+	);
+}
+
+void GoDb::DeleteChar(int selectSlot, Account* account, std::function<void()> onInserted)
+{
+	if (selectSlot < 1 || selectSlot > 8)
+		return;
+
+	if (!account)
+		return;
+
+	std::string query =
+		"SELECT "
+		"char_id_1, char_id_2, char_id_3, char_id_4, "
+		"char_id_5, char_id_6, char_id_7, char_id_8 "
+		"FROM t_accounts WHERE account_id = " +
+		std::to_string(account->Id());
+
+	g_engine.Db().AsyncQuery(query,
+		[this, account, selectSlot, onInserted](const auto& rows)
+		{
+			if (rows.empty())
+				return;
+
+			const auto& row = rows[0];
+
+			// Collect existing characters in logical order
+			std::vector<uint32_t> chars;
+			chars.reserve(8);
+
+			for (int i = 1; i <= 8; ++i)
+			{
+				auto it = row.find("char_id_" + std::to_string(i));
+				if (it != row.end() && !it->second.empty())
+					chars.push_back(static_cast<uint32_t>(std::stoul(it->second)));
+			}
+
+			if (selectSlot > static_cast<int>(chars.size()))
+				return;
+
+			// Character to delete
+			uint32_t goId = chars[selectSlot - 1];
+			chars.erase(chars.begin() + (selectSlot - 1));
+
+			// In-memory cleanup (safe ONLY if you already block further saves)
+			if (Go* go = godb.FindGoById(goId))
+			{
+				account->RemoveCharacter(selectSlot);
+				godb.RemoveGo(go);
+				delete go;
+			}
+
+			// Build UPDATE to close the gap
+			std::ostringstream update;
+			update << "UPDATE t_accounts SET ";
+
+			for (int i = 1; i <= 8; ++i)
+			{
+				update << "char_id_" << i << " = ";
+				if (i <= static_cast<int>(chars.size()))
+					update << chars[i - 1];
+				else
+					update << "NULL";
+
+				if (i < 8)
+					update << ", ";
+			}
+
+			update << " WHERE account_id = " << account->Id();
+
+			// 1) Update account slots
+			g_engine.Db().AsyncQuery(update.str(),
+				[this, goId, onInserted](const auto&)
+				{
+					// 2) Delete Go (FK cascade)
+					std::string delGo =
+						"DELETE FROM t_gos WHERE go_id = " +
+						std::to_string(goId);
+
+					g_engine.Db().AsyncQuery(delGo,
+						[onInserted](const auto&)
+						{
+							// 3) Main-thread callback
+							g_engine.m_mainThreadJobs.push(
+								[onInserted]()
+								{
+									if (onInserted)
+										onInserted();
+								});
+						});
+				});
+		});
 }

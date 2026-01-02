@@ -31,63 +31,6 @@ GoMagic :: GoMagic (Go * go) : GoComponent (go)
 {
 }
 
-GoMagic::GoMagic(Go* newGo, const GoMagic& other) : GoComponent(newGo) // attach to new Go
-{
-	m_skill_class = other.m_skill_class;       // default "mc_none"
-	m_required_level = other.m_required_level;    // default 1.0f
-	m_cast_sub_animation = other.m_cast_sub_animation; // default 1
-	m_cast_range = other.m_cast_range;        // default 1.0f
-	m_cast_reload_delay = other.m_cast_reload_delay;  // default 1
-	m_effect_duration = other.m_effect_duration;   // default 1
-	m_defensive = other.m_defensive;         // default false
-	m_offensive = other.m_offensive;         // default false
-}
-
-GoMagic :: GoMagic (Go * go, xmlNode * node) : GoComponent (go)
-{
-	if (node != NULL)
-	{
-		xmlNode * current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-
-			if (xmlStrEqual (current->name, (const xmlChar *) "spell_class") != 0)
-			{
-				m_skill_class = xml::XReadString(current, "value", "mc_none");
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "required_level") != 0)
-			{
-				m_required_level = xml::ReadAttribute<float> (current, "value", 1.0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "cast_sub_animation") != 0)
-			{
-				m_cast_sub_animation = xml::ReadAttribute<uint8_t> (current, "value", 1);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "cast_range") != 0)
-			{
-				m_cast_range = xml::ReadAttribute<float> (current, "value", 1.0);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "cast_reload_delay") != 0)
-			{
-				m_cast_reload_delay = xml::ReadAttribute<int32_t> (current, "value", 1);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "effect_duration") != 0)
-			{
-				m_effect_duration = xml::ReadAttribute<int32_t> (current, "value", 1);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "defensive") != 0)
-			{
-				m_defensive = xml::ReadAttribute<bool> (current, "value", false);
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "offensive") != 0)
-			{
-				m_offensive = xml::ReadAttribute<bool> (current, "value", false);
-			}
-		}
-	}
-}
-
 GoMagic::GoMagic(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 {
 	if (tmplComp == nullptr)
@@ -104,16 +47,43 @@ GoMagic::GoMagic(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("offensive")) { if (FromString(*f, m_offensive) != true) m_offensive = false; }
 }
 
-void GoMagic::InheritFrom(const GoMagic& other)
+GoMagic::GoMagic(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
 {
-	if (m_skill_class == "mc_none")          m_skill_class = other.m_skill_class;
-	if (m_required_level == 1.0f)           m_required_level = other.m_required_level;
-	if (m_cast_sub_animation == 1)           m_cast_sub_animation = other.m_cast_sub_animation;
-	if (m_cast_range == 1.0f)               m_cast_range = other.m_cast_range;
-	if (m_cast_reload_delay == 1)            m_cast_reload_delay = other.m_cast_reload_delay;
-	if (m_effect_duration == 1)              m_effect_duration = other.m_effect_duration;
-	if (m_defensive == false)                m_defensive = other.m_defensive;
-	if (m_offensive == false)                m_offensive = other.m_offensive;
+	m_skill_class = r.at("spell_class");
+	m_required_level = std::stof(r.at("required_level"));
+	m_cast_sub_animation = static_cast<uint8_t>(std::stoi(r.at("cast_sub_animation")));
+	m_cast_range = std::stof(r.at("cast_range"));
+	m_cast_reload_delay = std::stoi(r.at("cast_reload_delay"));
+	m_effect_duration = std::stoi(r.at("effect_duration"));
+	m_defensive = r.at("is_defensive") == "1";
+	m_offensive = r.at("is_offensive") == "1";
+}
+
+void GoMagic::Save(MySQL& db)
+{
+	std::string q =
+		"INSERT INTO t_go_magic (go_id, spell_class, required_level, cast_sub_animation, "
+		"cast_range, cast_reload_delay, effect_duration, is_defensive, is_offensive) VALUES (" +
+		std::to_string(GetGo()->Goid()) + ", '" +
+		m_skill_class + "', " +
+		std::to_string(m_required_level) + ", " +
+		std::to_string(m_cast_sub_animation) + ", " +
+		std::to_string(m_cast_range) + ", " +
+		std::to_string(m_cast_reload_delay) + ", " +
+		std::to_string(m_effect_duration) + ", " +
+		std::to_string(m_defensive ? 1 : 0) + ", " +
+		std::to_string(m_offensive ? 1 : 0) + ") "
+		"ON DUPLICATE KEY UPDATE "
+		"spell_class=VALUES(spell_class), "
+		"required_level=VALUES(required_level), "
+		"cast_sub_animation=VALUES(cast_sub_animation), "
+		"cast_range=VALUES(cast_range), "
+		"cast_reload_delay=VALUES(cast_reload_delay), "
+		"effect_duration=VALUES(effect_duration), "
+		"is_defensive=VALUES(is_defensive), "
+		"is_offensive=VALUES(is_offensive)";
+
+	db.AsyncQuery(q, [](const auto&) {});
 }
 
 bool GoMagic :: IsCastableOn (Go * go) const

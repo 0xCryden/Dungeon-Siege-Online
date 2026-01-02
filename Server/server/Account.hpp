@@ -11,11 +11,15 @@
 	{
 		public:
 			
-			Account (xmlNode * node);
-			
+			Account(uint32_t accountId,
+				const string& username,
+				const string& passwordPlain,
+				uint32_t admin);
+
 			void AddCharacter(Go * go);
 			void RemoveCharacter(int slot);
 
+			uint32_t Admin() const { return m_admin; }
 			string Username () const;
 			string Password () const;
 			uint32_t Id () const;
@@ -39,6 +43,7 @@
 			string m_username;
 			string m_password;
 			uint32_t m_id;
+			uint32_t m_admin;
 			
 			vector<Go *> m_objects;
 	};

@@ -83,7 +83,7 @@ void WriteItemRecursive(Go* item, Packet& packet)
     if (item->HasInventory() && !item->Inventory()->ListItems().empty())
     {
     	GoInventory* inv = item->Inventory();
-        packet.WriteUInt8(1); // has inventory^
+        packet.WriteUInt8(1); // has inventory
 
         const GopSet& inveen = inv->ListItems();
         packet.WriteUInt8(inveen.size());
@@ -229,6 +229,7 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				try {
 				    amount = std::stof(message.Data());
 				} catch (const std::exception& e) {
+					cout << "Error applying amount: " << e.what() << endl;
 				    // handle error
 				}
 
@@ -485,8 +486,6 @@ void Player :: OnGoHandleMessage (const WorldMessage & message)
 				Packet packet;
 				packet.WriteUInt8 (RCDROP);
 				packet.WriteUInt32 (to->Goid());
-				
-				//to->SetOwner(0);
 
 				m_connection->Send (packet.Data(), packet.Size());
 			}

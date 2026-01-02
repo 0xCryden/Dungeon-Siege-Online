@@ -23,7 +23,7 @@ struct Skill
 {
 	string name;
 	float level;
-	float experience;
+	double experience;
 };
 
 #endif /* SKILL_HPP_ */

@@ -25,12 +25,10 @@
 		public:
 
 			GoCommon(Go* go);
-			GoCommon(Go* go, const GoCommon& other);
-			GoCommon (Go * go, xmlNode * node);
 			GoCommon(Go* go, const TemplateComponent* tmplComp);
+			GoCommon(Go* go, const std::map<std::string, std::string>& r);
 
-			void InheritFrom(const GoCommon& other);
-			void Save(xmlNode* commonNode) const;
+			void Save(MySQL& db);
 
 			string AutoExpirationClass () const;
 			string ForcedExpirationClass () const;

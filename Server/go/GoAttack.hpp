@@ -22,18 +22,18 @@
 
 #include "../enum/eAttackClass.hpp"
 #include "GoMagic.hpp"
-	
+
+class MySQL;
+
 class GoAttack : public GoComponent
 {
 	public:
 
 		GoAttack(Go * go);
-		GoAttack(Go* go, const GoAttack& other);
-		GoAttack(Go * go, xmlNode * node);
 		GoAttack(Go* go, const TemplateComponent* tmpl);
+		GoAttack(Go* go, const std::map<std::string, std::string>& r);
 
-		void InheritFrom(const GoAttack& other);
-		void Save (xmlNode* attackNode) const;
+		void Save(MySQL& db);
 
 		int CalcHitType (Go * target, const string & skill, GoMagic * magic = nullptr);
 		float CalcDamage (Go * target, const string & skill, int hitType, GoMagic * magic = nullptr);

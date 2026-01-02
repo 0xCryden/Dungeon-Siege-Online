@@ -6,6 +6,7 @@
 #include "../net/Network.hpp"
 #include "../platform/windows/WinSockApi.h"
 #include "../xml/XmlCleanupGuard.h"
+#include "../mysql/MySQL.h"
 class Engine;
 
 class Server
@@ -18,26 +19,24 @@ class Server
 		void Loop();
 		void Stop();
 
-		void LoadAccounts (const string & filename);
-		Account * GetAccount (const string & account);
-		void CreateAccount (const string & username, const string & password);
-		void DeleteChar (int selectSlot, const string & username, const string & password);
-		void CreateChar (const string & username, const string & charName, int charType, int charHead, int charSkin, int charHair, int charShirt, int charPants);
+		Account* GetAccount(const string& account);
+		void CreateAccount (const string & username, const string & password, std::function<void()> onInserted);
 
 	private:
 		void InitRng();
 		void InitSystemGuards();
 		void InitNetwork(const uint16_t port = 4000);
-		void LoadResources(const string& folderName = "data");
+		void InitDatabase(const string& ip = "127.0.0.1", const string& username = "root", const string& password = "root", const string& database = "db_data");
 		void InitTimers();
+
+		void LoadResources(const string& folderName = "data");
+		void LoadAccounts();
 
 		// Config m_config;
 		mt19937 m_rng;
 
 		std::unique_ptr<WinSockApi> m_wsa;
 		std::unique_ptr<XmlCleanupGuard> m_xml;
-		//Engine* m_engine;
-		//std::unique_ptr<Engine> m_engine;
 		Network m_network;
 
 		map<string, Account*> m_accounts;

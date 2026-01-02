@@ -24,38 +24,6 @@ GoCommon :: GoCommon (Go * go) : GoComponent (go)
 {
 }
 
-GoCommon::GoCommon(Go* newGo, const GoCommon& other) : GoComponent(newGo) // attach to new Go
-{
-	m_auto_expiration_class = other.m_auto_expiration_class;
-	m_forced_expiration_class = other.m_forced_expiration_class;
-	m_screen_name = other.m_screen_name;
-}
-
-GoCommon :: GoCommon (Go * go, xmlNode * node) : GoComponent (go)
-{
-	if (node != NULL)
-	{
-		xmlNode * current = NULL;
-		for (current = node->children; current != NULL; current = current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "auto_expiration_class") != 0)
-			{
-				m_auto_expiration_class = xml::XReadString (current, "value", "");
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "forced_expiration_class") != 0)
-			{
-				m_forced_expiration_class = xml::XReadString (current, "value", "");
-			}
-			else if (xmlStrEqual (current->name, (const xmlChar *) "screen_name") != 0)
-			{
-				m_screen_name = xml::XReadString (current, "value", "");
-			}
-		}
-	}
-}
-
 GoCommon::GoCommon(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 {
 	if (tmplComp == nullptr)
@@ -67,18 +35,28 @@ GoCommon::GoCommon(Go* go, const TemplateComponent* tmplComp) : GoComponent(go)
 	if (f = tmplComp->GetField("screen_name")) { try { m_screen_name = StripQuotes(*f); } catch (...) { m_screen_name = ""; } }
 }
 
-void GoCommon::InheritFrom(const GoCommon& other)
+GoCommon::GoCommon(Go* go, const std::map<std::string, std::string>& r) : GoComponent(go)
 {
-	if (m_auto_expiration_class.empty())   m_auto_expiration_class = other.m_auto_expiration_class;
-	if (m_forced_expiration_class.empty()) m_forced_expiration_class = other.m_forced_expiration_class;
-	if (m_screen_name.empty())             m_screen_name = other.m_screen_name;
+	m_auto_expiration_class = r.at("auto_expiration_class");
+	m_forced_expiration_class = r.at("forced_expiration_class");
+	m_screen_name = r.at("screen_name");
 }
 
-void GoCommon :: Save (xmlNode* commonNode) const
+void GoCommon::Save(MySQL& db)
 {
-	xml::SetOrUpdateChildValue(commonNode, "auto_expiration_class", m_auto_expiration_class);
-	xml::SetOrUpdateChildValue(commonNode, "forced_expiration_class", m_forced_expiration_class);
-	xml::SetOrUpdateChildValue(commonNode, "screen_name", m_screen_name);
+	std::string query =
+		"INSERT INTO t_go_common "
+		"(go_id, auto_expiration_class, forced_expiration_class, screen_name) VALUES ("
+		+ std::to_string(GetGo()->Goid()) + ", '"
+		+ m_auto_expiration_class + "', '"
+		+ m_forced_expiration_class + "', '"
+		+ m_screen_name + "') "
+		"ON DUPLICATE KEY UPDATE "
+		"auto_expiration_class = VALUES(auto_expiration_class), "
+		"forced_expiration_class = VALUES(forced_expiration_class), "
+		"screen_name = VALUES(screen_name)";
+
+	db.AsyncQuery(query, [](const auto&) {});
 }
 
 string GoCommon :: AutoExpirationClass () const

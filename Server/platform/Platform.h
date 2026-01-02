@@ -30,6 +30,8 @@
 #endif
 
 #pragma comment(lib, "libxml2.lib")
+#pragma comment(lib, "libmysql.lib")
+#pragma comment(lib, "mysqlclient.lib")
 
 // -------------------------
 // Standardized integer aliases (cross-platform)

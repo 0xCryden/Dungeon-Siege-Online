@@ -25,11 +25,11 @@
 		public:
 
 			GoBody(Go* go);
-			GoBody(Go* go, const GoBody& other);
-			GoBody(Go * go, xmlNode * node);
 			GoBody(Go* go, const TemplateComponent* tmplComp);
+			GoBody(Go* go, const std::map<std::string, std::string>& r);
 			
-			void InheritFrom(const GoBody& other);
+			void Save(MySQL& db);
+
 			float AvgMoveVelocity () const;
 			float MaxMoveVelocity () const;
 			float MinMoveVelocity () const;

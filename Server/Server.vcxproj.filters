@@ -129,6 +129,9 @@
     <ClCompile Include="go\GoConversation.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="mysql\MySQL.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.hpp">
@@ -137,10 +140,10 @@
     <ClInclude Include="gas\Gas.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="InGame.hpp">
+    <ClInclude Include="worldstate\InGame.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="MainMenu.hpp">
+    <ClInclude Include="worldstate\MainMenu.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Common.h">
@@ -257,7 +260,7 @@
     <ClInclude Include="net\packets.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="net\WorldState.hpp">
+    <ClInclude Include="worldstate\WorldState.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Player.hpp">
@@ -309,6 +312,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="go\GoConversation.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="mysql\MySQL.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

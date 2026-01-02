@@ -1,31 +1,14 @@
-
 #include "Account.hpp"
 
-Account :: Account (xmlNode * node)
+Account::Account(uint32_t accountId,
+	const std::string& username,
+	const std::string& password,
+	uint32_t admin)
+	: m_id(accountId)
+	, m_username(username)
+	, m_password(password)
+	, m_admin(admin)
 {
-	if (node != NULL)
-	{
-		m_username = xml::ReadAttribute<string> (node, "username", "");
-		m_password = xml::ReadAttribute<string> (node, "password", "");
-		m_id = xml::ReadAttribute<uint32_t> (node, "id", 0);
-		
-		xmlNode * current = NULL;
-		for (current = node->children; current != NULL; current =  current->next)
-		{
-			if (current->type != XML_ELEMENT_NODE) continue;
-			
-			if (xmlStrEqual (current->name, (const xmlChar *) "go") != 0)
-			{
-				uint32_t id = xml::ReadAttribute<uint32_t> (current, "id", 0);
-				
-				Go * go = godb.FindGoById (id);
-				if (go != NULL)
-				{
-					m_objects.push_back (go);
-				}
-			}
-		}
-	}
 }
 
 void Account :: AddCharacter (Go * go)

@@ -25,39 +25,39 @@
 #include "GoComponent.hpp"
 
 #include "../Gas/Gas.hpp"
+
+class MySQL;
 	
 class GoActor : public GoComponent
 {
 public:
 			
 	GoActor (Go * go);
-	GoActor(Go* go, const GoActor& actor); // copy
-	GoActor(Go* go, xmlNode* node); // should be GoActor (xmlNode * node);
 	GoActor (Go* go, const TemplateComponent* tmpl);
+	GoActor(Go* go, const std::map<std::string, std::string>& r);
 	~GoActor ();
-	
-	void InheritFrom(const GoActor& parent);
 
-	void Save(xmlNode* actorNode) const;
-	void SaveSkills(xmlNode* actorNode) const;
+	void Save(MySQL& db);
 
 	eActorAlignment Alignment () const;
-	bool CanLevelUp();
+	bool CanLevelUp() const;
+	void SetCanLevelUp(bool can);
 	map<string, Skill*> Skills();
+	string GetTitle() const;
 
-	float GetLevelFromXP(float xp);
-	float GetXPFromLevel(float level);
-	float GetMaxExpGainForLevel(float level);
+	float GetLevelFromXP(double xp);
+	double GetXPFromLevel(float level);
+	double GetMaxExpGainForLevel(float level);
 	void ChangeSkillLevel (const string & skill, float delta);
 	bool HasSkill (const string & skill) const;
 	float GetSkillLevel (const string & skill) const;
-	float GetSkillExp (const string & skill) const;
+	double GetSkillExp (const string & skill) const;
 	float HighestSkillLevel () const;
 	void SetAlignment (eActorAlignment alignment);
 	void SetSkillLevel (const string & skill, float value);
-	void SetSkillExp (const string & skill, float value);
+	void SetSkillExp (const string & skill, double value);
 
-	void AddSkillExp (const string & skill, float value);
+	void AddSkillExp (const string & skill, double value);
 
 private:
 			

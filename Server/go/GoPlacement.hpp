@@ -12,15 +12,11 @@ class GoPlacement : public GoComponent
 	public:
 
 		GoPlacement(Go* go);
-		GoPlacement(Go* go, const GoPlacement& other);
-		GoPlacement (Go * go, xmlNode * node);
+		GoPlacement(Go* go, const GoPlacement& other); // copy constructor
 		GoPlacement(Go* go, const TemplateComponent* tmplComp);
-		// Copy constructor
-		//GoPlacement(Go* go, const GoPlacement& other);
-		GoPlacement(Go* go, const PlacementData& data);
+		GoPlacement(Go* go, const std::map<std::string, std::string>& r);
 
-		void InheritFrom(const GoPlacement& other);
-		void Save (xmlNode* placementNode) const;
+		void Save(MySQL& db);
 
 		bool IsDirty () const;
 		void MarkAsClean ();
